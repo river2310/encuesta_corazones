@@ -17,9 +17,21 @@
     <style>
         /* Definición de la fuente Inter (uso predeterminado de Tailwind) y colores principales */
         body { font-family: 'Inter', sans-serif; background-color: #f4f7f9; }
-        .kpi-card { transition: transform 0.2s ease-in-out; }
-        .kpi-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .kpi-card { 
+            transition: transform 0.2s ease-in-out; 
+            cursor: pointer; /* Indica que es interactivo */
+        }
+        .kpi-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+        }
         .chart-container { height: 400px; } /* Altura fija para el contenedor del gráfico */
+        
+        /* Estilos para el Modal */
+        .modal {
+            transition: opacity 0.3s ease-in-out;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body class="p-4 sm:p-8">
@@ -87,8 +99,39 @@
         </section>
     </div>
 
+    <!-- Modal para el Desglose de Género -->
+    <div id="genderBreakdownModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 transform transition-all duration-300">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 id="modalTitle" class="text-2xl font-bold text-indigo-700">Desglose por Género</h3>
+                <button onclick="hideGenderBreakdown()" class="text-gray-500 hover:text-gray-800 focus:outline-none">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div id="modalContent">
+                <!-- El contenido del desglose se inyectará aquí -->
+                <div class="space-y-4 mt-4">
+                    <div id="breakdown-femenino" class="flex justify-between items-center p-3 bg-pink-50 rounded-lg border-l-4 border-pink-500">
+                        <span class="font-semibold text-lg text-gray-700">Femenino</span>
+                        <span id="countFemenino" class="text-2xl font-extrabold text-pink-700">0</span>
+                    </div>
+                    <div id="breakdown-masculino" class="flex justify-between items-center p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                        <span class="font-semibold text-lg text-gray-700">Masculino</span>
+                        <span id="countMasculino" class="text-2xl font-extrabold text-blue-700">0</span>
+                    </div>
+                    <!-- Nota para otros géneros si aplica -->
+                    <div id="breakdown-otros" class="text-sm text-gray-500 pt-2 border-t mt-4 hidden">
+                        *Otros/No especificado: <span id="countOtros">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <script>
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT1netX0UFy7WUn4MTgF1kBcpsYa46zlQS9_SeS6JFsK9hZNC-Bi9ZR2AFrEExezQe3tv3LX8QAD_a8/pub?output=csv';
+        let globalGroupGenderBreakdown = {}; // Variable global para almacenar el desglose
 
         // Definición de colores para los gráficos
         const CHART_COLORS = [
@@ -118,6 +161,24 @@
             if (row[key.toUpperCase()] !== undefined) return row[key.toUpperCase()];
 
             return undefined;
+        };
+        
+        /**
+         * Normaliza la clave del grupo de edad para manejar variaciones comunes en el CSV (e.g., singular/plural).
+         * @param {string} rawGroup La cadena de texto del grupo de edad del CSV.
+         * @returns {string} La clave normalizada ('infancia', 'adolescentes', 'adultos', 'adultos mayores').
+         */
+        const normalizeGroupKey = (rawGroup) => {
+            if (!rawGroup) return 'otro';
+            const normalized = String(rawGroup).toLowerCase().trim();
+            
+            // Mapeo robusto: utiliza includes() para ser tolerante a variaciones como "adolescentes" vs "adolescencia"
+            if (normalized.includes('infanc')) return 'infancia'; 
+            if (normalized.includes('adolescen')) return 'adolescentes'; 
+            if (normalized.includes('adultos mayor') || normalized.includes('adulto mayor')) return 'adultos mayores';
+            if (normalized.includes('adultos') || normalized.includes('adulto')) return 'adultos';
+            
+            return normalized; // Devuelve el valor normalizado si no coincide con los grupos esperados
         };
 
 
@@ -155,6 +216,8 @@
             let totalPoblacion = 0;
             const groupTotals = {};
             const genderTotals = {};
+            const groupGenderBreakdown = {}; // Nueva estructura anidada: { grupo: { genero: count } }
+
             // Lista de grupos esperados para asegurar que todos aparezcan en los KPIs y gráficos
             const ageGroups = ['infancia', 'adolescentes', 'adultos', 'adultos mayores'];
 
@@ -166,17 +229,25 @@
                 const count = (countRaw !== undefined && !isNaN(countRaw)) ? countRaw : 1;
                 totalPoblacion += count;
 
-                // Sumar por grupo de edad, intentando 'grupo_edad', 'Grupo_Edad', etc.
+                // Sumar por grupo de edad usando la nueva función de normalización
                 const groupRaw = getColumnValue(row, 'grupo_edad');
-                // Normalizar la clave del grupo a minúsculas y sin espacios
-                const group = groupRaw ? String(groupRaw).toLowerCase().trim() : 'otro';
+                const group = normalizeGroupKey(groupRaw);
                 groupTotals[group] = (groupTotals[group] || 0) + count;
 
                 // Sumar por género/sexo
                 const genderRaw = getColumnValue(row, 'genero'); // Asumiendo que 'genero' es menos propenso a cambiar
                 const gender = genderRaw ? String(genderRaw).toLowerCase().trim() : 'no especificado';
                 genderTotals[gender] = (genderTotals[gender] || 0) + count;
+                
+                // Agregar al desglose de grupo y género
+                if (!groupGenderBreakdown[group]) {
+                    groupGenderBreakdown[group] = {};
+                }
+                groupGenderBreakdown[group][gender] = (groupGenderBreakdown[group][gender] || 0) + count;
             });
+            
+            // Guardar el desglose en la variable global para acceder desde el click handler
+            globalGroupGenderBreakdown = groupGenderBreakdown;
 
             // 2. Generación de KPIs
             renderKPIs(groupTotals, totalPoblacion, ageGroups);
@@ -187,6 +258,57 @@
             // 4. Renderizado de Gráfico de Barras (Comparativa por Género)
             renderGenderBarChart(genderTotals);
         }
+
+        /**
+         * Muestra el modal de desglose de género para un grupo de edad.
+         */
+        function showGenderBreakdown(groupKey) {
+            const groupData = globalGroupGenderBreakdown[groupKey] || {};
+            
+            // Normalizar la clave para el título
+            const displayKey = groupKey.charAt(0).toUpperCase() + groupKey.slice(1);
+            
+            // Obtener los totales normalizados (asumiendo 'femenino' y 'masculino' son las claves principales)
+            const femenino = groupData['femenino'] || 0;
+            const masculino = groupData['masculino'] || 0;
+            
+            // Calcular "otros" (cualquier otra clave de género)
+            let otros = 0;
+            Object.keys(groupData).forEach(key => {
+                if (key !== 'femenino' && key !== 'masculino') {
+                    otros += groupData[key];
+                }
+            });
+
+            // Actualizar el contenido del modal
+            document.getElementById('modalTitle').textContent = `Desglose de Género: ${displayKey}`;
+            document.getElementById('countFemenino').textContent = femenino.toLocaleString('es-ES');
+            document.getElementById('countMasculino').textContent = masculino.toLocaleString('es-ES');
+            document.getElementById('countOtros').textContent = otros.toLocaleString('es-ES');
+
+            const otrosElement = document.getElementById('breakdown-otros');
+            if (otros > 0) {
+                otrosElement.classList.remove('hidden');
+            } else {
+                otrosElement.classList.add('hidden');
+            }
+
+            // Mostrar el modal
+            document.getElementById('genderBreakdownModal').classList.remove('hidden');
+            
+            // Renderizar los iconos de Lucide dentro del modal (si no están ya renderizados)
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
+        }
+
+        /**
+         * Oculta el modal de desglose de género.
+         */
+        function hideGenderBreakdown() {
+            document.getElementById('genderBreakdownModal').classList.add('hidden');
+        }
+
 
         /**
          * Renderiza las tarjetas de KPIs.
@@ -230,8 +352,9 @@
                 const color = details.color;
                 const iconName = details.icon;
                 
+                // Añadimos el evento onclick
                 const kpiCard = `
-                    <div class="kpi-card bg-white p-6 rounded-xl shadow-md border-t-4 border-[${color}]">
+                    <div class="kpi-card bg-white p-6 rounded-xl shadow-md border-t-4 border-[${color}]" onclick="showGenderBreakdown('${groupKey}')">
                         <div class="flex justify-between items-start">
                             <div class="text-sm font-medium text-gray-500">${displayKey}</div>
                             <!-- Icono de Lucide -->
