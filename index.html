@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis encuesta visitando corazones</title>
+    <!-- Favicon para la ventana del navegador -->
+    <link rel="icon" type="image/png" href="https://d3dac9gdq8t83x.cloudfront.net/media/static/images/favicons/logo-verde.png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- PapaParse CDN for CSV processing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Definición de la fuente Inter (uso predeterminado de Tailwind) y colores principales */
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f9; }
+        .kpi-card { transition: transform 0.2s ease-in-out; }
+        .kpi-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .chart-container { height: 400px; } /* Altura fija para el contenedor del gráfico */
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div id="loading" class="text-center text-xl text-indigo-600 font-semibold mt-10">
+        Cargando datos... Por favor, espere.
+    </div>
+
+    <div id="dashboard-content" class="hidden">
+        <header class="mb-8">
+            <!-- Contenedor flex para alinear el logo y el título -->
+            <div class="flex items-center space-x-4 pb-2 border-b-4 border-indigo-500">
+                <!-- Logo de la encuesta -->
+                <img src="https://d3dac9gdq8t83x.cloudfront.net/media/static/images/hor-verde.png" alt="Logo Visitando Corazones" class="h-12 w-auto object-contain">
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800">
+                    Análisis encuesta visitando corazones
+                </h1>
+            </div>
+            <p class="text-gray-600 mt-2">
+                Visualización interactiva
+            </p>
+        </header>
+
+        <!-- Sección de KPIs -->
+        <section class="mb-10">
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Indicadores Clave (KPIs)</h2>
+            
+            <!-- Contenedor para el KPI Total General (de ancho completo) -->
+            <div id="total-kpi-container" class="mb-6">
+                <!-- El KPI Total General se inyectará aquí -->
+            </div>
+
+            <!-- Contenedor para los KPIs por Grupo de Edad (Grid de 4 columnas) -->
+            <div id="group-kpi-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Los KPIs de grupo se inyectarán aquí -->
+            </div>
+        </section>
+
+        <!-- Sección de Gráficos -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Gráfico de Pastel: Distribución Porcentual por Grupo de Edad -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
+                    Distribución Porcentual por Grupo de Edad
+                </h3>
+                <div class="chart-container">
+                    <canvas id="ageGroupPieChart"></canvas>
+                </div>
+                <p class="text-sm text-gray-500 mt-4 italic">
+                    Este gráfico muestra qué grupo de edad representa la mayor proporción de la población total.
+                </p>
+            </div>
+
+            <!-- Gráfico de Barras: Comparativa de Personas por Género -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
+                    Comparativa de Población por Género
+                </h3>
+                <div class="chart-container">
+                    <canvas id="genderBarChart"></canvas>
+                </div>
+                <p class="text-sm text-gray-500 mt-4 italic">
+                    Comparación directa del total de personas por categoría de género (`sexo`).
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT1netX0UFy7WUn4MTgF1kBcpsYa46zlQS9_SeS6JFsK9hZNC-Bi9ZR2AFrEExezQe3tv3LX8QAD_a8/pub?output=csv';
+
+        // Definición de colores para los gráficos
+        const CHART_COLORS = [
+            '#4F46E5', // Indigo
+            '#10B981', // Emerald
+            '#F59E0B', // Amber
+            '#EF4444', // Red
+            '#3B82F6', // Blue (for gender, if needed)
+            '#EC4899', // Pink (for gender, if needed)
+        ];
+        
+        /**
+         * Función auxiliar para obtener el valor de una columna, manejando variaciones de mayúsculas/minúsculas.
+         * @param {Object} row La fila de datos.
+         * @param {string} key La clave en minúsculas (ej: 'cantidad').
+         * @returns {*} El valor encontrado o undefined.
+         */
+        const getColumnValue = (row, key) => {
+            // 1. Intentar la clave exacta (en minúsculas, como se usa en el código)
+            if (row[key] !== undefined) return row[key];
+            
+            // 2. Intentar la clave con la primera letra en mayúscula (ej: 'Cantidad' o 'Grupo_edad')
+            const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+            if (row[capitalizedKey] !== undefined) return row[capitalizedKey];
+            
+            // 3. Intentar la clave completamente capitalizada (ej: 'GRUPO_EDAD')
+            if (row[key.toUpperCase()] !== undefined) return row[key.toUpperCase()];
+
+            return undefined;
+        };
+
+
+        /**
+         * Inicializa y carga los datos desde el CSV.
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            Papa.parse(CSV_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                dynamicTyping: true,
+                complete: (results) => {
+                    document.getElementById('loading').classList.add('hidden');
+                    if (results.data.length === 0) {
+                        console.error('Error: No se encontraron datos válidos en el CSV.');
+                        document.getElementById('loading').textContent = 'Error: No se encontraron datos válidos en el CSV.';
+                        return;
+                    }
+                    document.getElementById('dashboard-content').classList.remove('hidden');
+                    processAndRenderData(results.data);
+                },
+                error: (error) => {
+                    document.getElementById('loading').textContent = 'Error al cargar los datos: ' + error.message;
+                    console.error('Error al parsear el CSV:', error);
+                }
+            });
+        });
+
+        /**
+         * Procesa los datos y renderiza el dashboard.
+         * @param {Array<Object>} data Los datos del CSV.
+         */
+        function processAndRenderData(data) {
+            let totalPoblacion = 0;
+            const groupTotals = {};
+            const genderTotals = {};
+            // Lista de grupos esperados para asegurar que todos aparezcan en los KPIs y gráficos
+            const ageGroups = ['infancia', 'adolescentes', 'adultos', 'adultos mayores'];
+
+            // 1. Procesamiento de datos
+            data.forEach(row => {
+                // Obtener cantidad, intentando 'cantidad', 'Cantidad', etc.
+                const countRaw = getColumnValue(row, 'cantidad');
+                // Si countRaw es nulo/indefinido o no es un número, asumimos 1 por fila (nivel de persona)
+                const count = (countRaw !== undefined && !isNaN(countRaw)) ? countRaw : 1;
+                totalPoblacion += count;
+
+                // Sumar por grupo de edad, intentando 'grupo_edad', 'Grupo_Edad', etc.
+                const groupRaw = getColumnValue(row, 'grupo_edad');
+                // Normalizar la clave del grupo a minúsculas y sin espacios
+                const group = groupRaw ? String(groupRaw).toLowerCase().trim() : 'otro';
+                groupTotals[group] = (groupTotals[group] || 0) + count;
+
+                // Sumar por género/sexo
+                const genderRaw = getColumnValue(row, 'genero'); // Asumiendo que 'genero' es menos propenso a cambiar
+                const gender = genderRaw ? String(genderRaw).toLowerCase().trim() : 'no especificado';
+                genderTotals[gender] = (genderTotals[gender] || 0) + count;
+            });
+
+            // 2. Generación de KPIs
+            renderKPIs(groupTotals, totalPoblacion, ageGroups);
+
+            // 3. Renderizado de Gráfico de Pastel (Distribución por Grupo de Edad)
+            renderAgeGroupPieChart(groupTotals, ageGroups);
+
+            // 4. Renderizado de Gráfico de Barras (Comparativa por Género)
+            renderGenderBarChart(genderTotals);
+        }
+
+        /**
+         * Renderiza las tarjetas de KPIs.
+         */
+        function renderKPIs(groupTotals, totalPoblacion, ageGroups) {
+            const totalKpiContainer = document.getElementById('total-kpi-container');
+            const groupKpiContainer = document.getElementById('group-kpi-container');
+            
+            // 1. Total General KPI (Ancho completo)
+            const totalKpiCard = `
+                <div class="kpi-card bg-white p-6 rounded-xl shadow-lg border-b-4 border-indigo-700">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center space-x-3">
+                            <i data-lucide="users" class="w-8 h-8 text-indigo-700"></i>
+                            <h3 class="text-xl font-bold text-indigo-700">POBLACIÓN TOTAL ENCUESTADA</h3>
+                        </div>
+                        <span class="text-4xl font-extrabold text-gray-900">${totalPoblacion.toLocaleString('es-ES')}</span>
+                    </div>
+                </div>
+            `;
+            totalKpiContainer.innerHTML = totalKpiCard;
+
+
+            // 2. Group KPIs (Grid de 4 columnas)
+            let groupKpiHtml = '';
+            
+            // Asigna un color y un icono a cada grupo para la coherencia
+            const groupDetails = {
+                'infancia': { color: '#4F46E5', icon: 'baby' }, // Indigo
+                'adolescentes': { color: '#10B981', icon: 'graduation-cap' }, // Emerald
+                'adultos': { color: '#F59E0B', icon: 'briefcase' }, // Amber
+                'adultos mayores': { color: '#EF4444', icon: 'heart-handshake' } // Red
+            };
+
+            ageGroups.forEach(groupKey => {
+                const total = groupTotals[groupKey] || 0;
+                const percentage = totalPoblacion > 0 ? ((total / totalPoblacion) * 100).toFixed(1) : 0;
+                const displayKey = groupKey.charAt(0).toUpperCase() + groupKey.slice(1); // Capitalizar
+
+                const details = groupDetails[groupKey] || { color: '#6B7280', icon: 'users' };
+                const color = details.color;
+                const iconName = details.icon;
+                
+                const kpiCard = `
+                    <div class="kpi-card bg-white p-6 rounded-xl shadow-md border-t-4 border-[${color}]">
+                        <div class="flex justify-between items-start">
+                            <div class="text-sm font-medium text-gray-500">${displayKey}</div>
+                            <!-- Icono de Lucide -->
+                            <i data-lucide="${iconName}" class="w-6 h-6" style="color: ${color};"></i>
+                        </div>
+                        <div class="mt-2 text-3xl font-bold text-gray-900">${total.toLocaleString('es-ES')}</div>
+                        <div class="mt-1 text-lg font-semibold" style="color: ${color};">${percentage}% del Total</div>
+                    </div>
+                `;
+                groupKpiHtml += kpiCard;
+            });
+            
+            groupKpiContainer.innerHTML = groupKpiHtml;
+
+            // Importante: Llamar a lucide.createIcons() después de inyectar el HTML para renderizar los SVG
+            setTimeout(() => {
+                // Verificamos que lucide esté disponible globalmente antes de llamar
+                if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                    lucide.createIcons();
+                }
+            }, 0);
+        }
+
+        /**
+         * Renderiza el gráfico de pastel para la distribución por grupo de edad.
+         */
+        function renderAgeGroupPieChart(groupTotals, ageGroups) {
+            const labels = ageGroups.map(g => g.charAt(0).toUpperCase() + g.slice(1));
+            const dataValues = ageGroups.map(g => groupTotals[g] || 0);
+
+            // Destruir el gráfico existente si lo hay para evitar errores al actualizar
+            if (window.ageGroupPieChartInstance) {
+                window.ageGroupPieChartInstance.destroy();
+            }
+
+            window.ageGroupPieChartInstance = new Chart(document.getElementById('ageGroupPieChart'), {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total de Personas',
+                        data: dataValues,
+                        backgroundColor: CHART_COLORS.slice(0, dataValues.length),
+                        hoverOffset: 10,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 14 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed !== null) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const value = context.parsed;
+                                        const percentage = (total > 0 ? ((value / total) * 100).toFixed(1) : 0);
+                                        label += value.toLocaleString('es-ES') + ' (' + percentage + '%)';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Renderiza el gráfico de barras para la comparativa de género.
+         */
+        function renderGenderBarChart(genderTotals) {
+            const labels = Object.keys(genderTotals).map(g => g.charAt(0).toUpperCase() + g.slice(1));
+            const dataValues = Object.values(genderTotals);
+            
+            // Usamos colores primarios diferentes para este gráfico
+            const backgroundColors = labels.map((_, i) => ['#3B82F6', '#EC4899', '#9CA3AF'][i % 3]);
+            
+            // Destruir el gráfico existente si lo hay para evitar errores al actualizar
+            if (window.genderBarChartInstance) {
+                window.genderBarChartInstance.destroy();
+            }
+
+            window.genderBarChartInstance = new Chart(document.getElementById('genderBarChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total de Personas',
+                        data: dataValues,
+                        backgroundColor: backgroundColors,
+                        borderColor: backgroundColors,
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Comparativa de Personas por Género' }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Cantidad de Personas' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Género' }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
