@@ -1,479 +1,384 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Análisis encuesta visitando corazones</title>
-    <!-- Favicon para la ventana del navegador -->
-    <link rel="icon" type="image/png" href="https://d3dac9gdq8t83x.cloudfront.net/media/static/images/favicons/logo-verde.png">
-    <!-- Tailwind CSS CDN -->
+    <link rel="icon" type="image/png" href="https://d3dac9gdget83x.cloudfront.net/media/static/images/favicons/logo-verde.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <!-- PapaParse CDN for CSV processing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Definición de la fuente Inter (uso predeterminado de Tailwind) y colores principales */
-        body { font-family: 'Inter', sans-serif; background-color: #f4f7f9; }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f4f4; color: #333333; }
+        
+        :root {
+            --clues-green: #0f5319; 
+            --clues-gold: #76b82a; 
+            --clues-red: #ea047f; 
+            --clues-gray: #6F7271;
+            --clues-light-gold: #D4C19C;
+        }
+
         .kpi-card { 
-            transition: transform 0.2s ease-in-out; 
-            cursor: pointer; /* Indica que es interactivo */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; 
+            cursor: pointer;
+            border-top-width: 4px;
         }
         .kpi-card:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+            transform: translateY(-4px); 
+            box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1); 
         }
-        .chart-container { height: 400px; } /* Altura fija para el contenedor del gráfico */
         
-        /* Estilos para el Modal */
+        .header-border { border-bottom: 4px solid var(--clues-green); }
+        .chart-container { height: 380px; position: relative; }
+
         .modal {
             transition: opacity 0.3s ease-in-out;
             z-index: 1000;
+        }
+
+        @keyframes heartPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-heart {
+            animation: heartPulse 1.2s ease-in-out infinite;
         }
     </style>
 </head>
 <body class="p-4 sm:p-8">
 
-    <div id="loading" class="text-center text-xl text-indigo-600 font-semibold mt-10">
-        Cargando datos... Por favor, espere.
+    <div id="status-container" class="flex flex-col items-center justify-center mt-32">
+        <div id="loading-animation" class="animate-heart mb-6">
+            <i data-lucide="heart" class="w-16 h-16" style="fill: var(--clues-red); color: var(--clues-red);"></i>
+        </div>
+        <p id="status-text" class="text-xl font-bold uppercase tracking-widest" style="color: var(--clues-green);">Cargando Datos...</p>
+        <p id="status-subtext" class="text-sm text-gray-500 mt-2">Visitando corazones para obtener información</p>
+        <button id="retry-btn" onclick="location.reload()" class="hidden mt-6 px-8 py-3 bg-gray-800 text-white font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-black transition-colors">Reintentar Conexión</button>
     </div>
 
-    <div id="dashboard-content" class="hidden">
-        <header class="mb-8">
-            <!-- Contenedor flex para alinear el logo y el título -->
-            <div class="flex items-center space-x-4 pb-2 border-b-4 border-indigo-500">
-                <!-- Logo de la encuesta -->
-                <img src="https://d3dac9gdq8t83x.cloudfront.net/media/static/images/hor-verde.png" alt="Logo Visitando Corazones" class="h-12 w-auto object-contain">
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800">
-                    Análisis encuesta visitando corazones
-                </h1>
+    <div id="dashboard-content" class="hidden max-w-7xl mx-auto">
+        <header class="mb-10">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 pb-4 header-border">
+                <div class="flex items-center space-x-6">
+                    <img src="https://d3dac9gdq8t83x.cloudfront.net/media/static/images/hor-verde.png" alt="Logo CLUES DGIS" class="h-16 w-auto object-contain">
+                    <div class="flex flex-col">
+                        <div class="text-[9px] sm:text-[11px] font-bold uppercase tracking-tight leading-tight" style="color: var(--clues-gold);">
+                            Dirección de Planeación, Evaluación y Proyectos Especiales
+                        </div>
+                        <div class="text-[9px] sm:text-[11px] font-bold uppercase tracking-tight leading-tight mb-1" style="color: var(--clues-gray);">
+                            Subdirección de Informática y Estadísticas en Salud
+                        </div>
+                        <h1 class="text-xl sm:text-3xl font-extrabold" style="color: var(--clues-green);">
+                            Análisis encuesta visitando corazones
+                        </h1>
+                    </div>
+                </div>
             </div>
-            <!-- Se elimina el párrafo de "Visualización interactiva" -->
         </header>
 
-        <!-- Sección de KPIs -->
-        <section class="mb-10">
-            <h2 class="text-2xl font-bold text-gray-700 mb-4">Indicadores Clave</h2>
+        <section class="mb-12">
+            <div class="flex items-center space-x-3 mb-6">
+                <i data-lucide="layout-dashboard" class="w-6 h-6 text-gray-400"></i>
+                <h2 class="text-xl font-bold uppercase tracking-wide" style="color: var(--clues-gray);">Indicadores Clave</h2>
+            </div>
             
-            <!-- Contenedor para el KPI Total General (de ancho completo) -->
-            <div id="total-kpi-container" class="mb-6">
-                <!-- El KPI Total General se inyectará aquí -->
-            </div>
-
-            <!-- Contenedor para los KPIs por Grupo de Edad (Grid de 4 columnas) -->
-            <div id="group-kpi-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Los KPIs de grupo se inyectarán aquí -->
-            </div>
+            <div id="total-kpi-container" class="mb-8"></div>
+            <div id="group-kpi-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
         </section>
 
-        <!-- Sección de Gráficos -->
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
-            <!-- Gráfico de Pastel: Distribución Porcentual por Grupo de Edad -->
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-                <h3 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
-                    Distribución Porcentual por Grupo de Edad
-                </h3>
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div class="flex items-center space-x-2 mb-6 border-b pb-2">
+                    <div class="w-2 h-6" style="background-color: var(--clues-gold);"></div>
+                    <h3 class="text-lg font-bold uppercase" style="color: var(--clues-green);">Distribución por Edad</h3>
+                </div>
                 <div class="chart-container">
                     <canvas id="ageGroupPieChart"></canvas>
                 </div>
-                <p class="text-sm text-gray-500 mt-4 italic">
-                    Este gráfico muestra qué grupo de edad representa la mayor proporción de la población total.
-                </p>
             </div>
 
-            <!-- Gráfico de Barras: Comparativa de Personas por Género -->
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-                <h3 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
-                    Comparativa de Población por Género
-                </h3>
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div class="flex items-center space-x-2 mb-6 border-b pb-2">
+                    <div class="w-2 h-6" style="background-color: var(--clues-red);"></div>
+                    <h3 class="text-lg font-bold uppercase" style="color: var(--clues-green);">Población por Género</h3>
+                </div>
                 <div class="chart-container">
                     <canvas id="genderBarChart"></canvas>
                 </div>
-                <p class="text-sm text-gray-500 mt-4 italic">
-                    Comparación directa del total de personas por categoría de género (`sexo`).
-                </p>
             </div>
         </section>
+
+        <footer class="mt-16 pt-8 border-t"></footer>
     </div>
 
-    <!-- Modal para el Desglose de Género -->
-    <div id="genderBreakdownModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 transform transition-all duration-300">
-            <div class="flex justify-between items-center border-b pb-3 mb-4">
-                <h3 id="modalTitle" class="text-2xl font-bold text-indigo-700">Desglose por Género</h3>
-                <button onclick="hideGenderBreakdown()" class="text-gray-500 hover:text-gray-800 focus:outline-none">
+    <div id="genderBreakdownModal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+            <div class="p-6 border-b flex justify-between items-center" style="background-color: var(--clues-green);">
+                <h3 id="modalTitle" class="text-xl font-bold text-white uppercase tracking-tight">Desglose</h3>
+                <button onclick="hideGenderBreakdown()" class="text-white hover:opacity-75">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
-            <div id="modalContent">
-                <!-- El contenido del desglose se inyectará aquí -->
-                <div class="space-y-4 mt-4">
-                    <div id="breakdown-femenino" class="flex justify-between items-center p-3 bg-pink-50 rounded-lg border-l-4 border-pink-500">
-                        <span class="font-semibold text-lg text-gray-700">Femenino</span>
-                        <span id="countFemenino" class="text-2xl font-extrabold text-pink-700">0</span>
+            <div class="p-8">
+                <div class="space-y-6">
+                    <div class="flex justify-between items-end border-b pb-2">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-3 h-3 rounded-full" style="background-color: var(--clues-red);"></div>
+                            <span class="text-gray-600 font-medium uppercase text-sm">Femenino</span>
+                        </div>
+                        <span id="countFemenino" class="text-3xl font-black" style="color: var(--clues-red);">0</span>
                     </div>
-                    <div id="breakdown-masculino" class="flex justify-between items-center p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-                        <span class="font-semibold text-lg text-gray-700">Masculino</span>
-                        <span id="countMasculino" class="text-2xl font-extrabold text-blue-700">0</span>
+                    <div class="flex justify-between items-end border-b pb-2">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-3 h-3 rounded-full" style="background-color: var(--clues-green);"></div>
+                            <span class="text-gray-600 font-medium uppercase text-sm">Masculino</span>
+                        </div>
+                        <span id="countMasculino" class="text-3xl font-black" style="color: var(--clues-green);">0</span>
                     </div>
-                    <!-- Nota para otros géneros si aplica -->
-                    <div id="breakdown-otros" class="text-sm text-gray-500 pt-2 border-t mt-4 hidden">
-                        *Otros/No especificado: <span id="countOtros">0</span>
+                    <div id="breakdown-otros" class="text-xs text-right text-gray-400 uppercase hidden">
+                        * Otros/Sin especificar: <span id="countOtros">0</span>
                     </div>
                 </div>
+                <button onclick="hideGenderBreakdown()" class="mt-8 w-full py-3 rounded font-bold uppercase text-sm tracking-widest text-white transition-colors" style="background-color: var(--clues-gold);">
+                    Cerrar Detalle
+                </button>
             </div>
         </div>
     </div>
 
-
     <script>
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT1netX0UFy7WUn4MTgF1kBcpsYa46zlQS9_SeS6JFsK9hZNC-Bi9ZR2AFrEExezQe3tv3LX8QAD_a8/pub?output=csv';
-        let globalGroupGenderBreakdown = {}; // Variable global para almacenar el desglose
+        let globalGroupGenderBreakdown = {};
 
-        // Definición de colores para los gráficos
-        const CHART_COLORS = [
-            '#4F46E5', // Indigo
-            '#10B981', // Emerald
-            '#F59E0B', // Amber
-            '#EF4444', // Red
-            '#3B82F6', // Blue (for gender, if needed)
-            '#EC4899', // Pink (for gender, if needed)
-        ];
+        const COLORS = {
+            green: '#0f5319', 
+            gold: '#76b82a', 
+            red: '#ea047f',
+            secondary: '#285C4D',
+            gray: '#6F7271'
+        };
+
+        const CHART_COLORS = [COLORS.green, COLORS.gold, COLORS.red, COLORS.secondary];
         
-        /**
-         * Función auxiliar para obtener el valor de una columna, manejando variaciones de mayúsculas/minúsculas.
-         * @param {Object} row La fila de datos.
-         * @param {string} key La clave en minúsculas (ej: 'cantidad').
-         * @returns {*} El valor encontrado o undefined.
-         */
+        const formatNumber = (num) => {
+            return num.toLocaleString('es-MX');
+        };
+
         const getColumnValue = (row, key) => {
-            // 1. Intentar la clave exacta (en minúsculas, como se usa en el código)
             if (row[key] !== undefined) return row[key];
-            
-            // 2. Intentar la clave con la primera letra en mayúscula (ej: 'Cantidad' o 'Grupo_edad')
             const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
             if (row[capitalizedKey] !== undefined) return row[capitalizedKey];
-            
-            // 3. Intentar la clave completamente capitalizada (ej: 'GRUPO_EDAD')
             if (row[key.toUpperCase()] !== undefined) return row[key.toUpperCase()];
-
             return undefined;
         };
         
-        /**
-         * Normaliza la clave del grupo de edad para manejar variaciones comunes en el CSV (e.g., singular/plural).
-         * @param {string} rawGroup La cadena de texto del grupo de edad del CSV.
-         * @returns {string} La clave normalizada ('infancia', 'adolescentes', 'adultos', 'adultos mayores').
-         */
         const normalizeGroupKey = (rawGroup) => {
             if (!rawGroup) return 'otro';
             const normalized = String(rawGroup).toLowerCase().trim();
-            
-            // Mapeo robusto: utiliza includes() para ser tolerante a variaciones como "adolescentes" vs "adolescencia"
             if (normalized.includes('infanc')) return 'infancia'; 
             if (normalized.includes('adolescen')) return 'adolescentes'; 
             if (normalized.includes('adultos mayor') || normalized.includes('adulto mayor')) return 'adultos mayores';
             if (normalized.includes('adultos') || normalized.includes('adulto')) return 'adultos';
-            
-            return normalized; // Devuelve el valor normalizado si no coincide con los grupos esperados
+            return normalized;
         };
 
+        const showError = (message) => {
+            document.getElementById('loading-animation').classList.add('hidden');
+            document.getElementById('status-subtext').classList.add('hidden');
+            const statusText = document.getElementById('status-text');
+            statusText.textContent = message;
+            statusText.style.color = '#dc2626';
+            document.getElementById('retry-btn').classList.remove('hidden');
+        };
 
-        /**
-         * Inicializa y carga los datos desde el CSV.
-         */
         document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+
             Papa.parse(CSV_URL, {
                 download: true,
                 header: true,
                 skipEmptyLines: true,
                 dynamicTyping: true,
                 complete: (results) => {
-                    document.getElementById('loading').classList.add('hidden');
-                    if (results.data.length === 0) {
-                        console.error('Error: No se encontraron datos válidos en el CSV.');
-                        document.getElementById('loading').textContent = 'Error: No se encontraron datos válidos en el CSV.';
+                    if (results.errors.length > 0 && results.data.length === 0) {
+                        showError('Error en los datos CSV');
                         return;
                     }
-                    document.getElementById('dashboard-content').classList.remove('hidden');
-                    processAndRenderData(results.data);
+                    if (results.data.length === 0) {
+                        showError('Sin registros encontrados');
+                        return;
+                    }
+                    setTimeout(() => {
+                        document.getElementById('status-container').classList.add('hidden');
+                        document.getElementById('dashboard-content').classList.remove('hidden');
+                        processAndRenderData(results.data);
+                    }, 800);
                 },
                 error: (error) => {
-                    document.getElementById('loading').textContent = 'Error al cargar los datos: ' + error.message;
-                    console.error('Error al parsear el CSV:', error);
+                    showError('Error de Conexión');
                 }
             });
         });
 
-        /**
-         * Procesa los datos y renderiza el dashboard.
-         * @param {Array<Object>} data Los datos del CSV.
-         */
         function processAndRenderData(data) {
             let totalPoblacion = 0;
             const groupTotals = {};
             const genderTotals = {};
-            const groupGenderBreakdown = {}; // Nueva estructura anidada: { grupo: { genero: count } }
-
-            // Lista de grupos esperados para asegurar que todos aparezcan en los KPIs y gráficos
+            const groupGenderBreakdown = {};
             const ageGroups = ['infancia', 'adolescentes', 'adultos', 'adultos mayores'];
 
-            // 1. Procesamiento de datos
             data.forEach(row => {
-                // Obtener cantidad, intentando 'cantidad', 'Cantidad', etc.
                 const countRaw = getColumnValue(row, 'cantidad');
-                // Si countRaw es nulo/indefinido o no es un número, asumimos 1 por fila (nivel de persona)
                 const count = (countRaw !== undefined && !isNaN(countRaw)) ? countRaw : 1;
                 totalPoblacion += count;
 
-                // Sumar por grupo de edad usando la nueva función de normalización
                 const groupRaw = getColumnValue(row, 'grupo_edad');
                 const group = normalizeGroupKey(groupRaw);
                 groupTotals[group] = (groupTotals[group] || 0) + count;
 
-                // Sumar por género/sexo
-                const genderRaw = getColumnValue(row, 'genero'); // Asumiendo que 'genero' es menos propenso a cambiar
+                const genderRaw = getColumnValue(row, 'genero');
                 const gender = genderRaw ? String(genderRaw).toLowerCase().trim() : 'no especificado';
                 genderTotals[gender] = (genderTotals[gender] || 0) + count;
                 
-                // Agregar al desglose de grupo y género
-                if (!groupGenderBreakdown[group]) {
-                    groupGenderBreakdown[group] = {};
-                }
+                if (!groupGenderBreakdown[group]) groupGenderBreakdown[group] = {};
                 groupGenderBreakdown[group][gender] = (groupGenderBreakdown[group][gender] || 0) + count;
             });
             
-            // Guardar el desglose en la variable global para acceder desde el click handler
             globalGroupGenderBreakdown = groupGenderBreakdown;
-
-            // 2. Generación de KPIs
             renderKPIs(groupTotals, totalPoblacion, ageGroups);
-
-            // 3. Renderizado de Gráfico de Pastel (Distribución por Grupo de Edad)
             renderAgeGroupPieChart(groupTotals, ageGroups);
-
-            // 4. Renderizado de Gráfico de Barras (Comparativa por Género)
             renderGenderBarChart(genderTotals);
         }
 
-        /**
-         * Muestra el modal de desglose de género para un grupo de edad.
-         */
         function showGenderBreakdown(groupKey) {
             const groupData = globalGroupGenderBreakdown[groupKey] || {};
-            
-            // Normalizar la clave para el título
             const displayKey = groupKey.charAt(0).toUpperCase() + groupKey.slice(1);
-            
-            // Obtener los totales normalizados (asumiendo 'femenino' y 'masculino' son las claves principales)
             const femenino = groupData['femenino'] || 0;
             const masculino = groupData['masculino'] || 0;
-            
-            // Calcular "otros" (cualquier otra clave de género)
             let otros = 0;
             Object.keys(groupData).forEach(key => {
-                if (key !== 'femenino' && key !== 'masculino') {
-                    otros += groupData[key];
-                }
+                if (key !== 'femenino' && key !== 'masculino') otros += groupData[key];
             });
 
-            // Actualizar el contenido del modal
-            document.getElementById('modalTitle').textContent = `Desglose de Género: ${displayKey}`;
-            document.getElementById('countFemenino').textContent = femenino.toLocaleString('es-ES');
-            document.getElementById('countMasculino').textContent = masculino.toLocaleString('es-ES');
-            document.getElementById('countOtros').textContent = otros.toLocaleString('es-ES');
+            document.getElementById('modalTitle').textContent = `DETALLE: ${displayKey}`;
+            document.getElementById('countFemenino').textContent = formatNumber(femenino);
+            document.getElementById('countMasculino').textContent = formatNumber(masculino);
+            document.getElementById('countOtros').textContent = formatNumber(otros);
 
-            const otrosElement = document.getElementById('breakdown-otros');
-            if (otros > 0) {
-                otrosElement.classList.remove('hidden');
-            } else {
-                otrosElement.classList.add('hidden');
-            }
+            if (otros > 0) document.getElementById('breakdown-otros').classList.remove('hidden');
+            else document.getElementById('breakdown-otros').classList.add('hidden');
 
-            // Mostrar el modal
             document.getElementById('genderBreakdownModal').classList.remove('hidden');
-            
-            // Renderizar los iconos de Lucide dentro del modal (si no están ya renderizados)
-            if (typeof lucide !== 'undefined' && lucide.createIcons) {
-                lucide.createIcons();
-            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
-        /**
-         * Oculta el modal de desglose de género.
-         */
         function hideGenderBreakdown() {
             document.getElementById('genderBreakdownModal').classList.add('hidden');
         }
 
-
-        /**
-         * Renderiza las tarjetas de KPIs.
-         */
         function renderKPIs(groupTotals, totalPoblacion, ageGroups) {
             const totalKpiContainer = document.getElementById('total-kpi-container');
             const groupKpiContainer = document.getElementById('group-kpi-container');
             
-            // 1. Total General KPI (Ancho completo)
-            const totalKpiCard = `
-                <div class="kpi-card bg-white p-6 rounded-xl shadow-lg border-b-4 border-indigo-700">
+            totalKpiContainer.innerHTML = `
+                <div class="kpi-card bg-white p-8 rounded-lg shadow-sm border-l-8" style="border-color: var(--clues-green);">
                     <div class="flex justify-between items-center">
-                        <div class="flex items-center space-x-3">
-                            <i data-lucide="users" class="w-8 h-8 text-indigo-700"></i>
-                            <h3 class="text-xl font-bold text-indigo-700">POBLACIÓN TOTAL ENCUESTADA</h3>
+                        <div class="flex items-center space-x-4">
+                            <i data-lucide="activity" class="w-10 h-10" style="color: var(--clues-green);"></i>
+                            <h3 class="text-sm font-black uppercase tracking-widest text-gray-500">Población Total Encuestada</h3>
                         </div>
-                        <span class="text-4xl font-extrabold text-gray-900">${totalPoblacion.toLocaleString('es-ES')}</span>
+                        <span class="text-5xl font-black text-gray-900">${formatNumber(totalPoblacion)}</span>
                     </div>
                 </div>
             `;
-            totalKpiContainer.innerHTML = totalKpiCard;
 
-
-            // 2. Group KPIs (Grid de 4 columnas)
             let groupKpiHtml = '';
-            
-            // Asigna un color y un icono a cada grupo para la coherencia
             const groupDetails = {
-                'infancia': { color: '#4F46E5', icon: 'baby' }, // Indigo
-                'adolescentes': { color: '#10B981', icon: 'graduation-cap' }, // Emerald
-                'adultos': { color: '#F59E0B', icon: 'briefcase' }, // Amber
-                'adultos mayores': { color: '#EF4444', icon: 'heart-handshake' } // Red
+                'infancia': { color: COLORS.green, icon: 'baby' },
+                'adolescentes': { color: COLORS.gold, icon: 'graduation-cap' },
+                'adultos': { color: COLORS.red, icon: 'briefcase' },
+                'adultos mayores': { color: COLORS.secondary, icon: 'heart-pulse' }
             };
 
             ageGroups.forEach(groupKey => {
                 const total = groupTotals[groupKey] || 0;
                 const percentage = totalPoblacion > 0 ? ((total / totalPoblacion) * 100).toFixed(1) : 0;
-                const displayKey = groupKey.charAt(0).toUpperCase() + groupKey.slice(1); // Capitalizar
+                const displayKey = groupKey.charAt(0).toUpperCase() + groupKey.slice(1);
+                const details = groupDetails[groupKey] || { color: '#666', icon: 'users' };
 
-                const details = groupDetails[groupKey] || { color: '#6B7280', icon: 'users' };
-                const color = details.color;
-                const iconName = details.icon;
-                
-                // Añadimos el evento onclick
-                const kpiCard = `
-                    <div class="kpi-card bg-white p-6 rounded-xl shadow-md border-t-4 border-[${color}]" onclick="showGenderBreakdown('${groupKey}')">
-                        <div class="flex justify-between items-start">
-                            <div class="text-sm font-medium text-gray-500">${displayKey}</div>
-                            <!-- Icono de Lucide -->
-                            <i data-lucide="${iconName}" class="w-6 h-6" style="color: ${color};"></i>
+                groupKpiHtml += `
+                    <div class="kpi-card bg-white p-6 rounded-lg shadow-sm" style="border-top-color: ${details.color};" onclick="showGenderBreakdown('${groupKey}')">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-xs font-bold uppercase text-gray-400 tracking-wider">${displayKey}</span>
+                            <i data-lucide="${details.icon}" class="w-5 h-5" style="color: ${details.color};"></i>
                         </div>
-                        <div class="mt-2 text-3xl font-bold text-gray-900">${total.toLocaleString('es-ES')}</div>
-                        <div class="mt-1 text-lg font-semibold" style="color: ${color};">${percentage}% del Total</div>
+                        <div class="text-3xl font-black text-gray-800">${formatNumber(total)}</div>
+                        <div class="mt-2 text-xs font-bold px-2 py-1 rounded inline-block" style="background-color: ${details.color}20; color: ${details.color};">
+                            ${percentage}% DEL TOTAL
+                        </div>
                     </div>
                 `;
-                groupKpiHtml += kpiCard;
             });
             
             groupKpiContainer.innerHTML = groupKpiHtml;
-
-            // Importante: Llamar a lucide.createIcons() después de inyectar el HTML para renderizar los SVG
-            setTimeout(() => {
-                // Verificamos que lucide esté disponible globalmente antes de llamar
-                if (typeof lucide !== 'undefined' && lucide.createIcons) {
-                    lucide.createIcons();
-                }
-            }, 0);
+            setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 50);
         }
 
-        /**
-         * Renderiza el gráfico de pastel para la distribución por grupo de edad.
-         */
         function renderAgeGroupPieChart(groupTotals, ageGroups) {
-            const labels = ageGroups.map(g => g.charAt(0).toUpperCase() + g.slice(1));
+            const labels = ageGroups.map(g => g.toUpperCase());
             const dataValues = ageGroups.map(g => groupTotals[g] || 0);
 
-            // Destruir el gráfico existente si lo hay para evitar errores al actualizar
-            if (window.ageGroupPieChartInstance) {
-                window.ageGroupPieChartInstance.destroy();
-            }
+            if (window.ageGroupPieChartInstance) window.ageGroupPieChartInstance.destroy();
 
             window.ageGroupPieChartInstance = new Chart(document.getElementById('ageGroupPieChart'), {
                 type: 'pie',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Total de Personas',
                         data: dataValues,
-                        backgroundColor: CHART_COLORS.slice(0, dataValues.length),
-                        hoverOffset: 10,
+                        backgroundColor: CHART_COLORS,
+                        hoverOffset: 15,
+                        borderWidth: 4,
+                        borderColor: '#ffffff'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                font: { size: 14 }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.label || '';
-                                    if (label) { label += ': '; }
-                                    if (context.parsed !== null) {
-                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        const value = context.parsed;
-                                        const percentage = (total > 0 ? ((value / total) * 100).toFixed(1) : 0);
-                                        label += value.toLocaleString('es-ES') + ' (' + percentage + '%)';
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
+                        legend: { position: 'bottom', labels: { padding: 20, font: { weight: 'bold', size: 11 } } }
                     }
                 }
             });
         }
 
-        /**
-         * Renderiza el gráfico de barras para la comparativa de género.
-         */
         function renderGenderBarChart(genderTotals) {
-            const labels = Object.keys(genderTotals).map(g => g.charAt(0).toUpperCase() + g.slice(1));
+            const labels = Object.keys(genderTotals).map(g => g.toUpperCase());
             const dataValues = Object.values(genderTotals);
-            
-            // Usamos colores primarios diferentes para este gráfico
-            const backgroundColors = labels.map((_, i) => ['#3B82F6', '#EC4899', '#9CA3AF'][i % 3]);
-            
-            // Destruir el gráfico existente si lo hay para evitar errores al actualizar
-            if (window.genderBarChartInstance) {
-                window.genderBarChartInstance.destroy();
-            }
+            const barColors = labels.map(l => l.includes('FEM') ? COLORS.red : COLORS.green);
+
+            if (window.genderBarChartInstance) window.genderBarChartInstance.destroy();
 
             window.genderBarChartInstance = new Chart(document.getElementById('genderBarChart'), {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Total de Personas',
                         data: dataValues,
-                        backgroundColor: backgroundColors,
-                        borderColor: backgroundColors,
-                        borderWidth: 1,
-                        borderRadius: 5,
+                        backgroundColor: barColors,
+                        borderRadius: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        title: { display: true, text: 'Comparativa de Personas por Género' }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Cantidad de Personas' }
-                        },
-                        x: {
-                            title: { display: true, text: 'Género' }
-                        }
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } }
                     }
                 }
             });
