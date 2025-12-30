@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="https://d3dac9gdget83x.cloudfront.net/media/static/images/favicons/logo-verde.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -31,7 +32,8 @@
         }
         
         .header-border { border-bottom: 4px solid var(--clues-green); }
-        .chart-container { height: 380px; position: relative; }
+        .chart-container { height: 280px; position: relative; }
+        .chart-container-large { height: 450px; position: relative; }
 
         .modal {
             transition: opacity 0.3s ease-in-out;
@@ -55,7 +57,7 @@
             <i data-lucide="heart" class="w-16 h-16" style="fill: var(--clues-red); color: var(--clues-red);"></i>
         </div>
         <p id="status-text" class="text-xl font-bold uppercase tracking-widest" style="color: var(--clues-green);">Cargando Datos...</p>
-        <p id="status-subtext" class="text-sm text-gray-500 mt-2">Visitando corazones para obtener información</p>
+        <p id="status-subtext" class="text-sm text-gray-500 mt-2">Analizando información geográfica y de salud animal</p>
         <button id="retry-btn" onclick="location.reload()" class="hidden mt-6 px-8 py-3 bg-gray-800 text-white font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-black transition-colors">Reintentar Conexión</button>
     </div>
 
@@ -89,25 +91,60 @@
             <div id="group-kpi-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
         </section>
 
-        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                <div class="flex items-center space-x-2 mb-6 border-b pb-2">
-                    <div class="w-2 h-6" style="background-color: var(--clues-gold);"></div>
-                    <h3 class="text-lg font-bold uppercase" style="color: var(--clues-green);">Distribución por Edad</h3>
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-5 rounded-lg shadow-md border border-gray-200">
+                <div class="flex items-center space-x-2 mb-4 border-b pb-2">
+                    <div class="w-2 h-5" style="background-color: var(--clues-gold);"></div>
+                    <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">Distribución por Edad</h3>
                 </div>
                 <div class="chart-container">
-                    <canvas id="ageGroupPieChart"></canvas>
+                    <canvas id="ageGroupBarChart"></canvas>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                <div class="flex items-center space-x-2 mb-6 border-b pb-2">
-                    <div class="w-2 h-6" style="background-color: var(--clues-red);"></div>
-                    <h3 class="text-lg font-bold uppercase" style="color: var(--clues-green);">Población por Género</h3>
+            <div class="bg-white p-5 rounded-lg shadow-md border border-gray-200">
+                <div class="flex items-center space-x-2 mb-4 border-b pb-2">
+                    <div class="w-2 h-5" style="background-color: var(--clues-red);"></div>
+                    <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">Población por Género</h3>
                 </div>
                 <div class="chart-container">
                     <canvas id="genderBarChart"></canvas>
                 </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-lg shadow-md border border-gray-200">
+                <div class="flex items-center space-x-2 mb-4 border-b pb-2">
+                    <div class="w-2 h-5" style="background-color: #285C4D;"></div>
+                    <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">Mascotas en el Hogar</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="petsPieChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-8">
+            <div class="bg-white p-5 rounded-lg shadow-md border border-gray-200">
+                <div class="flex items-center space-x-2 mb-4 border-b pb-2">
+                    <div class="w-2 h-5" style="background-color: #ea047f;"></div>
+                    <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">Estatus General de Vacunación</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="vaccinationPieChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div class="flex items-center space-x-2 mb-6 border-b pb-3">
+                    <i data-lucide="map-pin" class="w-5 h-5 text-indigo-600"></i>
+                    <h3 class="text-sm font-black uppercase tracking-tight" style="color: var(--clues-green);">Top 10 Colonias: Comparativa de Mascotas y Vacunación</h3>
+                </div>
+                <div class="chart-container-large">
+                    <canvas id="topColoniasChart"></canvas>
+                </div>
+                <p class="text-[10px] text-gray-400 mt-4 italic uppercase">Basado en el total de hogares con mascotas registrados por colonia.</p>
             </div>
         </section>
 
@@ -150,7 +187,10 @@
     </div>
 
     <script>
-        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT1netX0UFy7WUn4MTgF1kBcpsYa46zlQS9_SeS6JFsK9hZNC-Bi9ZR2AFrEExezQe3tv3LX8QAD_a8/pub?output=csv';
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?output=csv';
+        
+        Chart.register(ChartDataLabels);
+
         let globalGroupGenderBreakdown = {};
 
         const COLORS = {
@@ -161,7 +201,10 @@
             gray: '#6F7271'
         };
 
-        const CHART_COLORS = [COLORS.green, COLORS.gold, COLORS.red, COLORS.secondary];
+        const CHART_COLORS = [
+            '#0f5319', '#76b82a', '#ea047f', '#285C4D', 
+            '#A57F2C', '#00897B', '#D81B60', '#558B2F'
+        ];
         
         const formatNumber = (num) => {
             return num.toLocaleString('es-MX');
@@ -174,15 +217,15 @@
             if (row[key.toUpperCase()] !== undefined) return row[key.toUpperCase()];
             return undefined;
         };
-        
-        const normalizeGroupKey = (rawGroup) => {
-            if (!rawGroup) return 'otro';
-            const normalized = String(rawGroup).toLowerCase().trim();
-            if (normalized.includes('infanc')) return 'infancia'; 
-            if (normalized.includes('adolescen')) return 'adolescentes'; 
-            if (normalized.includes('adultos mayor') || normalized.includes('adulto mayor')) return 'adultos mayores';
-            if (normalized.includes('adultos') || normalized.includes('adulto')) return 'adultos';
-            return normalized;
+
+        const calculateAgeGroup = (ageValue) => {
+            if (ageValue === undefined || ageValue === null || isNaN(ageValue) || ageValue === "") return 'otro';
+            const age = parseInt(ageValue);
+            if (age >= 0 && age <= 11) return 'infancia';
+            if (age >= 12 && age <= 17) return 'adolescentes';
+            if (age >= 18 && age <= 59) return 'adultos';
+            if (age >= 60) return 'adultos mayores';
+            return 'otro';
         };
 
         const showError = (message) => {
@@ -225,64 +268,94 @@
 
         function processAndRenderData(data) {
             let totalPoblacion = 0;
-            const groupTotals = {};
+            const groupTotals = {'infancia': 0, 'adolescentes': 0, 'adultos': 0, 'adultos mayores': 0};
             const genderTotals = {};
-            const groupGenderBreakdown = {};
-            const ageGroups = ['infancia', 'adolescentes', 'adultos', 'adultos mayores'];
-
+            const petTotals = {};
+            const vaccinationTotals = {'VACUNADOS': 0, 'NO VACUNADOS': 0};
+            const coloniaStats = {};
+            
             data.forEach(row => {
-                const countRaw = getColumnValue(row, 'cantidad');
-                const count = (countRaw !== undefined && !isNaN(countRaw)) ? countRaw : 1;
+                const count = (getColumnValue(row, 'cantidad') !== undefined && !isNaN(getColumnValue(row, 'cantidad'))) ? getColumnValue(row, 'cantidad') : 1;
                 totalPoblacion += count;
 
-                const groupRaw = getColumnValue(row, 'grupo_edad');
-                const group = normalizeGroupKey(groupRaw);
-                groupTotals[group] = (groupTotals[group] || 0) + count;
+                const ageGroup = calculateAgeGroup(getColumnValue(row, 'edad'));
+                if (ageGroup !== 'otro') groupTotals[ageGroup] += count;
 
-                const genderRaw = getColumnValue(row, 'genero');
+                const genderRaw = getColumnValue(row, 'genero') || getColumnValue(row, 'sexo');
                 const gender = genderRaw ? String(genderRaw).toLowerCase().trim() : 'no especificado';
                 genderTotals[gender] = (genderTotals[gender] || 0) + count;
                 
-                if (!groupGenderBreakdown[group]) groupGenderBreakdown[group] = {};
-                groupGenderBreakdown[group][gender] = (groupGenderBreakdown[group][gender] || 0) + count;
+                const hasPetsRaw = getColumnValue(row, 'tiene_mascotas');
+                const vacStatusRaw = getColumnValue(row, 'estan_vacunados');
+                const coloniaRaw = getColumnValue(row, 'colonia');
+
+                if (coloniaRaw) {
+                    const col = String(coloniaRaw).toUpperCase().trim();
+                    if (!coloniaStats[col]) coloniaStats[col] = { vac: 0, noVac: 0, totalPets: 0 };
+                    
+                    if (hasPetsRaw && String(hasPetsRaw).toLowerCase().includes('si')) {
+                        coloniaStats[col].totalPets++;
+                        if (vacStatusRaw) {
+                            const v = String(vacStatusRaw).toLowerCase();
+                            if (v.includes('si') || v.includes('vacunado')) {
+                                coloniaStats[col].vac++;
+                                vaccinationTotals['VACUNADOS']++;
+                            } else if (v.includes('no')) {
+                                coloniaStats[col].noVac++;
+                                vaccinationTotals['NO VACUNADOS']++;
+                            }
+                        }
+                    }
+                }
+
+                if (hasPetsRaw) {
+                    const s = String(hasPetsRaw).toLowerCase();
+                    if (s.includes('si')) {
+                        petTotals['TIENE MASCOTAS'] = (petTotals['TIENE MASCOTAS'] || 0) + 1;
+                    } else if (s.includes('no')) {
+                        petTotals['NO TIENE'] = (petTotals['NO TIENE'] || 0) + 1;
+                    }
+                }
+
+                if (ageGroup !== 'otro') {
+                    if (!globalGroupGenderBreakdown[ageGroup]) globalGroupGenderBreakdown[ageGroup] = {};
+                    globalGroupGenderBreakdown[ageGroup][gender] = (globalGroupGenderBreakdown[ageGroup][gender] || 0) + count;
+                }
             });
             
-            globalGroupGenderBreakdown = groupGenderBreakdown;
-            renderKPIs(groupTotals, totalPoblacion, ageGroups);
-            renderAgeGroupPieChart(groupTotals, ageGroups);
+            renderKPIs(groupTotals, totalPoblacion, ['infancia', 'adolescentes', 'adultos', 'adultos mayores']);
+            renderAgeGroupBarChart(groupTotals, ['infancia', 'adolescentes', 'adultos', 'adultos mayores']);
             renderGenderBarChart(genderTotals);
+            renderPetsPieChart(petTotals);
+            renderVaccinationPieChart(vaccinationTotals);
+            renderTopColoniasChart(coloniaStats);
         }
 
         function showGenderBreakdown(groupKey) {
             const groupData = globalGroupGenderBreakdown[groupKey] || {};
             const displayKey = groupKey.charAt(0).toUpperCase() + groupKey.slice(1);
-            const femenino = groupData['femenino'] || 0;
-            const masculino = groupData['masculino'] || 0;
+            const femenino = groupData['femenino'] || groupData['mujer'] || 0;
+            const masculino = groupData['masculino'] || groupData['hombre'] || 0;
             let otros = 0;
             Object.keys(groupData).forEach(key => {
-                if (key !== 'femenino' && key !== 'masculino') otros += groupData[key];
+                const k = key.toLowerCase();
+                if (k !== 'femenino' && k !== 'masculino' && k !== 'mujer' && k !== 'hombre') otros += groupData[key];
             });
-
             document.getElementById('modalTitle').textContent = `DETALLE: ${displayKey}`;
             document.getElementById('countFemenino').textContent = formatNumber(femenino);
             document.getElementById('countMasculino').textContent = formatNumber(masculino);
             document.getElementById('countOtros').textContent = formatNumber(otros);
-
             if (otros > 0) document.getElementById('breakdown-otros').classList.remove('hidden');
             else document.getElementById('breakdown-otros').classList.add('hidden');
-
             document.getElementById('genderBreakdownModal').classList.remove('hidden');
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
-        function hideGenderBreakdown() {
-            document.getElementById('genderBreakdownModal').classList.add('hidden');
-        }
+        function hideGenderBreakdown() { document.getElementById('genderBreakdownModal').classList.add('hidden'); }
 
         function renderKPIs(groupTotals, totalPoblacion, ageGroups) {
             const totalKpiContainer = document.getElementById('total-kpi-container');
             const groupKpiContainer = document.getElementById('group-kpi-container');
-            
             totalKpiContainer.innerHTML = `
                 <div class="kpi-card bg-white p-8 rounded-lg shadow-sm border-l-8" style="border-color: var(--clues-green);">
                     <div class="flex justify-between items-center">
@@ -294,7 +367,6 @@
                     </div>
                 </div>
             `;
-
             let groupKpiHtml = '';
             const groupDetails = {
                 'infancia': { color: COLORS.green, icon: 'baby' },
@@ -302,13 +374,11 @@
                 'adultos': { color: COLORS.red, icon: 'briefcase' },
                 'adultos mayores': { color: COLORS.secondary, icon: 'heart-pulse' }
             };
-
             ageGroups.forEach(groupKey => {
                 const total = groupTotals[groupKey] || 0;
                 const percentage = totalPoblacion > 0 ? ((total / totalPoblacion) * 100).toFixed(1) : 0;
                 const displayKey = groupKey.charAt(0).toUpperCase() + groupKey.slice(1);
                 const details = groupDetails[groupKey] || { color: '#666', icon: 'users' };
-
                 groupKpiHtml += `
                     <div class="kpi-card bg-white p-6 rounded-lg shadow-sm" style="border-top-color: ${details.color};" onclick="showGenderBreakdown('${groupKey}')">
                         <div class="flex justify-between items-start mb-4">
@@ -322,63 +392,137 @@
                     </div>
                 `;
             });
-            
             groupKpiContainer.innerHTML = groupKpiHtml;
             setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 50);
         }
 
-        function renderAgeGroupPieChart(groupTotals, ageGroups) {
-            const labels = ageGroups.map(g => g.toUpperCase());
-            const dataValues = ageGroups.map(g => groupTotals[g] || 0);
-
-            if (window.ageGroupPieChartInstance) window.ageGroupPieChartInstance.destroy();
-
-            window.ageGroupPieChartInstance = new Chart(document.getElementById('ageGroupPieChart'), {
-                type: 'pie',
+        function renderAgeGroupBarChart(groupTotals, ageGroups) {
+            if (window.ageGroupBarChartInstance) window.ageGroupBarChartInstance.destroy();
+            window.ageGroupBarChartInstance = new Chart(document.getElementById('ageGroupBarChart'), {
+                type: 'bar',
                 data: {
-                    labels: labels,
+                    labels: ageGroups.map(g => g.toUpperCase()),
                     datasets: [{
-                        data: dataValues,
-                        backgroundColor: CHART_COLORS,
-                        hoverOffset: 15,
-                        borderWidth: 4,
-                        borderColor: '#ffffff'
+                        data: ageGroups.map(g => groupTotals[g] || 0),
+                        backgroundColor: CHART_COLORS.slice(0, ageGroups.length),
+                        borderRadius: 4
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { padding: 20, font: { weight: 'bold', size: 11 } } }
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false },
+                        datalabels: { 
+                            formatter: (value) => formatNumber(value), 
+                            color: '#444', anchor: 'end', align: 'top', 
+                            font: { weight: 'bold', size: 9 } 
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 8 } } }
                     }
                 }
             });
         }
 
         function renderGenderBarChart(genderTotals) {
-            const labels = Object.keys(genderTotals).map(g => g.toUpperCase());
-            const dataValues = Object.values(genderTotals);
-            const barColors = labels.map(l => l.includes('FEM') ? COLORS.red : COLORS.green);
-
             if (window.genderBarChartInstance) window.genderBarChartInstance.destroy();
-
             window.genderBarChartInstance = new Chart(document.getElementById('genderBarChart'), {
                 type: 'bar',
                 data: {
-                    labels: labels,
-                    datasets: [{
-                        data: dataValues,
-                        backgroundColor: barColors,
-                        borderRadius: 4
-                    }]
+                    labels: Object.keys(genderTotals).map(g => g.toUpperCase()),
+                    datasets: [{ data: Object.values(genderTotals), backgroundColor: Object.keys(genderTotals).map(l => (l.includes('FEM') || l.includes('MUJ')) ? COLORS.red : COLORS.green), borderRadius: 4 }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false },
+                        datalabels: { formatter: (value) => formatNumber(value), color: '#444', anchor: 'end', align: 'top', font: { weight: 'bold', size: 9 } }
+                    },
+                    scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 9 } } } }
+                }
+            });
+        }
+
+        function renderPetsPieChart(petTotals) {
+            if (window.petsPieChartInstance) window.petsPieChartInstance.destroy();
+            window.petsPieChartInstance = new Chart(document.getElementById('petsPieChart'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(petTotals).map(l => l.toUpperCase()),
+                    datasets: [{ data: Object.values(petTotals), backgroundColor: CHART_COLORS, borderWidth: 4, borderColor: '#ffffff' }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'bottom', labels: { padding: 10, font: { weight: 'bold', size: 9 } } },
+                        datalabels: {
+                            formatter: (value, ctx) => {
+                                let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                return sum === 0 ? "" : (value * 100 / sum).toFixed(1) + "%";
+                            },
+                            color: '#fff', font: { weight: 'bold', size: 10 }, textShadowBlur: 4
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderVaccinationPieChart(vaccinationTotals) {
+            if (window.vaccinationPieChartInstance) window.vaccinationPieChartInstance.destroy();
+            window.vaccinationPieChartInstance = new Chart(document.getElementById('vaccinationPieChart'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(vaccinationTotals),
+                    datasets: [{ data: Object.values(vaccinationTotals), backgroundColor: [COLORS.green, COLORS.red], borderWidth: 4, borderColor: '#ffffff' }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'bottom', labels: { padding: 10, font: { weight: 'bold', size: 9 } } },
+                        datalabels: {
+                            formatter: (value, ctx) => {
+                                let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                return sum === 0 ? "" : (value * 100 / sum).toFixed(1) + "%";
+                            },
+                            color: '#fff', font: { weight: 'bold', size: 10 }, textShadowBlur: 4
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTopColoniasChart(coloniaStats) {
+            const top10 = Object.entries(coloniaStats)
+                .sort((a, b) => b[1].totalPets - a[1].totalPets)
+                .slice(0, 10);
+            
+            const labels = top10.map(item => item[0]);
+            const vacData = top10.map(item => item[1].vac);
+            const noVacData = top10.map(item => item[1].noVac);
+            const totalData = top10.map(item => item[1].totalPets);
+
+            if (window.topColoniasChartInstance) window.topColoniasChartInstance.destroy();
+            window.topColoniasChartInstance = new Chart(document.getElementById('topColoniasChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'HOGARES SIN VACUNAR', data: noVacData, backgroundColor: COLORS.red, borderRadius: 4 },
+                        { label: 'HOGARES VACUNADOS', data: vacData, backgroundColor: COLORS.green, borderRadius: 4 },
+                        { label: 'TOTAL HOGARES CON MASCOTA', data: totalData, backgroundColor: COLORS.gold, borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'top', labels: { font: { weight: 'bold', size: 10 } } },
+                        datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 8 }, formatter: (value) => value > 0 ? value : '' }
+                    },
                     scales: {
-                        y: { beginAtZero: true, grid: { display: false } },
-                        x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } }
+                        y: { beginAtZero: true, grid: { color: '#eee' }, ticks: { font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 9 }, autoSkip: false, maxRotation: 45, minRotation: 45 } }
                     }
                 }
             });
