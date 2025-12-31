@@ -105,7 +105,7 @@
             <div class="bg-white p-5 rounded-lg shadow-md border border-gray-200">
                 <div class="flex items-center space-x-2 mb-4 border-b pb-2">
                     <div class="w-2 h-5" style="background-color: var(--clues-red);"></div>
-                    <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">Población por Género</h3>
+                    <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">DISTRIBUCIÓN POR GENERO</h3>
                 </div>
                 <div class="chart-container">
                     <canvas id="genderBarChart"></canvas>
@@ -414,7 +414,7 @@
                         legend: { display: false },
                         datalabels: { 
                             formatter: (value) => formatNumber(value), 
-                            color: '#444', anchor: 'end', align: 'top', 
+                            color: '#000', anchor: 'end', align: 'top', 
                             font: { weight: 'bold', size: 9 } 
                         }
                     },
@@ -428,17 +428,22 @@
 
         function renderGenderBarChart(genderTotals) {
             if (window.genderBarChartInstance) window.genderBarChartInstance.destroy();
+            const labels = Object.keys(genderTotals);
             window.genderBarChartInstance = new Chart(document.getElementById('genderBarChart'), {
                 type: 'bar',
                 data: {
-                    labels: Object.keys(genderTotals).map(g => g.toUpperCase()),
-                    datasets: [{ data: Object.values(genderTotals), backgroundColor: Object.keys(genderTotals).map(l => (l.includes('FEM') || l.includes('MUJ')) ? COLORS.red : COLORS.green), borderRadius: 4 }]
+                    labels: labels.map(g => g.toUpperCase()),
+                    datasets: [{ 
+                        data: Object.values(genderTotals), 
+                        backgroundColor: labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]), 
+                        borderRadius: 4 
+                    }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { 
                         legend: { display: false },
-                        datalabels: { formatter: (value) => formatNumber(value), color: '#444', anchor: 'end', align: 'top', font: { weight: 'bold', size: 9 } }
+                        datalabels: { formatter: (value) => formatNumber(value), color: '#000', anchor: 'end', align: 'top', font: { weight: 'bold', size: 9 } }
                     },
                     scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 9 } } } }
                 }
@@ -462,7 +467,7 @@
                                 let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
                                 return sum === 0 ? "" : (value * 100 / sum).toFixed(1) + "%";
                             },
-                            color: '#fff', font: { weight: 'bold', size: 10 }, textShadowBlur: 4
+                            color: '#000', font: { weight: 'bold', size: 10 }
                         }
                     }
                 }
@@ -486,7 +491,7 @@
                                 let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
                                 return sum === 0 ? "" : (value * 100 / sum).toFixed(1) + "%";
                             },
-                            color: '#fff', font: { weight: 'bold', size: 10 }, textShadowBlur: 4
+                            color: '#000', font: { weight: 'bold', size: 10 }
                         }
                     }
                 }
@@ -518,7 +523,7 @@
                     responsive: true, maintainAspectRatio: false,
                     plugins: { 
                         legend: { position: 'top', labels: { font: { weight: 'bold', size: 10 } } },
-                        datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 8 }, formatter: (value) => value > 0 ? value : '' }
+                        datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 8 }, color: '#000', formatter: (value) => value > 0 ? value : '' }
                     },
                     scales: {
                         y: { beginAtZero: true, grid: { color: '#eee' }, ticks: { font: { size: 10 } } },
