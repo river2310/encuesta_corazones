@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análisis encuesta visitando corazones</title>
+    <title>Análisis encuesta visitando corazones - Por Hogar</title>
     <link rel="icon" type="image/png" href="https://d3dac9gdget83x.cloudfront.net/media/static/images/favicons/logo-verde.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -56,8 +56,8 @@
         <div id="loading-animation" class="animate-heart mb-6">
             <i data-lucide="heart" class="w-16 h-16" style="fill: var(--clues-red); color: var(--clues-red);"></i>
         </div>
-        <p id="status-text" class="text-xl font-bold uppercase tracking-widest" style="color: var(--clues-green);">Cargando Datos...</p>
-        <p id="status-subtext" class="text-sm text-gray-500 mt-2">Analizando datos</p>
+        <p id="status-text" class="text-xl font-bold uppercase tracking-widest" style="color: var(--clues-green);">Cargando Datos por Hogar...</p>
+        <p id="status-subtext" class="text-sm text-gray-500 mt-2">Analizando Secciones Electorales e Indicadores</p>
         <button id="retry-btn" onclick="location.reload()" class="hidden mt-6 px-8 py-3 bg-gray-800 text-white font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-black transition-colors">Reintentar Conexión</button>
     </div>
 
@@ -74,7 +74,7 @@
                             Subdirección de Informática y Estadísticas en Salud
                         </div>
                         <h1 class="text-xl sm:text-3xl font-extrabold" style="color: var(--clues-green);">
-                            Análisis encuesta visitando corazones
+                            Análisis encuesta visitando corazones (Por Hogar)
                         </h1>
                     </div>
                 </div>
@@ -83,8 +83,8 @@
 
         <section class="mb-12">
             <div class="flex items-center space-x-3 mb-6">
-                <i data-lucide="layout-dashboard" class="w-6 h-6 text-gray-400"></i>
-                <h2 class="text-xl font-bold uppercase tracking-wide" style="color: var(--clues-gray);">Indicadores Clave</h2>
+                <i data-lucide="home" class="w-6 h-6 text-gray-400"></i>
+                <h2 class="text-xl font-bold uppercase tracking-wide" style="color: var(--clues-gray);">Indicadores de Hogar</h2>
             </div>
             
             <div id="total-kpi-container" class="mb-8"></div>
@@ -95,7 +95,7 @@
             <div class="bg-white p-5 rounded-lg shadow-md border border-gray-200">
                 <div class="flex items-center space-x-2 mb-4 border-b pb-2">
                     <div class="w-2 h-5" style="background-color: var(--clues-gold);"></div>
-                    <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">Distribución por Edad</h3>
+                    <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">Distribución por Edad (Referente)</h3>
                 </div>
                 <div class="chart-container">
                     <canvas id="ageGroupBarChart"></canvas>
@@ -115,7 +115,7 @@
             <div class="bg-white p-5 rounded-lg shadow-md border border-gray-200">
                 <div class="flex items-center space-x-2 mb-4 border-b pb-2">
                     <div class="w-2 h-5" style="background-color: #285C4D;"></div>
-                    <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">Mascotas en el Hogar</h3>
+                    <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">Hogares con Mascotas</h3>
                 </div>
                 <div class="chart-container">
                     <canvas id="petsPieChart"></canvas>
@@ -127,24 +127,23 @@
             <div class="bg-white p-5 rounded-lg shadow-md border border-gray-200">
                 <div class="flex items-center space-x-2 mb-4 border-b pb-2">
                     <div class="w-2 h-5" style="background-color: #ea047f;"></div>
-                    <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">Estatus General de Vacunación</h3>
+                    <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">Estatus de Vacunación en el Hogar</h3>
                 </div>
-                <div class="chart-container">
-                    <canvas id="vaccinationPieChart"></canvas>
+                <div class="chart-container" style="height: 180px;">
+                    <canvas id="vaccinationStackedBarChart"></canvas>
                 </div>
             </div>
         </section>
 
         <section class="mb-8">
             <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                <div class="flex items-center space-x-2 mb-6 border-b pb-3">
+                <div class="flex items-center space-x-2 mb-6 border-b pb-4">
                     <i data-lucide="map-pin" class="w-5 h-5 text-indigo-600"></i>
-                    <h3 class="text-sm font-black uppercase tracking-tight" style="color: var(--clues-green);">Top 10 Colonias: Comparativa de Mascotas y Vacunación</h3>
+                    <h3 class="text-sm font-black uppercase tracking-tight" style="color: var(--clues-green);">Top 10 Colonias: Análisis por Hogar</h3>
                 </div>
                 <div class="chart-container-large">
                     <canvas id="topColoniasChart"></canvas>
                 </div>
-                <p class="text-[10px] text-gray-400 mt-4 italic uppercase">Basado en el total de hogares con mascotas registrados por colonia.</p>
             </div>
         </section>
 
@@ -152,7 +151,7 @@
     </div>
 
     <div id="genderBreakdownModal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-md overflow-hidden transform transition-all">
             <div class="p-6 border-b flex justify-between items-center" style="background-color: var(--clues-green);">
                 <h3 id="modalTitle" class="text-xl font-bold text-white uppercase tracking-tight">Desglose</h3>
                 <button onclick="hideGenderBreakdown()" class="text-white hover:opacity-75">
@@ -192,6 +191,7 @@
         Chart.register(ChartDataLabels);
 
         let globalGroupGenderBreakdown = {};
+        let globalColoniaStats = {};
 
         const COLORS = {
             green: '#0f5319', 
@@ -205,10 +205,10 @@
             '#0f5319', '#76b82a', '#ea047f', '#285C4D', 
             '#A57F2C', '#00897B', '#D81B60', '#558B2F'
         ];
+
+        const NO_APLICA_LABEL = 'NO APLICA (PÁJAROS, GALLINAS, ETC)';
         
-        const formatNumber = (num) => {
-            return num.toLocaleString('es-MX');
-        };
+        const formatNumber = (num) => num.toLocaleString('es-MX');
 
         const getColumnValue = (row, key) => {
             if (row[key] !== undefined) return row[key];
@@ -239,65 +239,60 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof lucide !== 'undefined') lucide.createIcons();
-
             Papa.parse(CSV_URL, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                dynamicTyping: true,
+                download: true, header: true, skipEmptyLines: true, dynamicTyping: true,
                 complete: (results) => {
-                    if (results.errors.length > 0 && results.data.length === 0) {
-                        showError('Error en los datos CSV');
-                        return;
-                    }
-                    if (results.data.length === 0) {
-                        showError('Sin registros encontrados');
-                        return;
-                    }
+                    if (results.errors.length > 0 && results.data.length === 0) { showError('Error en los datos CSV'); return; }
                     setTimeout(() => {
                         document.getElementById('status-container').classList.add('hidden');
                         document.getElementById('dashboard-content').classList.remove('hidden');
                         processAndRenderData(results.data);
                     }, 800);
                 },
-                error: (error) => {
-                    showError('Error de Conexión');
-                }
+                error: () => showError('Error de Conexión')
             });
         });
 
-        function processAndRenderData(data) {
-            let totalPoblacion = 0;
+        async function processAndRenderData(data) {
+            let totalHogares = 0;
             const groupTotals = {'infancia': 0, 'adolescentes': 0, 'adultos': 0, 'adultos mayores': 0};
             const genderTotals = {};
             const petTotals = {};
-            const vaccinationTotals = {'VACUNADOS': 0, 'NO VACUNADOS': 0};
+            const vaccinationTotals = {'VACUNADOS': 0, 'VACUNAS INCOMPLETAS': 0, 'NO VACUNADOS': 0};
+            vaccinationTotals[NO_APLICA_LABEL] = 0;
             const coloniaStats = {};
             
             data.forEach(row => {
-                const count = (getColumnValue(row, 'cantidad') !== undefined && !isNaN(getColumnValue(row, 'cantidad'))) ? getColumnValue(row, 'cantidad') : 1;
-                totalPoblacion += count;
-
+                totalHogares++;
                 const ageGroup = calculateAgeGroup(getColumnValue(row, 'edad'));
-                if (ageGroup !== 'otro') groupTotals[ageGroup] += count;
-
+                if (ageGroup !== 'otro') groupTotals[ageGroup]++;
+                
                 const genderRaw = getColumnValue(row, 'genero') || getColumnValue(row, 'sexo');
                 const gender = genderRaw ? String(genderRaw).toLowerCase().trim() : 'no especificado';
-                genderTotals[gender] = (genderTotals[gender] || 0) + count;
+                genderTotals[gender] = (genderTotals[gender] || 0) + 1;
                 
                 const hasPetsRaw = getColumnValue(row, 'tiene_mascotas');
                 const vacStatusRaw = getColumnValue(row, 'estan_vacunados');
                 const coloniaRaw = getColumnValue(row, 'colonia');
+                const seccionRaw = getColumnValue(row, 'seccion_electoral');
 
                 if (coloniaRaw) {
                     const col = String(coloniaRaw).toUpperCase().trim();
-                    if (!coloniaStats[col]) coloniaStats[col] = { vac: 0, noVac: 0, totalPets: 0 };
-                    
+                    if (!coloniaStats[col]) {
+                        coloniaStats[col] = { vac: 0, inc: 0, noVac: 0, totalPets: 0, secciones: new Set() };
+                    }
+                    if (seccionRaw) coloniaStats[col].secciones.add(seccionRaw);
                     if (hasPetsRaw && String(hasPetsRaw).toLowerCase().includes('si')) {
                         coloniaStats[col].totalPets++;
                         if (vacStatusRaw) {
-                            const v = String(vacStatusRaw).toLowerCase();
-                            if (v.includes('si') || v.includes('vacunado')) {
+                            const v = String(vacStatusRaw).toLowerCase().trim();
+                            const noAplicaList = ['gallos', 'huron', 'pajarito', 'pajaritos', 'pajaros'];
+                            if (noAplicaList.some(item => v.includes(item))) {
+                                vaccinationTotals[NO_APLICA_LABEL]++;
+                            } else if (['una si la otra no', 'perros si, gatos no', 'una si y otra no', 'solo perros, gatos no', 'solo dos de tres', 'uno si y uno no', 'si a excepcion de gatos', 'incompleta'].some(item => v.includes(item))) {
+                                vaccinationTotals['VACUNAS INCOMPLETAS']++;
+                                coloniaStats[col].inc++;
+                            } else if (v.includes('si') || v.includes('vacunado')) {
                                 coloniaStats[col].vac++;
                                 vaccinationTotals['VACUNADOS']++;
                             } else if (v.includes('no')) {
@@ -307,27 +302,23 @@
                         }
                     }
                 }
-
                 if (hasPetsRaw) {
                     const s = String(hasPetsRaw).toLowerCase();
-                    if (s.includes('si')) {
-                        petTotals['TIENE MASCOTAS'] = (petTotals['TIENE MASCOTAS'] || 0) + 1;
-                    } else if (s.includes('no')) {
-                        petTotals['NO TIENE'] = (petTotals['NO TIENE'] || 0) + 1;
-                    }
+                    if (s.includes('si')) petTotals['TIENE MASCOTAS'] = (petTotals['TIENE MASCOTAS'] || 0) + 1;
+                    else if (s.includes('no')) petTotals['NO TIENE'] = (petTotals['NO TIENE'] || 0) + 1;
                 }
-
                 if (ageGroup !== 'otro') {
                     if (!globalGroupGenderBreakdown[ageGroup]) globalGroupGenderBreakdown[ageGroup] = {};
-                    globalGroupGenderBreakdown[ageGroup][gender] = (globalGroupGenderBreakdown[ageGroup][gender] || 0) + count;
+                    globalGroupGenderBreakdown[ageGroup][gender] = (globalGroupGenderBreakdown[ageGroup][gender] || 0) + 1;
                 }
             });
             
-            renderKPIs(groupTotals, totalPoblacion, ['infancia', 'adolescentes', 'adultos', 'adultos mayores']);
+            globalColoniaStats = coloniaStats;
+            renderKPIs(groupTotals, totalHogares, ['infancia', 'adolescentes', 'adultos', 'adultos mayores']);
             renderAgeGroupBarChart(groupTotals, ['infancia', 'adolescentes', 'adultos', 'adultos mayores']);
             renderGenderBarChart(genderTotals);
             renderPetsPieChart(petTotals);
-            renderVaccinationPieChart(vaccinationTotals);
+            renderVaccinationStackedBarChart(vaccinationTotals);
             renderTopColoniasChart(coloniaStats);
         }
 
@@ -337,10 +328,7 @@
             const femenino = groupData['femenino'] || groupData['mujer'] || 0;
             const masculino = groupData['masculino'] || groupData['hombre'] || 0;
             let otros = 0;
-            Object.keys(groupData).forEach(key => {
-                const k = key.toLowerCase();
-                if (k !== 'femenino' && k !== 'masculino' && k !== 'mujer' && k !== 'hombre') otros += groupData[key];
-            });
+            Object.keys(groupData).forEach(key => { if (!['femenino', 'masculino', 'mujer', 'hombre'].includes(key.toLowerCase())) otros += groupData[key]; });
             document.getElementById('modalTitle').textContent = `DETALLE: ${displayKey}`;
             document.getElementById('countFemenino').textContent = formatNumber(femenino);
             document.getElementById('countMasculino').textContent = formatNumber(masculino);
@@ -353,42 +341,33 @@
 
         function hideGenderBreakdown() { document.getElementById('genderBreakdownModal').classList.add('hidden'); }
 
-        function renderKPIs(groupTotals, totalPoblacion, ageGroups) {
+        function renderKPIs(groupTotals, totalHogares, ageGroups) {
             const totalKpiContainer = document.getElementById('total-kpi-container');
             const groupKpiContainer = document.getElementById('group-kpi-container');
             totalKpiContainer.innerHTML = `
                 <div class="kpi-card bg-white p-8 rounded-lg shadow-sm border-l-8" style="border-color: var(--clues-green);">
                     <div class="flex justify-between items-center">
                         <div class="flex items-center space-x-4">
-                            <i data-lucide="activity" class="w-10 h-10" style="color: var(--clues-green);"></i>
-                            <h3 class="text-sm font-black uppercase tracking-widest text-gray-500">Población Total Encuestada</h3>
+                            <i data-lucide="home" class="w-10 h-10" style="color: var(--clues-green);"></i>
+                            <h3 class="text-sm font-black uppercase tracking-widest text-gray-500">Total Hogares Encuestados</h3>
                         </div>
-                        <span class="text-5xl font-black text-gray-900">${formatNumber(totalPoblacion)}</span>
+                        <span class="text-5xl font-black text-gray-900">${formatNumber(totalHogares)}</span>
                     </div>
                 </div>
             `;
             let groupKpiHtml = '';
-            const groupDetails = {
-                'infancia': { color: COLORS.green, icon: 'baby' },
-                'adolescentes': { color: COLORS.gold, icon: 'graduation-cap' },
-                'adultos': { color: COLORS.red, icon: 'briefcase' },
-                'adultos mayores': { color: COLORS.secondary, icon: 'heart-pulse' }
-            };
+            const groupDetails = { 'infancia': { color: COLORS.green, icon: 'baby' }, 'adolescentes': { color: COLORS.gold, icon: 'graduation-cap' }, 'adultos': { color: COLORS.red, icon: 'briefcase' }, 'adultos mayores': { color: COLORS.secondary, icon: 'heart-pulse' } };
             ageGroups.forEach(groupKey => {
                 const total = groupTotals[groupKey] || 0;
-                const percentage = totalPoblacion > 0 ? ((total / totalPoblacion) * 100).toFixed(1) : 0;
-                const displayKey = groupKey.charAt(0).toUpperCase() + groupKey.slice(1);
-                const details = groupDetails[groupKey] || { color: '#666', icon: 'users' };
+                const percentage = totalHogares > 0 ? ((total / totalHogares) * 100).toFixed(1) : 0;
                 groupKpiHtml += `
-                    <div class="kpi-card bg-white p-6 rounded-lg shadow-sm" style="border-top-color: ${details.color};" onclick="showGenderBreakdown('${groupKey}')">
+                    <div class="kpi-card bg-white p-6 rounded-lg shadow-sm" style="border-top-color: ${groupDetails[groupKey].color};" onclick="showGenderBreakdown('${groupKey}')">
                         <div class="flex justify-between items-start mb-4">
-                            <span class="text-xs font-bold uppercase text-gray-400 tracking-wider">${displayKey}</span>
-                            <i data-lucide="${details.icon}" class="w-5 h-5" style="color: ${details.color};"></i>
+                            <span class="text-xs font-bold uppercase text-gray-400 tracking-wider">${groupKey}</span>
+                            <i data-lucide="${groupDetails[groupKey].icon}" class="w-5 h-5" style="color: ${groupDetails[groupKey].color};"></i>
                         </div>
                         <div class="text-3xl font-black text-gray-800">${formatNumber(total)}</div>
-                        <div class="mt-2 text-xs font-bold px-2 py-1 rounded inline-block" style="background-color: ${details.color}20; color: ${details.color};">
-                            ${percentage}% DEL TOTAL
-                        </div>
+                        <div class="mt-2 text-xs font-bold px-2 py-1 rounded inline-block" style="background-color: ${groupDetails[groupKey].color}20; color: ${groupDetails[groupKey].color};">${percentage}% DE HOGARES</div>
                     </div>
                 `;
             });
@@ -399,30 +378,8 @@
         function renderAgeGroupBarChart(groupTotals, ageGroups) {
             if (window.ageGroupBarChartInstance) window.ageGroupBarChartInstance.destroy();
             window.ageGroupBarChartInstance = new Chart(document.getElementById('ageGroupBarChart'), {
-                type: 'bar',
-                data: {
-                    labels: ageGroups.map(g => g.toUpperCase()),
-                    datasets: [{
-                        data: ageGroups.map(g => groupTotals[g] || 0),
-                        backgroundColor: CHART_COLORS.slice(0, ageGroups.length),
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { display: false },
-                        datalabels: { 
-                            formatter: (value) => formatNumber(value), 
-                            color: '#000', anchor: 'end', align: 'top', 
-                            font: { weight: 'bold', size: 9 } 
-                        }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { display: false } },
-                        x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 8 } } }
-                    }
-                }
+                type: 'bar', data: { labels: ageGroups.map(g => g.toUpperCase()), datasets: [{ data: ageGroups.map(g => groupTotals[g] || 0), backgroundColor: CHART_COLORS.slice(0, ageGroups.length), borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { formatter: (value) => formatNumber(value), color: '#000', anchor: 'end', align: 'top', font: { weight: 'bold', size: 9 }, textStrokeColor: '#fff', textStrokeWidth: 3 } }, scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 8 } } } } }
             });
         }
 
@@ -430,68 +387,43 @@
             if (window.genderBarChartInstance) window.genderBarChartInstance.destroy();
             const labels = Object.keys(genderTotals);
             window.genderBarChartInstance = new Chart(document.getElementById('genderBarChart'), {
-                type: 'bar',
-                data: {
-                    labels: labels.map(g => g.toUpperCase()),
-                    datasets: [{ 
-                        data: Object.values(genderTotals), 
-                        backgroundColor: labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]), 
-                        borderRadius: 4 
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { display: false },
-                        datalabels: { formatter: (value) => formatNumber(value), color: '#000', anchor: 'end', align: 'top', font: { weight: 'bold', size: 9 } }
-                    },
-                    scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 9 } } } }
-                }
+                type: 'bar', data: { labels: labels.map(g => g.toUpperCase()), datasets: [{ data: Object.values(genderTotals), backgroundColor: labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]), borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { formatter: (value) => formatNumber(value), color: '#000', anchor: 'end', align: 'top', font: { weight: 'bold', size: 9 }, textStrokeColor: '#fff', textStrokeWidth: 3 } }, scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 9 } } } } }
             });
         }
 
         function renderPetsPieChart(petTotals) {
             if (window.petsPieChartInstance) window.petsPieChartInstance.destroy();
             window.petsPieChartInstance = new Chart(document.getElementById('petsPieChart'), {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(petTotals).map(l => l.toUpperCase()),
-                    datasets: [{ data: Object.values(petTotals), backgroundColor: CHART_COLORS, borderWidth: 4, borderColor: '#ffffff' }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { position: 'bottom', labels: { padding: 10, font: { weight: 'bold', size: 9 } } },
-                        datalabels: {
-                            formatter: (value, ctx) => {
-                                let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                return sum === 0 ? "" : (value * 100 / sum).toFixed(1) + "%";
-                            },
-                            color: '#000', font: { weight: 'bold', size: 10 }
-                        }
-                    }
-                }
+                type: 'pie', data: { labels: Object.keys(petTotals).map(l => l.toUpperCase()), datasets: [{ data: Object.values(petTotals), backgroundColor: CHART_COLORS, borderWidth: 4, borderColor: '#ffffff' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { weight: 'bold', size: 9 } } }, datalabels: { formatter: (value, ctx) => { let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0); return sum === 0 ? "" : (value * 100 / sum).toFixed(1) + "%"; }, color: '#000', font: { weight: 'bold', size: 10 }, textStrokeColor: '#fff', textStrokeWidth: 3 } } }
             });
         }
 
-        function renderVaccinationPieChart(vaccinationTotals) {
-            if (window.vaccinationPieChartInstance) window.vaccinationPieChartInstance.destroy();
-            window.vaccinationPieChartInstance = new Chart(document.getElementById('vaccinationPieChart'), {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(vaccinationTotals),
-                    datasets: [{ data: Object.values(vaccinationTotals), backgroundColor: [COLORS.green, COLORS.red], borderWidth: 4, borderColor: '#ffffff' }]
-                },
+        function renderVaccinationStackedBarChart(vaccinationTotals) {
+            if (window.vaccinationStackedBarChartInstance) window.vaccinationStackedBarChartInstance.destroy();
+            const datasets = [
+                { label: 'VACUNADOS', data: [vaccinationTotals['VACUNADOS']], backgroundColor: COLORS.green },
+                { label: 'INCOMPLETAS', data: [vaccinationTotals['VACUNAS INCOMPLETAS']], backgroundColor: COLORS.gold },
+                { label: 'NO VACUNADOS', data: [vaccinationTotals['NO VACUNADOS']], backgroundColor: COLORS.red },
+                { label: 'NO APLICA', data: [vaccinationTotals[NO_APLICA_LABEL]], backgroundColor: COLORS.gray }
+            ];
+            window.vaccinationStackedBarChartInstance = new Chart(document.getElementById('vaccinationStackedBarChart'), {
+                type: 'bar',
+                data: { labels: ['HOGARES ANALIZADOS'], datasets: datasets },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { position: 'bottom', labels: { padding: 10, font: { weight: 'bold', size: 9 } } },
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    scales: { x: { stacked: true, display: false }, y: { stacked: true, grid: { display: false }, ticks: { font: { weight: 'bold', size: 10 } } } },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 15, font: { weight: 'bold', size: 10 } } },
                         datalabels: {
+                            color: '#fff', font: { weight: 'bold', size: 11 },
                             formatter: (value, ctx) => {
-                                let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                return sum === 0 ? "" : (value * 100 / sum).toFixed(1) + "%";
+                                let total = ctx.chart.data.datasets.reduce((acc, ds) => acc + ds.data[0], 0);
+                                if (value === 0) return '';
+                                return ((value / total) * 100).toFixed(1) + '%';
                             },
-                            color: '#000', font: { weight: 'bold', size: 10 }
+                            textStrokeColor: '#000', textStrokeWidth: 1
                         }
                     }
                 }
@@ -499,37 +431,15 @@
         }
 
         function renderTopColoniasChart(coloniaStats) {
-            const top10 = Object.entries(coloniaStats)
-                .sort((a, b) => b[1].totalPets - a[1].totalPets)
-                .slice(0, 10);
-            
+            const top10 = Object.entries(coloniaStats).sort((a, b) => b[1].totalPets - a[1].totalPets).slice(0, 10);
             const labels = top10.map(item => item[0]);
             const vacData = top10.map(item => item[1].vac);
             const noVacData = top10.map(item => item[1].noVac);
             const totalData = top10.map(item => item[1].totalPets);
-
             if (window.topColoniasChartInstance) window.topColoniasChartInstance.destroy();
             window.topColoniasChartInstance = new Chart(document.getElementById('topColoniasChart'), {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { label: 'HOGARES SIN VACUNAR', data: noVacData, backgroundColor: COLORS.red, borderRadius: 4 },
-                        { label: 'HOGARES VACUNADOS', data: vacData, backgroundColor: COLORS.green, borderRadius: 4 },
-                        { label: 'TOTAL HOGARES CON MASCOTA', data: totalData, backgroundColor: COLORS.gold, borderRadius: 4 }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { position: 'top', labels: { font: { weight: 'bold', size: 10 } } },
-                        datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 8 }, color: '#000', formatter: (value) => value > 0 ? value : '' }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#eee' }, ticks: { font: { size: 10 } } },
-                        x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 9 }, autoSkip: false, maxRotation: 45, minRotation: 45 } }
-                    }
-                }
+                type: 'bar', data: { labels: labels, datasets: [{ label: 'HOGARES SIN VACUNAR', data: noVacData, backgroundColor: COLORS.red, borderRadius: 4 }, { label: 'HOGARES VACUNADOS', data: vacData, backgroundColor: COLORS.green, borderRadius: 4 }, { label: 'TOTAL HOGARES CON MASCOTA', data: totalData, backgroundColor: COLORS.gold, borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { font: { weight: 'bold', size: 10 } } }, datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 8 }, color: '#000', formatter: (value) => value > 0 ? value : '', textStrokeColor: '#fff', textStrokeWidth: 2 } }, scales: { y: { beginAtZero: true, grid: { color: '#eee' }, ticks: { font: { size: 10 } } }, x: { grid: { display: false }, ticks: { font: { weight: 'bold', size: 9 }, autoSkip: false, maxRotation: 45, minRotation: 45 } } } }
             });
         }
     </script>
