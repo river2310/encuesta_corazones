@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análisis encuesta visitando corazones - Por Hogar</title>
+    <title>Análisis encuesta visitando corazones</title>
     <link rel="icon" type="image/png" href="https://d3dac9gdget83x.cloudfront.net/media/static/images/favicons/logo-verde.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -52,15 +52,17 @@
 </head>
 <body class="p-4 sm:p-8">
 
+    <!-- Pantalla de Carga -->
     <div id="status-container" class="flex flex-col items-center justify-center mt-32">
         <div id="loading-animation" class="animate-heart mb-6">
             <i data-lucide="heart" class="w-16 h-16" style="fill: var(--clues-red); color: var(--clues-red);"></i>
         </div>
-        <p id="status-text" class="text-xl font-bold uppercase tracking-widest" style="color: var(--clues-green);">Cargando Datos por Hogar...</p>
-        <p id="status-subtext" class="text-sm text-gray-500 mt-2">Analizando Secciones Electorales e Indicadores</p>
+        <p id="status-text" class="text-xl font-bold uppercase tracking-widest" style="color: var(--clues-green);">Procesando datos</p>
+        <p id="status-subtext" class="text-sm text-gray-500 mt-2">Analizando información de la encuesta</p>
         <button id="retry-btn" onclick="location.reload()" class="hidden mt-6 px-8 py-3 bg-gray-800 text-white font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-black transition-colors">Reintentar Conexión</button>
     </div>
 
+    <!-- Contenido del Dashboard -->
     <div id="dashboard-content" class="hidden max-w-7xl mx-auto">
         <header class="mb-10">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 pb-4 header-border">
@@ -74,13 +76,14 @@
                             Subdirección de Informática y Estadísticas en Salud
                         </div>
                         <h1 class="text-xl sm:text-3xl font-extrabold" style="color: var(--clues-green);">
-                            Análisis encuesta visitando corazones (Por Hogar)
+                            Análisis encuesta visitando corazones
                         </h1>
                     </div>
                 </div>
             </div>
         </header>
 
+        <!-- Indicadores Clave -->
         <section class="mb-12">
             <div class="flex items-center space-x-3 mb-6">
                 <i data-lucide="home" class="w-6 h-6 text-gray-400"></i>
@@ -91,6 +94,7 @@
             <div id="group-kpi-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
         </section>
 
+        <!-- Gráficas Demográficas y de Mascotas -->
         <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <div class="bg-white p-5 rounded-lg shadow-md border border-gray-200">
                 <div class="flex items-center space-x-2 mb-4 border-b pb-2">
@@ -123,6 +127,7 @@
             </div>
         </section>
 
+        <!-- Gráfica de Vacunación Stacked -->
         <section class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-8">
             <div class="bg-white p-5 rounded-lg shadow-md border border-gray-200">
                 <div class="flex items-center space-x-2 mb-4 border-b pb-2">
@@ -135,6 +140,7 @@
             </div>
         </section>
 
+        <!-- Gráfica Top Colonias -->
         <section class="mb-8">
             <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                 <div class="flex items-center space-x-2 mb-6 border-b pb-4">
@@ -150,6 +156,7 @@
         <footer class="mt-16 pt-8 border-t"></footer>
     </div>
 
+    <!-- Modal de Desglose -->
     <div id="genderBreakdownModal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-lg shadow-2xl w-full max-md overflow-hidden transform transition-all">
             <div class="p-6 border-b flex justify-between items-center" style="background-color: var(--clues-green);">
@@ -206,7 +213,8 @@
             '#A57F2C', '#00897B', '#D81B60', '#558B2F'
         ];
 
-        const NO_APLICA_LABEL = 'NO APLICA (PÁJAROS, GALLINAS, ETC)';
+        // Definición de la etiqueta solicitada para No Aplica
+        const NO_APLICA_LABEL = 'NO APLICA (AVES, GALLINAS, ETC.)';
         
         const formatNumber = (num) => num.toLocaleString('es-MX');
 
@@ -274,28 +282,33 @@
                 const hasPetsRaw = getColumnValue(row, 'tiene_mascotas');
                 const vacStatusRaw = getColumnValue(row, 'estan_vacunados');
                 const coloniaRaw = getColumnValue(row, 'colonia');
-                const seccionRaw = getColumnValue(row, 'seccion_electoral');
 
                 if (coloniaRaw) {
                     const col = String(coloniaRaw).toUpperCase().trim();
                     if (!coloniaStats[col]) {
-                        coloniaStats[col] = { vac: 0, inc: 0, noVac: 0, totalPets: 0, secciones: new Set() };
+                        coloniaStats[col] = { vac: 0, inc: 0, noVac: 0, totalPets: 0 };
                     }
-                    if (seccionRaw) coloniaStats[col].secciones.add(seccionRaw);
                     if (hasPetsRaw && String(hasPetsRaw).toLowerCase().includes('si')) {
                         coloniaStats[col].totalPets++;
                         if (vacStatusRaw) {
-                            const v = String(vacStatusRaw).toLowerCase().trim();
-                            const noAplicaList = ['gallos', 'huron', 'pajarito', 'pajaritos', 'pajaros'];
-                            if (noAplicaList.some(item => v.includes(item))) {
+                            const v = String(vacStatusRaw).trim().toUpperCase();
+                            
+                            // Lógica de detección estricta para NO APLICA (AVES, GALLINAS, ETC.)
+                            if (v.includes("NO APLICA (AVES, GALLINAS, ETC.)")) {
                                 vaccinationTotals[NO_APLICA_LABEL]++;
-                            } else if (['una si la otra no', 'perros si, gatos no', 'una si y otra no', 'solo perros, gatos no', 'solo dos de tres', 'uno si y uno no', 'si a excepcion de gatos', 'incompleta'].some(item => v.includes(item))) {
+                            } 
+                            // Lógica de detección para Vacunas Incompletas
+                            else if (['UNA SI LA OTRA NO', 'PERROS SI, GATOS NO', 'UNA SI Y OTRA NO', 'SOLO PERROS, GATOS NO', 'SOLO DOS DE TRES', 'UNO SI Y UNO NO', 'SI A EXCEPCION DE GATOS', 'INCOMPLETA'].some(item => v.includes(item))) {
                                 vaccinationTotals['VACUNAS INCOMPLETAS']++;
                                 coloniaStats[col].inc++;
-                            } else if (v.includes('si') || v.includes('vacunado')) {
+                            } 
+                            // Lógica de detección para Vacunados
+                            else if (v.includes('SI') || v.includes('VACUNADO')) {
                                 coloniaStats[col].vac++;
                                 vaccinationTotals['VACUNADOS']++;
-                            } else if (v.includes('no')) {
+                            } 
+                            // Lógica de detección para No Vacunados
+                            else if (v.includes('NO')) {
                                 coloniaStats[col].noVac++;
                                 vaccinationTotals['NO VACUNADOS']++;
                             }
@@ -406,7 +419,7 @@
                 { label: 'VACUNADOS', data: [vaccinationTotals['VACUNADOS']], backgroundColor: COLORS.green },
                 { label: 'INCOMPLETAS', data: [vaccinationTotals['VACUNAS INCOMPLETAS']], backgroundColor: COLORS.gold },
                 { label: 'NO VACUNADOS', data: [vaccinationTotals['NO VACUNADOS']], backgroundColor: COLORS.red },
-                { label: 'NO APLICA', data: [vaccinationTotals[NO_APLICA_LABEL]], backgroundColor: COLORS.gray }
+                { label: NO_APLICA_LABEL, data: [vaccinationTotals[NO_APLICA_LABEL]], backgroundColor: COLORS.gray }
             ];
             window.vaccinationStackedBarChartInstance = new Chart(document.getElementById('vaccinationStackedBarChart'), {
                 type: 'bar',
@@ -420,7 +433,7 @@
                             color: '#fff', font: { weight: 'bold', size: 11 },
                             formatter: (value, ctx) => {
                                 let total = ctx.chart.data.datasets.reduce((acc, ds) => acc + ds.data[0], 0);
-                                if (value === 0) return '';
+                                if (value === 0 || total === 0) return '';
                                 return ((value / total) * 100).toFixed(1) + '%';
                             },
                             textStrokeColor: '#000', textStrokeWidth: 1
