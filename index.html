@@ -10,6 +10,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Librerías para PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f4f4f4; color: #333333; }
         
@@ -48,6 +51,15 @@
         .animate-heart {
             animation: heartPulse 1.2s ease-in-out infinite;
         }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--clues-gray); border-radius: 10px; }
+        
+        .table-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body class="p-4 sm:p-8">
@@ -67,7 +79,7 @@
         <header class="mb-10">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 pb-4 header-border">
                 <div class="flex items-center space-x-6">
-                    <img src="https://d3dac9gdq8t83x.cloudfront.net/media/static/images/hor-verde.png" alt="Logo CLUES DGIS" class="h-16 w-auto object-contain">
+                    <img id="dashboardLogo" src="https://d3dac9gdq8t83x.cloudfront.net/media/static/images/hor-verde.png" alt="Logo CLUES DGIS" class="h-16 w-auto object-contain">
                     <div class="flex flex-col">
                         <div class="text-[11px] sm:text-[13px] font-bold uppercase tracking-tight leading-tight" style="color: var(--clues-gray);">
                             Dirección de Planeación, Evaluación y Proyectos Especiales
@@ -153,6 +165,54 @@
             </div>
         </section>
 
+        <!-- Tabla de Exploración de Datos con Multi-filtro -->
+        <section class="mb-12">
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+                <div class="p-6 border-b bg-gray-50">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="database" class="w-5 h-5 text-slate-500"></i>
+                            <h3 class="text-sm font-black uppercase tracking-tight" style="color: var(--clues-green);">Resumen por Colonia y Sección</h3>
+                        </div>
+                        <button onclick="generatePDFReport()" class="flex items-center space-x-2 bg-slate-800 hover:bg-black text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all shadow-md">
+                            <i data-lucide="file-text" class="w-4 h-4"></i>
+                            <span>Generar Reporte PDF</span>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="relative">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase mb-1 block tracking-tight">Filtrar por Colonia</label>
+                            <input type="text" id="coloniaSearchInput" placeholder="Ej: Centro, Tequisquiapan..." class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-green-700 outline-none transition-all">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-8 text-gray-400"></i>
+                        </div>
+                        <div class="relative">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase mb-1 block tracking-tight">Filtrar por Sección(es) Electoral(es)</label>
+                            <input type="text" id="seccionSearchInput" placeholder="Separa por comas: 0845, 1200, 0142..." class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-green-700 outline-none transition-all">
+                            <i data-lucide="hash" class="w-4 h-4 absolute left-3 top-8 text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-container custom-scrollbar">
+                    <table class="w-full text-left border-collapse" id="summaryTable">
+                        <thead class="sticky top-0 bg-white shadow-sm z-10">
+                            <tr class="text-[10px] font-black uppercase text-gray-500 border-b">
+                                <th class="px-6 py-4">Colonia</th>
+                                <th class="px-6 py-4 text-center">Sección</th>
+                                <th class="px-6 py-4 text-center">Total Hogares</th>
+                                <th class="px-6 py-4 text-center">Con Mascota</th>
+                                <th class="px-6 py-4 text-center">Vacunados</th>
+                                <th class="px-6 py-4 text-center text-amber-600">Incompletas</th>
+                                <th class="px-6 py-4 text-center text-red-600">Sin Vacuna</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody" class="text-xs text-gray-700 divide-y divide-gray-100">
+                            <!-- Los datos se insertarán aquí mediante JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
         <footer class="mt-16 pt-8 border-t"></footer>
     </div>
 
@@ -198,7 +258,8 @@
         Chart.register(ChartDataLabels);
 
         let globalGroupGenderBreakdown = {};
-        let globalColoniaStats = {};
+        let globalRawData = []; 
+        let lastTableResults = []; 
 
         const COLORS = {
             green: '#0f5319', 
@@ -213,7 +274,6 @@
             '#A57F2C', '#00897B', '#D81B60', '#558B2F'
         ];
 
-        // Definición de la etiqueta solicitada para No Aplica
         const NO_APLICA_LABEL = 'NO APLICA (AVES, GALLINAS, ETC.)';
         
         const formatNumber = (num) => num.toLocaleString('es-MX');
@@ -247,6 +307,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof lucide !== 'undefined') lucide.createIcons();
+            
             Papa.parse(CSV_URL, {
                 download: true, header: true, skipEmptyLines: true, dynamicTyping: true,
                 complete: (results) => {
@@ -259,6 +320,18 @@
                 },
                 error: () => showError('Error de Conexión')
             });
+
+            const coloniaInput = document.getElementById('coloniaSearchInput');
+            const seccionInput = document.getElementById('seccionSearchInput');
+
+            const handleSearch = () => {
+                const colTerm = coloniaInput.value.toLowerCase();
+                const secTerm = seccionInput.value.toLowerCase();
+                filterAndRenderTable(colTerm, secTerm);
+            };
+
+            coloniaInput.addEventListener('input', handleSearch);
+            seccionInput.addEventListener('input', handleSearch);
         });
 
         async function processAndRenderData(data) {
@@ -269,6 +342,7 @@
             const vaccinationTotals = {'VACUNADOS': 0, 'VACUNAS INCOMPLETAS': 0, 'NO VACUNADOS': 0};
             vaccinationTotals[NO_APLICA_LABEL] = 0;
             const coloniaStats = {};
+            globalRawData = []; 
             
             data.forEach(row => {
                 totalHogares++;
@@ -282,57 +356,234 @@
                 const hasPetsRaw = getColumnValue(row, 'tiene_mascotas');
                 const vacStatusRaw = getColumnValue(row, 'estan_vacunados');
                 const coloniaRaw = getColumnValue(row, 'colonia');
+                const seccionRaw = getColumnValue(row, 'seccion_electoral');
+
+                let estatus = "OTRO";
+                const v = String(vacStatusRaw || "").trim().toUpperCase();
+                if (v.includes("NO APLICA (AVES, GALLINAS, ETC.)")) estatus = "NO_APLICA";
+                else if (['UNA SI LA OTRA NO', 'PERROS SI, GATOS NO', 'UNA SI Y OTRA NO', 'SOLO PERROS, GATOS NO', 'SOLO DOS DE TRES', 'UNO SI Y UNO NO', 'SI A EXCEPCION DE GATOS', 'INCOMPLETA'].some(item => v.includes(item))) estatus = "INC";
+                else if (v.includes('SI') || v.includes('VACUNADO')) estatus = "VAC";
+                else if (v.includes('NO')) estatus = "NOVAC";
+
+                globalRawData.push({
+                    colonia: String(coloniaRaw || 'SIN COLONIA').toUpperCase(),
+                    seccion: String(seccionRaw || 'S/S'),
+                    tieneMascotas: String(hasPetsRaw || "").toLowerCase().includes('si'),
+                    estatus: estatus
+                });
 
                 if (coloniaRaw) {
                     const col = String(coloniaRaw).toUpperCase().trim();
-                    if (!coloniaStats[col]) {
-                        coloniaStats[col] = { vac: 0, inc: 0, noVac: 0, totalPets: 0 };
-                    }
+                    if (!coloniaStats[col]) coloniaStats[col] = { vac: 0, inc: 0, noVac: 0, totalPets: 0 };
                     if (hasPetsRaw && String(hasPetsRaw).toLowerCase().includes('si')) {
                         coloniaStats[col].totalPets++;
-                        if (vacStatusRaw) {
-                            const v = String(vacStatusRaw).trim().toUpperCase();
-                            
-                            // Lógica de detección estricta para NO APLICA (AVES, GALLINAS, ETC.)
-                            if (v.includes("NO APLICA (AVES, GALLINAS, ETC.)")) {
-                                vaccinationTotals[NO_APLICA_LABEL]++;
-                            } 
-                            // Lógica de detección para Vacunas Incompletas
-                            else if (['UNA SI LA OTRA NO', 'PERROS SI, GATOS NO', 'UNA SI Y OTRA NO', 'SOLO PERROS, GATOS NO', 'SOLO DOS DE TRES', 'UNO SI Y UNO NO', 'SI A EXCEPCION DE GATOS', 'INCOMPLETA'].some(item => v.includes(item))) {
-                                vaccinationTotals['VACUNAS INCOMPLETAS']++;
-                                coloniaStats[col].inc++;
-                            } 
-                            // Lógica de detección para Vacunados
-                            else if (v.includes('SI') || v.includes('VACUNADO')) {
-                                coloniaStats[col].vac++;
-                                vaccinationTotals['VACUNADOS']++;
-                            } 
-                            // Lógica de detección para No Vacunados
-                            else if (v.includes('NO')) {
-                                coloniaStats[col].noVac++;
-                                vaccinationTotals['NO VACUNADOS']++;
-                            }
-                        }
+                        if (estatus === "NO_APLICA") vaccinationTotals[NO_APLICA_LABEL]++;
+                        else if (estatus === "INC") { vaccinationTotals['VACUNAS INCOMPLETAS']++; coloniaStats[col].inc++; }
+                        else if (estatus === "VAC") { vaccinationTotals['VACUNADOS']++; coloniaStats[col].vac++; }
+                        else if (estatus === "NOVAC") { vaccinationTotals['NO VACUNADOS']++; coloniaStats[col].noVac++; }
                     }
                 }
+
                 if (hasPetsRaw) {
                     const s = String(hasPetsRaw).toLowerCase();
                     if (s.includes('si')) petTotals['TIENE MASCOTAS'] = (petTotals['TIENE MASCOTAS'] || 0) + 1;
                     else if (s.includes('no')) petTotals['NO TIENE'] = (petTotals['NO TIENE'] || 0) + 1;
                 }
+
                 if (ageGroup !== 'otro') {
                     if (!globalGroupGenderBreakdown[ageGroup]) globalGroupGenderBreakdown[ageGroup] = {};
                     globalGroupGenderBreakdown[ageGroup][gender] = (globalGroupGenderBreakdown[ageGroup][gender] || 0) + 1;
                 }
             });
             
-            globalColoniaStats = coloniaStats;
             renderKPIs(groupTotals, totalHogares, ['infancia', 'adolescentes', 'adultos', 'adultos mayores']);
             renderAgeGroupBarChart(groupTotals, ['infancia', 'adolescentes', 'adultos', 'adultos mayores']);
             renderGenderBarChart(genderTotals);
             renderPetsPieChart(petTotals);
             renderVaccinationStackedBarChart(vaccinationTotals);
             renderTopColoniasChart(coloniaStats);
+            filterAndRenderTable("", ""); 
+        }
+
+        function filterAndRenderTable(colTerm, secTermRaw) {
+            const tbody = document.getElementById('dataTableBody');
+            
+            const secTerms = secTermRaw.split(',')
+                .map(t => t.trim().toLowerCase())
+                .filter(t => t !== "");
+
+            const filtered = globalRawData.filter(item => {
+                const colMatch = item.colonia.toLowerCase().includes(colTerm);
+                let secMatch = true;
+                if (secTerms.length > 0) {
+                    secMatch = secTerms.some(term => item.seccion.toLowerCase().includes(term));
+                }
+                return colMatch && secMatch;
+            });
+
+            const grouped = {};
+            filtered.forEach(item => {
+                const key = `${item.colonia}|${item.seccion}`;
+                if (!grouped[key]) {
+                    grouped[key] = {
+                        colonia: item.colonia,
+                        seccion: item.seccion,
+                        totalHogares: 0,
+                        conMascota: 0,
+                        vac: 0,
+                        inc: 0,
+                        noVac: 0,
+                        noAplica: 0
+                    };
+                }
+                const g = grouped[key];
+                g.totalHogares++;
+                if (item.tieneMascotas) g.conMascota++;
+                if (item.estatus === "VAC") g.vac++;
+                else if (item.estatus === "INC") g.inc++;
+                else if (item.estatus === "NOVAC") g.noVac++;
+                else if (item.estatus === "NO_APLICA") g.noAplica++;
+            });
+
+            const results = Object.values(grouped).sort((a, b) => b.totalHogares - a.totalHogares);
+            lastTableResults = results; 
+
+            if (results.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-gray-400 italic">No se encontraron grupos coincidentes</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = results.map(g => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3 font-semibold text-gray-900">${g.colonia}</td>
+                    <td class="px-6 py-3 text-center"><span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold font-mono text-[10px]">${g.seccion}</span></td>
+                    <td class="px-6 py-3 text-center font-bold text-gray-500">${g.totalHogares}</td>
+                    <td class="px-6 py-3 text-center font-bold text-green-700">${g.conMascota}</td>
+                    <td class="px-6 py-3 text-center font-black text-green-600">${g.vac}</td>
+                    <td class="px-6 py-3 text-center font-black text-amber-500">${g.inc}</td>
+                    <td class="px-6 py-3 text-center font-black text-red-500">${g.noVac}</td>
+                </tr>
+            `).join('');
+            
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        // Función para generar reporte PDF con Logo, Encabezado y Totales
+        function generatePDFReport() {
+            if (lastTableResults.length === 0) {
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const dateStr = new Date().toLocaleDateString();
+            const logoUrl = 'https://d3dac9gdq8t83x.cloudfront.net/media/static/images/hor-verde.png';
+
+            const img = new Image();
+            img.src = logoUrl;
+            img.crossOrigin = 'Anonymous';
+
+            img.onload = () => {
+                // Posicionar Logo
+                doc.addImage(img, 'PNG', 14, 10, 45, 18);
+
+                // Encabezado institucional
+                doc.setFontSize(8);
+                doc.setTextColor(111, 114, 113); 
+                doc.setFont(undefined, 'bold');
+                doc.text("Dirección de Planeación, Evaluación y Proyectos Especiales", 65, 16);
+                doc.text("Subdirección de Informática y Estadísticas en Salud", 65, 20);
+
+                // Título del Reporte
+                doc.setFontSize(14);
+                doc.setTextColor(15, 83, 25); 
+                doc.text("Visitando Corazones: Reporte por Colonia y Sección", 65, 28);
+
+                // Línea divisoria
+                doc.setDrawColor(15, 83, 25);
+                doc.setLineWidth(0.5);
+                doc.line(14, 35, 196, 35);
+
+                // Metadatos
+                doc.setFontSize(9);
+                doc.setTextColor(111, 114, 113);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Fecha de generación: ${dateStr}`, 14, 42);
+                doc.text(`Total de zonas incluidas: ${lastTableResults.length}`, 14, 47);
+
+                // Calcular Totales por Columna
+                let totalH = 0, totalM = 0, totalV = 0, totalI = 0, totalS = 0;
+                lastTableResults.forEach(g => {
+                    totalH += g.totalHogares;
+                    totalM += g.conMascota;
+                    totalV += g.vac;
+                    totalI += g.inc;
+                    totalS += g.noVac;
+                });
+
+                // Preparar datos para la tabla
+                const tableHeaders = [
+                    ["COLONIA", "SECCIÓN", "TOTAL HOGARES", "CON MASCOTA", "VACUNADOS", "INCOMPLETAS", "SIN VACUNA"]
+                ];
+
+                const tableData = lastTableResults.map(g => [
+                    g.colonia,
+                    g.seccion,
+                    g.totalHogares,
+                    g.conMascota,
+                    g.vac,
+                    g.inc,
+                    g.noVac
+                ]);
+
+                // Definir el pie de la tabla (Totales)
+                const tableFoot = [
+                    ["TOTALES", "", totalH, totalM, totalV, totalI, totalS]
+                ];
+
+                doc.autoTable({
+                    startY: 52,
+                    head: tableHeaders,
+                    body: tableData,
+                    foot: tableFoot,
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [15, 83, 25], 
+                        textColor: [255, 255, 255],
+                        fontSize: 7,
+                        halign: 'center'
+                    },
+                    footStyles: {
+                        fillColor: [240, 240, 240],
+                        textColor: [0, 0, 0],
+                        fontSize: 7,
+                        halign: 'center',
+                        fontStyle: 'bold'
+                    },
+                    styles: {
+                        fontSize: 7,
+                        cellPadding: 2
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 50, fontStyle: 'bold' },
+                        1: { halign: 'center', cellWidth: 20 },
+                        2: { halign: 'center' },
+                        3: { halign: 'center' },
+                        4: { halign: 'center' },
+                        5: { halign: 'center' },
+                        6: { halign: 'center' }
+                    },
+                    alternateRowStyles: {
+                        fillColor: [245, 245, 245]
+                    }
+                });
+
+                doc.save(`Reporte_Visitando_Corazones_${dateStr.replace(/\//g, '-')}.pdf`);
+            };
+
+            img.onerror = () => {
+                alert("Error al cargar los recursos del PDF. Inténtelo de nuevo.");
+            };
         }
 
         function showGenderBreakdown(groupKey) {
@@ -417,7 +668,7 @@
             if (window.vaccinationStackedBarChartInstance) window.vaccinationStackedBarChartInstance.destroy();
             const datasets = [
                 { label: 'VACUNADOS', data: [vaccinationTotals['VACUNADOS']], backgroundColor: COLORS.green },
-                { label: 'INCOMPLETAS', data: [vaccinationTotals['VACUNAS INCOMPLETAS']], backgroundColor: COLORS.gold },
+                { label: 'VACUNAS INCOMPLETAS', data: [vaccinationTotals['VACUNAS INCOMPLETAS']], backgroundColor: COLORS.gold },
                 { label: 'NO VACUNADOS', data: [vaccinationTotals['NO VACUNADOS']], backgroundColor: COLORS.red },
                 { label: NO_APLICA_LABEL, data: [vaccinationTotals[NO_APLICA_LABEL]], backgroundColor: COLORS.gray }
             ];
