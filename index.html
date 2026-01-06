@@ -96,7 +96,6 @@
                     
                     <!-- Título Principal -->
                     <h1 class="text-3xl sm:text-4xl font-black tracking-tight leading-none" style="color: var(--clues-green);">Visitando Corazones</h1>
-                    <!-- Texto actualizado por solicitud del usuario -->
                     <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Análisis encuesta visitando corazones</p>
                 </div>
             </div>
@@ -161,8 +160,10 @@
         <!-- 2. Mascotas Detalle -->
         <div id="details-pets" class="details-content">
             <div class="flex items-center space-x-3 mb-6">
+                <!-- Acento visual en rojo para mantener el contexto de la sección -->
                 <div class="w-1.5 h-8 bg-red-600 rounded-full"></div>
-                <h2 class="text-xl font-black text-red-900 uppercase">Salud Animal</h2>
+                <!-- Texto cambiado a Verde Institucional para formalidad -->
+                <h2 class="text-xl font-black uppercase" style="color: var(--clues-green);">Detalle Mascotas</h2>
             </div>
             <div class="space-y-8">
                 <div class="bg-white p-6 rounded-lg shadow-md">
@@ -245,7 +246,6 @@
             </div>
         </div>
 
-        <!-- Footer actualizado por solicitud del usuario -->
         <footer class="mt-20 pt-8 border-t text-center text-[10px] text-gray-400 uppercase font-black tracking-widest">
             Corte Diciembre 2025
         </footer>
@@ -517,7 +517,7 @@
                     let tnv=0; lastTableResults.forEach(g => tnv+=g.nv);
                     head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "S/V", "% RIESGO"]];
                     body = lastTableResults.map(g => [g.m, g.c, g.s, g.nv, (g.p>0 ? (g.nv/g.p*100).toFixed(1) : 0)+"%"]);
-                    foot = [["TOTALES", "", "", tnv, ""]];
+                    f = [["TOTALES", "", "", tnv, ""]];
                 } else {
                     head = [["MUNICIPIO", "COLONIA", "GÉNERO PRED.", "EDAD PRED."]];
                     body = lastTableResults.map(g => {
