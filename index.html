@@ -64,8 +64,9 @@
             opacity: 0;
         }
         .details-content.active {
-            max-height: 5000px; /* Suficiente para el contenido */
+            max-height: 5000px; 
             opacity: 1;
+            margin-top: 1.5rem;
         }
         .toggle-btn i {
             transition: transform 0.3s ease;
@@ -117,7 +118,6 @@
                 </div>
             </div>
 
-            <!-- Card Principal Población -->
             <div class="bg-white p-8 rounded-lg shadow-sm border-t-4" style="border-color: var(--clues-green);">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                     <div class="flex items-center space-x-4">
@@ -136,12 +136,8 @@
                 </div>
             </div>
 
-            <!-- Contenido Desplegable Población -->
             <div id="details-population" class="details-content space-y-8">
-                <!-- KPIs por Edad -->
                 <div id="group-kpi-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
-                
-                <!-- Gráficas Población -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                         <div class="flex items-center space-x-2 mb-4 border-b pb-2">
@@ -174,7 +170,6 @@
                 </div>
             </div>
 
-            <!-- Card Principal Mascotas -->
             <div class="bg-white p-8 rounded-lg shadow-sm border-t-4" style="border-color: var(--clues-red);">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                     <div class="flex items-center space-x-4">
@@ -193,9 +188,7 @@
                 </div>
             </div>
 
-            <!-- Contenido Desplegable Mascotas -->
             <div id="details-pets" class="details-content space-y-8">
-                <!-- Gráfica Vacunación Stacked -->
                 <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                     <div class="flex items-center space-x-2 mb-4 border-b pb-2">
                         <div class="w-2 h-5" style="background-color: #ea047f;"></div>
@@ -207,7 +200,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Pets Pie Chart -->
                     <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 md:col-span-1">
                         <div class="flex items-center space-x-2 mb-4 border-b pb-2">
                             <div class="w-2 h-5" style="background-color: #285C4D;"></div>
@@ -217,7 +209,6 @@
                             <canvas id="petsPieChart"></canvas>
                         </div>
                     </div>
-                    <!-- Top Colonias -->
                     <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 md:col-span-2">
                         <div class="flex items-center space-x-2 mb-4 border-b pb-2">
                             <i data-lucide="map-pin" class="w-4 h-4 text-indigo-600"></i>
@@ -231,48 +222,88 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 3: TABLA DE DATOS -->
-        <section class="mb-12">
-            <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-                <div class="p-6 border-b bg-gray-50">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                        <div class="flex items-center space-x-2">
-                            <i data-lucide="database" class="w-5 h-5 text-slate-500"></i>
-                            <h3 class="text-sm font-black uppercase tracking-tight" style="color: var(--clues-green);">Resumen por Colonia y Sección</h3>
-                        </div>
-                        <button onclick="generatePDFReport()" class="flex items-center space-x-2 bg-slate-800 hover:bg-black text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all shadow-md">
-                            <i data-lucide="file-text" class="w-4 h-4"></i>
-                            <span>Generar Reporte PDF</span>
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="relative">
-                            <label class="text-[10px] font-bold text-gray-400 uppercase mb-1 block tracking-tight">Filtrar por Colonia</label>
-                            <input type="text" id="coloniaSearchInput" placeholder="Ej: Centro, Tequisquiapan..." class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-green-700 outline-none transition-all">
-                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-8 text-gray-400"></i>
-                        </div>
-                        <div class="relative">
-                            <label class="text-[10px] font-bold text-gray-400 uppercase mb-1 block tracking-tight">Filtrar por Sección(es) Electoral(es)</label>
-                            <input type="text" id="seccionSearchInput" placeholder="Separa por comas: 0845, 1200, 0142..." class="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-green-700 outline-none transition-all">
-                            <i data-lucide="hash" class="w-4 h-4 absolute left-3 top-8 text-gray-400"></i>
-                        </div>
-                    </div>
+        <!-- SECCIÓN 3: REPORTES -->
+        <section id="reports-section" class="space-y-6 mb-12">
+            <div class="flex items-center justify-between border-l-4 border-slate-700 pl-4 bg-white py-3 rounded-r-lg shadow-sm">
+                <div class="flex items-center space-x-3">
+                    <i data-lucide="file-bar-chart" class="w-6 h-6 text-slate-700"></i>
+                    <h2 class="text-xl font-black uppercase tracking-tight" style="color: var(--clues-gray);">Reportes</h2>
                 </div>
-                <div class="table-container custom-scrollbar">
-                    <table class="w-full text-left border-collapse" id="summaryTable">
-                        <thead class="sticky top-0 bg-white shadow-sm z-10">
-                            <tr class="text-[10px] font-black uppercase text-gray-500 border-b">
-                                <th class="px-6 py-4">Colonia</th>
-                                <th class="px-6 py-4 text-center">Sección</th>
-                                <th class="px-6 py-4 text-center">Total Hogares</th>
-                                <th class="px-6 py-4 text-center">Con Mascota</th>
-                                <th class="px-6 py-4 text-center">Vacunados</th>
-                                <th class="px-6 py-4 text-center text-amber-600">Incompletas</th>
-                                <th class="px-6 py-4 text-center text-red-600">Sin Vacuna</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dataTableBody" class="text-xs text-gray-700 divide-y divide-gray-100"></tbody>
-                    </table>
+            </div>
+
+            <!-- Card Principal Reportes -->
+            <div class="bg-white p-8 rounded-lg shadow-sm border-t-4 border-slate-600">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="p-4 bg-slate-50 rounded-full">
+                            <i data-lucide="database" class="w-10 h-10 text-slate-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400">Generación de Reportes</h3>
+                            <p class="text-sm font-bold text-gray-600 italic">Análisis avanzados y herramientas de exportación</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleDetails('reports')" id="btn-reports" class="toggle-btn flex items-center space-x-2 bg-slate-800 hover:bg-black text-white px-6 py-3 rounded-full font-bold uppercase text-xs tracking-widest transition-all shadow-lg">
+                        <span>Generar Reportes</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenido Desplegable Reportes -->
+            <div id="details-reports" class="details-content space-y-6">
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+                    <div class="p-6 border-b bg-gray-50 space-y-6">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div class="space-y-1">
+                                <h3 id="reportTitleDisplay" class="text-sm font-black uppercase tracking-tight" style="color: var(--clues-green);">Resumen General</h3>
+                                <p id="reportDescDisplay" class="text-[10px] text-gray-400 font-bold uppercase">Análisis base por colonia y sección</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <button onclick="clearFilters()" class="flex items-center space-x-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-600 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all shadow-sm">
+                                    <i data-lucide="filter-x" class="w-4 h-4"></i>
+                                    <span>Limpiar Filtros</span>
+                                </button>
+                                <button onclick="generatePDFReport()" class="flex items-center space-x-2 bg-slate-800 hover:bg-black text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all shadow-md">
+                                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                                    <span>Generar Reporte PDF</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filtros y Selector de Reporte -->
+                        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 bg-white p-4 rounded-lg border">
+                            <div class="lg:col-span-1">
+                                <label class="text-[10px] font-black text-gray-400 uppercase mb-1 block">Tipo de Reporte</label>
+                                <select id="reportTypeSelector" onchange="handleReportChange()" class="w-full p-2 border rounded text-xs font-bold text-gray-700 focus:ring-2 focus:ring-green-700 outline-none">
+                                    <option value="summary">Resumen por Colonia y Sección</option>
+                                    <option value="risk">Ranking de Riesgo Sanitario</option>
+                                    <option value="demo">Participación Demográfica</option>
+                                </select>
+                            </div>
+                            <div class="lg:col-span-1">
+                                <label class="text-[10px] font-black text-gray-400 uppercase mb-1 block">Municipio</label>
+                                <input type="text" id="municipioSearchInput" placeholder="Ej: San Luis Potosí..." class="w-full p-2 border rounded text-xs focus:ring-2 focus:ring-green-700 outline-none">
+                            </div>
+                            <div class="lg:col-span-2">
+                                <label class="text-[10px] font-black text-gray-400 uppercase mb-1 block">Filtrar por Colonia</label>
+                                <input type="text" id="coloniaSearchInput" placeholder="Ej: Centro, Tequisquiapan..." class="w-full p-2 border rounded text-xs focus:ring-2 focus:ring-green-700 outline-none">
+                            </div>
+                            <div class="lg:col-span-1">
+                                <label class="text-[10px] font-black text-gray-400 uppercase mb-1 block">Sección(es) Electoral(es)</label>
+                                <input type="text" id="seccionSearchInput" placeholder="0845, 1200..." class="w-full p-2 border rounded text-xs focus:ring-2 focus:ring-green-700 outline-none">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container custom-scrollbar">
+                        <table class="w-full text-left border-collapse" id="summaryTable">
+                            <thead class="sticky top-0 bg-white shadow-sm z-10" id="tableHeader">
+                                <!-- Encabezados dinámicos -->
+                            </thead>
+                            <tbody id="dataTableBody" class="text-xs text-gray-700 divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>
@@ -280,7 +311,7 @@
         <footer class="mt-16 pt-8 border-t"></footer>
     </div>
 
-    <!-- Modal de Desglose Género -->
+    <!-- Modal Desglose Género -->
     <div id="genderBreakdownModal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-lg shadow-2xl w-full max-md overflow-hidden transform transition-all">
             <div class="p-6 border-b flex justify-between items-center" style="background-color: var(--clues-green);">
@@ -324,39 +355,24 @@
         let globalGroupGenderBreakdown = {};
         let globalRawData = []; 
         let lastTableResults = []; 
+        let currentReportType = 'summary';
 
-        const COLORS = {
-            green: '#0f5319', 
-            gold: '#76b82a', 
-            red: '#ea047f',
-            secondary: '#285C4D',
-            gray: '#6F7271'
-        };
-
-        const CHART_COLORS = [
-            '#0f5319', '#76b82a', '#ea047f', '#285C4D', 
-            '#A57F2C', '#00897B', '#D81B60', '#558B2F'
-        ];
-
+        const COLORS = { green: '#0f5319', gold: '#76b82a', red: '#ea047f', secondary: '#285C4D', gray: '#6F7271' };
+        const CHART_COLORS = [ '#0f5319', '#76b82a', '#ea047f', '#285C4D', '#A57F2C', '#00897B', '#D81B60', '#558B2F' ];
         const NO_APLICA_LABEL = 'NO APLICA (AVES, GALLINAS, ETC.)';
         
         const formatNumber = (num) => num.toLocaleString('es-MX');
 
-        // Toggle Sections
         function toggleDetails(sectionId) {
             const content = document.getElementById(`details-${sectionId}`);
             const btn = document.getElementById(`btn-${sectionId}`);
             const isExpanding = !content.classList.contains('active');
-            
             content.classList.toggle('active');
             btn.classList.toggle('active');
-            
             const btnSpan = btn.querySelector('span');
-            if (sectionId === 'population') {
-                btnSpan.textContent = isExpanding ? 'Ocultar detalle de población' : 'Ver detalle de población';
-            } else {
-                btnSpan.textContent = isExpanding ? 'Ocultar detalle de mascotas' : 'Ver detalle de mascotas';
-            }
+            if (sectionId === 'population') btnSpan.textContent = isExpanding ? 'Ocultar detalle de población' : 'Ver detalle de población';
+            else if (sectionId === 'pets') btnSpan.textContent = isExpanding ? 'Ocultar detalle de mascotas' : 'Ver detalle de mascotas';
+            else if (sectionId === 'reports') btnSpan.textContent = isExpanding ? 'Cerrar opciones de reportes' : 'Generar Reportes';
         }
 
         const getColumnValue = (row, key) => {
@@ -377,60 +393,79 @@
             return 'otro';
         };
 
-        const showError = (message) => {
-            document.getElementById('loading-animation').classList.add('hidden');
-            document.getElementById('status-subtext').classList.add('hidden');
-            const statusText = document.getElementById('status-text');
-            statusText.textContent = message;
-            statusText.style.color = '#dc2626';
-            document.getElementById('retry-btn').classList.remove('hidden');
-        };
+        function handleReportChange() {
+            currentReportType = document.getElementById('reportTypeSelector').value;
+            const titleEl = document.getElementById('reportTitleDisplay');
+            const descEl = document.getElementById('reportDescDisplay');
+            
+            const meta = {
+                summary: { t: "Resumen por Colonia y Sección", d: "Análisis base por colonia y sección electoral" },
+                risk: { t: "Ranking de Riesgo Sanitario", d: "Zonas con mayor prioridad de vacunación" },
+                demo: { t: "Participación Demográfica", d: "Perfil predominante por zona" }
+            };
+
+            titleEl.textContent = meta[currentReportType].t;
+            descEl.textContent = meta[currentReportType].d;
+            
+            filterAndRenderTable(
+                document.getElementById('coloniaSearchInput').value.toLowerCase(), 
+                document.getElementById('seccionSearchInput').value.toLowerCase(),
+                document.getElementById('municipioSearchInput').value.toLowerCase()
+            );
+        }
+
+        function clearFilters() {
+            document.getElementById('coloniaSearchInput').value = "";
+            document.getElementById('seccionSearchInput').value = "";
+            document.getElementById('municipioSearchInput').value = "";
+            filterAndRenderTable("", "", "");
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             if (typeof lucide !== 'undefined') lucide.createIcons();
-            
             Papa.parse(CSV_URL, {
                 download: true, header: true, skipEmptyLines: true, dynamicTyping: true,
                 complete: (results) => {
-                    if (results.errors.length > 0 && results.data.length === 0) { showError('Error en los datos CSV'); return; }
+                    if (results.errors.length > 0 && results.data.length === 0) return;
                     setTimeout(() => {
                         document.getElementById('status-container').classList.add('hidden');
                         document.getElementById('dashboard-content').classList.remove('hidden');
                         processAndRenderData(results.data);
                     }, 800);
-                },
-                error: () => showError('Error de Conexión')
+                }
             });
 
             const colInput = document.getElementById('coloniaSearchInput');
             const secInput = document.getElementById('seccionSearchInput');
-            const handleSearch = () => filterAndRenderTable(colInput.value.toLowerCase(), secInput.value.toLowerCase());
+            const munInput = document.getElementById('municipioSearchInput');
+            const handleSearch = () => filterAndRenderTable(colInput.value.toLowerCase(), secInput.value.toLowerCase(), munInput.value.toLowerCase());
             colInput.addEventListener('input', handleSearch);
             secInput.addEventListener('input', handleSearch);
+            munInput.addEventListener('input', handleSearch);
         });
 
         async function processAndRenderData(data) {
-            let totalHogares = 0;
-            let totalConMascota = 0;
+            let totalHogares = 0, totalConMascota = 0;
             const groupTotals = {'infancia': 0, 'adolescentes': 0, 'adultos': 0, 'adultos mayores': 0};
-            const genderTotals = {};
-            const petTotals = {};
-            const vaccinationTotals = {'VACUNADOS': 0, 'VACUNAS INCOMPLETAS': 0, 'NO VACUNADOS': 0};
+            const genderTotals = {}, petTotals = {}, vaccinationTotals = {'VACUNADOS': 0, 'VACUNAS INCOMPLETAS': 0, 'NO VACUNADOS': 0};
             vaccinationTotals[NO_APLICA_LABEL] = 0;
             const coloniaStats = {};
             globalRawData = []; 
             
             data.forEach(row => {
                 totalHogares++;
-                const ageGroup = calculateAgeGroup(getColumnValue(row, 'edad'));
+                const ageRaw = getColumnValue(row, 'edad');
+                const ageGroup = calculateAgeGroup(ageRaw);
                 if (ageGroup !== 'otro') groupTotals[ageGroup]++;
+                
                 const genderRaw = getColumnValue(row, 'genero') || getColumnValue(row, 'sexo');
                 const gender = genderRaw ? String(genderRaw).toLowerCase().trim() : 'no especificado';
-                genderTotals[gender] = (genderTotals[gender] || 0) + 1;
+                
                 const hasPetsRaw = getColumnValue(row, 'tiene_mascotas');
                 const vacStatusRaw = getColumnValue(row, 'estan_vacunados');
                 const coloniaRaw = getColumnValue(row, 'colonia');
                 const seccionRaw = getColumnValue(row, 'seccion_electoral');
+                const municipioRaw = getColumnValue(row, 'municipio');
 
                 let estatus = "OTRO";
                 const v = String(vacStatusRaw || "").trim().toUpperCase();
@@ -445,8 +480,13 @@
                 globalRawData.push({
                     colonia: String(coloniaRaw || 'SIN COLONIA').toUpperCase(),
                     seccion: String(seccionRaw || 'S/S'),
+                    municipio: String(municipioRaw || 'N/A').toUpperCase(),
                     tieneMascotas: tieneMascota,
-                    estatus: estatus
+                    estatus: estatus,
+                    edad: ageRaw,
+                    isSenior: parseInt(ageRaw) >= 60,
+                    genero: gender,
+                    ageGroup: ageGroup
                 });
 
                 if (coloniaRaw) {
@@ -460,20 +500,17 @@
                         else if (estatus === "NOVAC") { vaccinationTotals['NO VACUNADOS']++; coloniaStats[col].noVac++; }
                     }
                 }
-
                 if (hasPetsRaw) {
                     const s = String(hasPetsRaw).toLowerCase();
                     if (s.includes('si')) petTotals['TIENE MASCOTAS'] = (petTotals['TIENE MASCOTAS'] || 0) + 1;
                     else if (s.includes('no')) petTotals['NO TIENE'] = (petTotals['NO TIENE'] || 0) + 1;
                 }
-
                 if (ageGroup !== 'otro') {
                     if (!globalGroupGenderBreakdown[ageGroup]) globalGroupGenderBreakdown[ageGroup] = {};
                     globalGroupGenderBreakdown[ageGroup][gender] = (globalGroupGenderBreakdown[ageGroup][gender] || 0) + 1;
                 }
             });
             
-            // Actualizar Tarjetas Principales
             document.getElementById('main-total-hogares').textContent = formatNumber(totalHogares);
             document.getElementById('main-hogares-mascotas').textContent = formatNumber(totalConMascota);
 
@@ -483,68 +520,70 @@
             renderPetsPieChart(petTotals);
             renderVaccinationStackedBarChart(vaccinationTotals);
             renderTopColoniasChart(coloniaStats);
-            filterAndRenderTable("", ""); 
+            handleReportChange(); 
         }
 
-        function renderKPIs(groupTotals, totalHogares, ageGroups) {
-            const groupKpiContainer = document.getElementById('group-kpi-container');
-            let groupKpiHtml = '';
-            const groupDetails = { 'infancia': { color: COLORS.green, icon: 'baby' }, 'adolescentes': { color: COLORS.gold, icon: 'graduation-cap' }, 'adultos': { color: COLORS.red, icon: 'briefcase' }, 'adultos mayores': { color: COLORS.secondary, icon: 'heart-pulse' } };
-            ageGroups.forEach(groupKey => {
-                const total = groupTotals[groupKey] || 0;
-                const percentage = totalHogares > 0 ? ((total / totalHogares) * 100).toFixed(1) : 0;
-                groupKpiHtml += `
-                    <div class="kpi-card bg-white p-6 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition-all" style="border-top-color: ${groupDetails[groupKey].color};" onclick="showGenderBreakdown('${groupKey}')">
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="text-xs font-bold uppercase text-gray-400 tracking-wider">${groupKey}</span>
-                            <i data-lucide="${groupDetails[groupKey].icon}" class="w-5 h-5" style="color: ${groupDetails[groupKey].color};"></i>
-                        </div>
-                        <div class="text-3xl font-black text-gray-800">${formatNumber(total)}</div>
-                        <div class="mt-2 text-xs font-bold px-2 py-1 rounded inline-block" style="background-color: ${groupDetails[groupKey].color}20; color: ${groupDetails[groupKey].color};">${percentage}% DEL TOTAL</div>
-                    </div>
-                `;
-            });
-            groupKpiContainer.innerHTML = groupKpiHtml;
-            setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 50);
-        }
-
-        function filterAndRenderTable(colTerm, secTermRaw) {
+        function filterAndRenderTable(colTerm, secTermRaw, munTerm) {
             const tbody = document.getElementById('dataTableBody');
+            const header = document.getElementById('tableHeader');
             const secTerms = secTermRaw.split(',').map(t => t.trim().toLowerCase()).filter(t => t !== "");
-            const filtered = globalRawData.filter(item => {
+
+            let filtered = globalRawData.filter(item => {
                 const colMatch = item.colonia.toLowerCase().includes(colTerm);
-                let secMatch = secTerms.length > 0 ? secTerms.some(term => item.seccion.toLowerCase().includes(term)) : true;
-                return colMatch && secMatch;
+                const munMatch = item.municipio.toLowerCase().includes(munTerm);
+                const secMatch = secTerms.length > 0 ? secTerms.some(term => item.seccion.toLowerCase().includes(term)) : true;
+                return colMatch && secMatch && munMatch;
             });
+
             const grouped = {};
             filtered.forEach(item => {
-                const key = `${item.colonia}|${item.seccion}`;
-                if (!grouped[key]) grouped[key] = { colonia: item.colonia, seccion: item.seccion, totalHogares: 0, conMascota: 0, vac: 0, inc: 0, noVac: 0, noAplica: 0 };
+                const key = `${item.municipio}|${item.colonia}|${item.seccion}`;
+                if (!grouped[key]) grouped[key] = { 
+                    municipio: item.municipio, colonia: item.colonia, seccion: item.seccion, 
+                    totalH: 0, hasM: 0, vac: 0, inc: 0, noVac: 0, 
+                    genders: {}, ages: {} 
+                };
                 const g = grouped[key];
-                g.totalHogares++;
-                if (item.tieneMascotas) g.conMascota++;
+                g.totalH++;
+                if (item.tieneMascotas) g.hasM++;
                 if (item.estatus === "VAC") g.vac++;
                 else if (item.estatus === "INC") g.inc++;
                 else if (item.estatus === "NOVAC") g.noVac++;
-                else if (item.estatus === "NO_APLICA") g.noAplica++;
+                
+                g.genders[item.genero] = (g.genders[item.genero] || 0) + 1;
+                g.ages[item.ageGroup] = (g.ages[item.ageGroup] || 0) + 1;
             });
-            const results = Object.values(grouped).sort((a, b) => b.totalHogares - a.totalHogares);
-            lastTableResults = results; 
-            if (results.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-gray-400 italic">No se encontraron grupos coincidentes</td></tr>`;
-                return;
+
+            let results = Object.values(grouped);
+
+            let headerHtml = '';
+            let bodyHtml = '';
+
+            if (currentReportType === 'summary') {
+                headerHtml = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sección</th><th class="px-6 py-4 text-center">Hogares</th><th class="px-6 py-4 text-center">Mascotas</th><th class="px-6 py-4 text-center">Vac.</th><th class="px-6 py-4 text-center">Inc.</th><th class="px-6 py-4 text-center">S/V</th></tr>`;
+                results.sort((a,b) => b.totalH - a.totalH);
+                bodyHtml = results.map(g => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-3 font-bold text-gray-400 text-[10px]">${g.municipio}</td><td class="px-6 py-3 font-semibold text-gray-900">${g.colonia}</td><td class="px-6 py-3 text-center"><span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold font-mono text-[10px]">${g.seccion}</span></td><td class="px-6 py-3 text-center text-gray-500">${g.totalH}</td><td class="px-6 py-3 text-center text-green-700">${g.hasM}</td><td class="px-6 py-3 text-center text-green-600 font-black">${g.vac}</td><td class="px-6 py-3 text-center text-amber-500 font-black">${g.inc}</td><td class="px-6 py-3 text-center text-red-500 font-black">${g.noVac}</td></tr>`).join('');
+            } 
+            else if (currentReportType === 'risk') {
+                headerHtml = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sección</th><th class="px-6 py-4 text-center text-red-700">Mascotas S/V</th><th class="px-6 py-4 text-center">% Riesgo</th></tr>`;
+                results.sort((a,b) => b.noVac - a.noVac);
+                bodyHtml = results.map(g => {
+                    const risk = g.hasM > 0 ? ((g.noVac / g.hasM) * 100).toFixed(1) : 0;
+                    return `<tr class="hover:bg-red-50 transition-colors"><td class="px-6 py-3 font-bold text-gray-400 text-[10px]">${g.municipio}</td><td class="px-6 py-3 font-semibold text-red-900">${g.colonia}</td><td class="px-6 py-3 text-center font-mono text-[10px]">${g.seccion}</td><td class="px-6 py-3 text-center font-black text-red-600 text-lg">${g.noVac}</td><td class="px-6 py-3 text-center font-bold text-red-700">${risk}%</td></tr>`;
+                }).join('');
             }
-            tbody.innerHTML = results.map(g => `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-6 py-3 font-semibold text-gray-900">${g.colonia}</td>
-                    <td class="px-6 py-3 text-center"><span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold font-mono text-[10px]">${g.seccion}</span></td>
-                    <td class="px-6 py-3 text-center font-bold text-gray-500">${g.totalHogares}</td>
-                    <td class="px-6 py-3 text-center font-bold text-green-700">${g.conMascota}</td>
-                    <td class="px-6 py-3 text-center font-black text-green-600">${g.vac}</td>
-                    <td class="px-6 py-3 text-center font-black text-amber-500">${g.inc}</td>
-                    <td class="px-6 py-3 text-center font-black text-red-500">${g.noVac}</td>
-                </tr>
-            `).join('');
+            else if (currentReportType === 'demo') {
+                headerHtml = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Género Predom.</th><th class="px-6 py-4 text-center">Edad Predom.</th></tr>`;
+                bodyHtml = results.map(g => {
+                    const topGen = Object.entries(g.genders).sort((a,b) => b[1]-a[1])[0]?.[0] || 'N/A';
+                    const topAge = Object.entries(g.ages).sort((a,b) => b[1]-a[1])[0]?.[0] || 'N/A';
+                    return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-3 font-bold text-gray-400 text-[10px]">${g.municipio}</td><td class="px-6 py-3 font-semibold">${g.colonia}</td><td class="px-6 py-3 text-center uppercase font-bold text-slate-500">${topGen}</td><td class="px-6 py-3 text-center uppercase font-bold text-slate-500">${topAge}</td></tr>`;
+                }).join('');
+            }
+
+            lastTableResults = results;
+            header.innerHTML = headerHtml;
+            tbody.innerHTML = bodyHtml || `<tr><td colspan="8" class="px-6 py-8 text-center text-gray-400 italic">No se encontraron datos</td></tr>`;
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
@@ -552,8 +591,11 @@
             if (lastTableResults.length === 0) return;
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
-            const dateStr = new Date().toLocaleDateString();
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('es-MX');
+            const timeStr = now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
             const logoUrl = 'https://d3dac9gdq8t83x.cloudfront.net/media/static/images/hor-verde.png';
+            
             const img = new Image();
             img.src = logoUrl;
             img.crossOrigin = 'Anonymous';
@@ -563,84 +605,88 @@
                 doc.text("Dirección de Planeación, Evaluación y Proyectos Especiales", 65, 16);
                 doc.text("Subdirección de Informática y Estadísticas en Salud", 65, 20);
                 doc.setFontSize(14); doc.setTextColor(15, 83, 25); 
-                doc.text("Visitando Corazones: Reporte por Colonia y Sección", 65, 28);
+                doc.text(`Reporte: ${document.getElementById('reportTypeSelector').selectedOptions[0].text}`, 65, 28);
                 doc.setDrawColor(15, 83, 25); doc.setLineWidth(0.5); doc.line(14, 35, 196, 35);
-                doc.setFontSize(9); doc.setTextColor(111, 114, 113); doc.setFont(undefined, 'normal');
-                doc.text(`Fecha de generación: ${dateStr}`, 14, 42);
-                let totalH = 0, totalM = 0, totalV = 0, totalI = 0, totalS = 0;
-                lastTableResults.forEach(g => { totalH += g.totalHogares; totalM += g.conMascota; totalV += g.vac; totalI += g.inc; totalS += g.noVac; });
-                const tableHeaders = [["COLONIA", "SECCIÓN", "TOTAL HOGARES", "CON MASCOTA", "VACUNADOS", "INCOMPLETAS", "SIN VACUNA"]];
-                const tableData = lastTableResults.map(g => [g.colonia, g.seccion, g.totalHogares, g.conMascota, g.vac, g.inc, g.noVac]);
-                const tableFoot = [["TOTALES", "", totalH, totalM, totalV, totalI, totalS]];
-                doc.autoTable({ startY: 52, head: tableHeaders, body: tableData, foot: tableFoot, theme: 'grid',
-                    headStyles: { fillColor: [15, 83, 25], textColor: [255, 255, 255], fontSize: 7, halign: 'center' },
-                    footStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontSize: 7, halign: 'center', fontStyle: 'bold' },
+
+                doc.setFontSize(8); doc.setTextColor(111, 114, 113); doc.setFont(undefined, 'normal');
+                doc.text(`Generado el: ${dateStr} a las ${timeStr}`, 14, 42);
+
+                let tableHeaders, tableData, tableFoot;
+                if (currentReportType === 'summary') {
+                    let tH = 0, tM = 0, tV = 0, tI = 0, tS = 0;
+                    lastTableResults.forEach(g => { tH += g.totalH; tM += g.hasM; tV += g.vac; tI += g.inc; tS += g.noVac; });
+                    tableHeaders = [["MUNICIPIO", "COLONIA", "SEC.", "HOG.", "MASC.", "VAC.", "INC.", "S/V"]];
+                    tableData = lastTableResults.map(g => [g.municipio, g.colonia, g.seccion, g.totalH, g.hasM, g.vac, g.inc, g.noVac]);
+                    tableFoot = [["TOTALES", "", "", tH, tM, tV, tI, tS]];
+                } else if (currentReportType === 'risk') {
+                    let tNV = 0;
+                    lastTableResults.forEach(g => tNV += g.noVac);
+                    tableHeaders = [["MUNICIPIO", "COLONIA", "SECCIÓN", "S/V", "RIESGO %"]];
+                    tableData = lastTableResults.map(g => [g.municipio, g.colonia, g.seccion, g.noVac, (g.hasM > 0 ? (g.noVac/g.hasM*100).toFixed(1) : 0)+"%"]);
+                    tableFoot = [["TOTALES", "", "", tNV, ""]];
+                } else if (currentReportType === 'demo') {
+                    tableHeaders = [["MUNICIPIO", "COLONIA", "GÉNERO PRED.", "EDAD PRED."]];
+                    tableData = lastTableResults.map(g => {
+                        const topGen = Object.entries(g.genders).sort((a,b) => b[1]-a[1])[0]?.[0] || 'N/A';
+                        const topAge = Object.entries(g.ages).sort((a,b) => b[1]-a[1])[0]?.[0] || 'N/A';
+                        return [g.municipio, g.colonia, topGen.toUpperCase(), topAge.toUpperCase()];
+                    });
+                    tableFoot = null;
+                }
+
+                doc.autoTable({ startY: 45, head: tableHeaders, body: tableData, foot: tableFoot, theme: 'grid',
+                    headStyles: { fillColor: [15, 83, 25], fontSize: 7, halign: 'center' },
                     styles: { fontSize: 7, cellPadding: 2 },
-                    columnStyles: { 0: { cellWidth: 50, fontStyle: 'bold' }, 1: { halign: 'center', cellWidth: 20 } },
                     alternateRowStyles: { fillColor: [245, 245, 245] }
                 });
-                doc.save(`Reporte_Visitando_Corazones_${dateStr.replace(/\//g, '-')}.pdf`);
+                doc.save(`Reporte_Visitando_Corazones_${currentReportType}_${dateStr.replace(/\//g, '-')}.pdf`);
             };
         }
 
-        function showGenderBreakdown(groupKey) {
-            const groupData = globalGroupGenderBreakdown[groupKey] || {};
-            const femenino = groupData['femenino'] || groupData['mujer'] || 0;
-            const masculino = groupData['masculino'] || groupData['hombre'] || 0;
-            let otros = 0;
-            Object.keys(groupData).forEach(key => { if (!['femenino', 'masculino', 'mujer', 'hombre'].includes(key.toLowerCase())) otros += groupData[key]; });
-            document.getElementById('modalTitle').textContent = `DETALLE: ${groupKey.toUpperCase()}`;
-            document.getElementById('countFemenino').textContent = formatNumber(femenino);
-            document.getElementById('countMasculino').textContent = formatNumber(masculino);
-            document.getElementById('countOtros').textContent = formatNumber(otros);
-            document.getElementById('breakdown-otros').classList.toggle('hidden', otros === 0);
-            document.getElementById('genderBreakdownModal').classList.remove('hidden');
+        function renderKPIs(groupTotals, totalHogares, ageGroups) {
+            const container = document.getElementById('group-kpi-container');
+            const icons = { infancia: 'baby', adolescentes: 'graduation-cap', adultos: 'briefcase', 'adultos mayores': 'heart-pulse' };
+            const cls = { infancia: COLORS.green, adolescentes: COLORS.gold, adultos: COLORS.red, 'adultos mayores': COLORS.secondary };
+            container.innerHTML = ageGroups.map(key => `
+                <div class="kpi-card bg-white p-6 rounded-lg shadow-sm border-t-4" style="border-top-color: ${cls[key]};" onclick="showGenderBreakdown('${key}')">
+                    <div class="flex justify-between items-start mb-2"><span class="text-[10px] font-bold uppercase text-gray-400">${key}</span><i data-lucide="${icons[key]}" class="w-4 h-4" style="color: ${cls[key]}"></i></div>
+                    <div class="text-3xl font-black text-gray-800">${formatNumber(groupTotals[key] || 0)}</div>
+                </div>`).join('');
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
-        function hideGenderBreakdown() { document.getElementById('genderBreakdownModal').classList.add('hidden'); }
-
-        // Funciones Gráficas
         function renderAgeGroupBarChart(groupTotals, ageGroups) {
-            if (window.ageGroupBarChartInstance) window.ageGroupBarChartInstance.destroy();
-            window.ageGroupBarChartInstance = new Chart(document.getElementById('ageGroupBarChart'), {
-                type: 'bar', data: { labels: ageGroups.map(g => g.toUpperCase()), datasets: [{ data: ageGroups.map(g => groupTotals[g] || 0), backgroundColor: CHART_COLORS.slice(0, ageGroups.length), borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { formatter: (value) => formatNumber(value), color: '#000', anchor: 'end', align: 'top', font: { weight: 'bold', size: 9 } } } }
+            new Chart(document.getElementById('ageGroupBarChart'), {
+                type: 'bar', data: { labels: ageGroups.map(g => g.toUpperCase()), datasets: [{ data: ageGroups.map(g => groupTotals[g] || 0), backgroundColor: CHART_COLORS, borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
         function renderGenderBarChart(genderTotals) {
-            if (window.genderBarChartInstance) window.genderBarChartInstance.destroy();
-            const labels = Object.keys(genderTotals);
-            window.genderBarChartInstance = new Chart(document.getElementById('genderBarChart'), {
-                type: 'bar', data: { labels: labels.map(g => g.toUpperCase()), datasets: [{ data: Object.values(genderTotals), backgroundColor: labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]), borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { formatter: (value) => formatNumber(value), color: '#000', anchor: 'end', align: 'top', font: { weight: 'bold', size: 9 } } } }
+            new Chart(document.getElementById('genderBarChart'), {
+                type: 'bar', data: { labels: Object.keys(genderTotals).map(g => g.toUpperCase()), datasets: [{ data: Object.values(genderTotals), backgroundColor: CHART_COLORS, borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
         function renderPetsPieChart(petTotals) {
-            if (window.petsPieChartInstance) window.petsPieChartInstance.destroy();
-            window.petsPieChartInstance = new Chart(document.getElementById('petsPieChart'), {
+            new Chart(document.getElementById('petsPieChart'), {
                 type: 'pie', data: { labels: Object.keys(petTotals).map(l => l.toUpperCase()), datasets: [{ data: Object.values(petTotals), backgroundColor: CHART_COLORS, borderWidth: 4, borderColor: '#ffffff' }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { weight: 'bold', size: 9 } } } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
         }
         function renderVaccinationStackedBarChart(vaccinationTotals) {
-            if (window.vaccinationStackedBarChartInstance) window.vaccinationStackedBarChartInstance.destroy();
-            const datasets = [{ label: 'VACUNADOS', data: [vaccinationTotals['VACUNADOS']], backgroundColor: COLORS.green }, { label: 'VACUNAS INCOMPLETAS', data: [vaccinationTotals['VACUNAS INCOMPLETAS']], backgroundColor: COLORS.gold }, { label: 'NO VACUNADOS', data: [vaccinationTotals['NO VACUNADOS']], backgroundColor: COLORS.red }, { label: NO_APLICA_LABEL, data: [vaccinationTotals[NO_APLICA_LABEL]], backgroundColor: COLORS.gray }];
-            window.vaccinationStackedBarChartInstance = new Chart(document.getElementById('vaccinationStackedBarChart'), {
-                type: 'bar', data: { labels: ['HOGARES ANALIZADOS'], datasets: datasets },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, display: false }, y: { stacked: true, grid: { display: false } } },
-                plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', formatter: (v, ctx) => { let total = ctx.chart.data.datasets.reduce((acc, ds) => acc + ds.data[0], 0); return v === 0 ? '' : ((v/total)*100).toFixed(1)+'%'; } } } }
+            new Chart(document.getElementById('vaccinationStackedBarChart'), {
+                type: 'bar', data: { labels: ['HOGARES ANALIZADOS'], datasets: [{ label: 'VACUNADOS', data: [vaccinationTotals['VACUNADOS']], backgroundColor: COLORS.green }, { label: 'VACUNAS INCOMPLETAS', data: [vaccinationTotals['VACUNAS INCOMPLETAS']], backgroundColor: COLORS.gold }, { label: 'NO VACUNADOS', data: [vaccinationTotals['NO VACUNADOS']], backgroundColor: COLORS.red }, { label: NO_APLICA_LABEL, data: [vaccinationTotals[NO_APLICA_LABEL]], backgroundColor: COLORS.gray }] },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, display: false }, y: { stacked: true } }, plugins: { legend: { position: 'bottom' } } }
             });
         }
         function renderTopColoniasChart(coloniaStats) {
             const top10 = Object.entries(coloniaStats).sort((a, b) => b[1].totalPets - a[1].totalPets).slice(0, 10);
-            const labels = top10.map(item => item[0]);
-            if (window.topColoniasChartInstance) window.topColoniasChartInstance.destroy();
-            window.topColoniasChartInstance = new Chart(document.getElementById('topColoniasChart'), {
-                type: 'bar', data: { labels: labels, datasets: [{ label: 'HOGARES SIN VACUNAR', data: top10.map(i => i[1].noVac), backgroundColor: COLORS.red, borderRadius: 4 }, { label: 'HOGARES VACUNADOS', data: top10.map(i => i[1].vac), backgroundColor: COLORS.green, borderRadius: 4 }, { label: 'TOTAL HOGARES CON MASCOTA', data: top10.map(i => i[1].totalPets), backgroundColor: COLORS.gold, borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 8 } } } }
+            new Chart(document.getElementById('topColoniasChart'), {
+                type: 'bar', data: { labels: top10.map(i => i[0]), datasets: [{ label: 'NO VAC.', data: top10.map(i => i[1].noVac), backgroundColor: COLORS.red }, { label: 'VACUNADOS', data: top10.map(i => i[1].vac), backgroundColor: COLORS.green }, { label: 'TOTAL', data: top10.map(i => i[1].totalPets), backgroundColor: COLORS.gold }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
             });
         }
+        function hideGenderBreakdown() { document.getElementById('genderBreakdownModal').classList.add('hidden'); }
     </script>
 </body>
 </html>
