@@ -40,7 +40,7 @@
 
         @keyframes heartPulse {
             0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; }
             100% { transform: scale(1); opacity: 1; }
         }
         .animate-heart {
@@ -180,7 +180,6 @@
                         </div>
                         <div>
                             <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400">Hogares con Mascotas</h3>
-                            <!-- Cambio de color a negro (text-gray-900 para consistencia con población) -->
                             <p id="main-hogares-mascotas" class="text-5xl font-black text-gray-900">0</p>
                         </div>
                     </div>
@@ -196,14 +195,14 @@
                 <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                     <div class="flex items-center space-x-2 mb-4 border-b pb-2">
                         <div class="w-2 h-5" style="background-color: #ea047f;"></div>
-                        <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">Estatus de Vacunación en el Hogar</h3>
+                        <h3 class="text-xs font-bold uppercase" style="color: var(--clues-green);">Estatus mascotas vacunadas</h3>
                     </div>
                     <div class="chart-container" style="height: 180px;">
                         <canvas id="vaccinationStackedBarChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Gráficas de Pastel: Tenencia y Esterilización -->
+                <!-- Gráficas de Pastel -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                         <div class="flex items-center space-x-2 mb-4 border-b pb-2">
@@ -225,7 +224,7 @@
                     </div>
                 </div>
 
-                <!-- Top Colonias con Esterilización añadida -->
+                <!-- Top Colonias -->
                 <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                     <div class="flex items-center space-x-2 mb-4 border-b pb-2">
                         <i data-lucide="map-pin" class="w-4 h-4 text-indigo-600"></i>
@@ -479,12 +478,9 @@
                     if (ster) sterT.ESTERILIZADOS++; else sterT['NO ESTERILIZADOS']++;
                 }
 
-                const munRaw = getColumnValue(row, 'municipio');
-                const colRaw = getColumnValue(row, 'colonia');
-
                 globalRawData.push({
-                    municipio: String(munRaw || 'N/A').toUpperCase(),
-                    colonia: String(colRaw || 'SIN COLONIA').toUpperCase(),
+                    municipio: String(getColumnValue(row, 'municipio') || 'N/A').toUpperCase(),
+                    colonia: String(getColumnValue(row, 'colonia') || 'SIN COLONIA').toUpperCase(),
                     seccion: String(getColumnValue(row, 'seccion_electoral') || 'S/S'),
                     tieneMascotas: hasP,
                     esEsterilizado: ster,
@@ -493,8 +489,9 @@
                     genero: gen, ageGroup: ageG
                 });
 
-                if (colRaw) {
-                    const c = String(colRaw).toUpperCase().trim();
+                const cRaw = getColumnValue(row, 'colonia');
+                if (cRaw) {
+                    const c = String(cRaw).toUpperCase().trim();
                     if (!colStats[c]) colStats[c] = { vac: 0, totalPets: 0, noVac: 0, ster: 0 };
                     if (hasP) {
                         colStats[c].totalPets++;
@@ -660,7 +657,7 @@
                 plugins: {
                     legend: { position: 'bottom' },
                     datalabels: {
-                        color: '#000',
+                        color: '#fff', // Cambiado a blanco para mejor contraste
                         font: { weight: 'bold' },
                         formatter: (value, ctx) => {
                             let sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
@@ -679,7 +676,7 @@
 
             new Chart(document.getElementById('genderBarChart'), { 
                 type: 'bar', 
-                data: { labels: Object.keys(gen).map(k => k.toUpperCase()), datasets: [{ data: Object.values(gen), backgroundColor: CHART_COLORS, borderRadius: 4 }] }, 
+                data: { labels: Object.keys(gen).map(k => k.toUpperCase()), datasets: [{ label: 'Personas', data: Object.values(gen), backgroundColor: CHART_COLORS, borderRadius: 4 }] }, 
                 options: barOptions 
             });
             
@@ -698,9 +695,9 @@
             new Chart(document.getElementById('vaccinationStackedBarChart'), { 
                 type: 'bar', 
                 data: { labels: ['VACUNACIÓN'], datasets: [
-                    { label: 'VAC', data: [vac.VACUNADOS], backgroundColor: COLORS.green }, 
-                    { label: 'INC', data: [vac['VACUNAS INCOMPLETAS']], backgroundColor: COLORS.gold }, 
-                    { label: 'NOVAC', data: [vac['NO VACUNADOS']], backgroundColor: COLORS.red }
+                    { label: 'VACUNADOS', data: [vac.VACUNADOS], backgroundColor: COLORS.green }, 
+                    { label: 'INCOMPLETAS', data: [vac['VACUNAS INCOMPLETAS']], backgroundColor: COLORS.gold }, 
+                    { label: 'SIN VACUNA', data: [vac['NO VACUNADOS']], backgroundColor: COLORS.red }
                 ]}, 
                 options: { 
                     indexAxis: 'y', 
