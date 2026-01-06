@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Análisis encuesta visitando corazones</title>
-    <!-- Icono de la página corregido con la ruta del servidor activa -->
     <link rel="icon" type="image/png" href="https://d3dac9gdq8t83x.cloudfront.net/media/static/images/favicons/logo-verde.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Librerías para PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -25,7 +23,6 @@
             --clues-light-gold: #D4C19C;
         }
 
-        /* Estilo Botón Smartphone */
         .app-tile {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
@@ -73,7 +70,6 @@
 </head>
 <body class="p-4 sm:p-8">
 
-    <!-- Pantalla de Carga -->
     <div id="status-container" class="flex flex-col items-center justify-center mt-32">
         <div id="loading-animation" class="animate-heart mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="#ea047f" stroke="#ea047f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart">
@@ -85,7 +81,6 @@
         <button id="retry-btn" onclick="location.reload()" class="hidden mt-6 px-8 py-3 bg-gray-800 text-white font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-black transition-colors">Reintentar Conexión</button>
     </div>
 
-    <!-- Contenido del Dashboard -->
     <div id="dashboard-content" class="hidden max-w-7xl mx-auto">
         <header class="mb-10 text-center md:text-left border-b pb-6">
             <div class="flex flex-col md:flex-row items-center gap-6">
@@ -100,9 +95,7 @@
             </div>
         </header>
 
-        <!-- MENÚ DE SECCIONES ESTILO SMARTPHONE -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <!-- Botón Sección Población -->
             <div onclick="toggleDetails('population')" id="btn-population" class="app-tile bg-white p-6 rounded-3xl shadow-xl border-b-8 border-green-700 hover:shadow-2xl flex flex-col items-center text-center">
                 <div class="p-4 bg-green-50 rounded-2xl mb-4">
                     <i data-lucide="users" class="w-10 h-10 text-green-700"></i>
@@ -112,7 +105,6 @@
                 <span class="text-[10px] font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full uppercase">Hogares Totales</span>
             </div>
 
-            <!-- Botón Sección Mascotas -->
             <div onclick="toggleDetails('pets')" id="btn-pets" class="app-tile bg-white p-6 rounded-3xl shadow-xl border-b-8 border-red-600 hover:shadow-2xl flex flex-col items-center text-center">
                 <div class="p-4 bg-red-50 rounded-2xl mb-4">
                     <i data-lucide="paw-print" class="w-10 h-10 text-red-600"></i>
@@ -122,7 +114,6 @@
                 <span class="text-[10px] font-bold text-red-600 bg-red-50 px-3 py-1 rounded-full uppercase">Con Mascota</span>
             </div>
 
-            <!-- Botón Sección Reportes -->
             <div onclick="toggleDetails('reports')" id="btn-reports" class="app-tile bg-white p-6 rounded-3xl shadow-xl border-b-8 border-slate-700 hover:shadow-2xl flex flex-col items-center text-center">
                 <div class="p-4 bg-slate-50 rounded-2xl mb-4">
                     <i data-lucide="file-bar-chart" class="w-10 h-10 text-slate-700"></i>
@@ -133,7 +124,6 @@
             </div>
         </div>
 
-        <!-- CONTENIDOS DESPLEGABLES -->
         <div id="details-population" class="details-content">
             <div class="flex items-center space-x-3 mb-6">
                 <div class="w-1.5 h-8 bg-green-700 rounded-full"></div>
@@ -242,7 +232,6 @@
         </footer>
     </div>
 
-    <!-- Modal Desglose -->
     <div id="genderBreakdownModal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all">
             <div class="p-6 border-b flex justify-between items-center bg-green-800">
@@ -333,7 +322,7 @@
                 summary: { t: "Resumen General", d: "Análisis base por colonia y sección electoral" },
                 itr: { t: "Mascotas con Esquema de Salud Completo", d: "Cruce de datos: Mascotas vacunadas Y esterilizadas" },
                 risk: { t: "Ranking de Riesgo Sanitario", d: "Zonas con mayor prioridad de vacunación" },
-                demo: { t: "¿Quiénes nos atendieron?", d: "Características demográficas predominantes por zona" }
+                demo: { t: "¿Quiénes nos atendieron?", d: "Características de género y edad de los encuestados por zona" }
             };
             document.getElementById('reportTitleDisplay').textContent = meta[currentReportType].t;
             document.getElementById('reportDescDisplay').textContent = meta[currentReportType].d;
@@ -380,19 +369,15 @@
                 if (ageG !== 'otro') groupT[ageG]++;
                 const gen = String(getColumnValue(row, 'genero') || getColumnValue(row, 'sexo') || '').toLowerCase().trim();
                 genderT[gen] = (genderT[gen] || 0) + 1;
-                
                 const hasP = String(getColumnValue(row, 'tiene_mascotas') || '').toLowerCase().includes('si');
                 if (hasP) petT['TIENE']++; else petT['NO TIENE']++;
-
                 const ster = String(getColumnValue(row, 'estan_esterilizados') || '').toLowerCase().includes('si');
                 const vac = String(getColumnValue(row, 'estan_vacunados') || '').toUpperCase();
-                
                 let estatus = "OTRO";
                 if (vac.includes("NO APLICA")) estatus = "NO_APLICA";
                 else if (['UNA SI LA OTRA NO', 'PERROS SI, GATOS NO', 'INCOMPLETA'].some(i => vac.includes(i))) estatus = "INC";
                 else if (vac.includes('SI')) estatus = "VAC";
                 else if (vac.includes('NO')) estatus = "NOVAC";
-
                 if (hasP) {
                     tM++;
                     if (estatus === "VAC") vacT.VACUNADOS++;
@@ -400,19 +385,14 @@
                     else if (estatus === "NOVAC") vacT['SIN VACUNA']++;
                     if (ster) sterT.ESTERILIZADOS++; else sterT['NO ESTERILIZADOS']++;
                 }
-
                 globalRawData.push({
                     municipio: String(getColumnValue(row, 'municipio') || 'N/A').toUpperCase(),
                     colonia: String(getColumnValue(row, 'colonia') || 'SIN COLONIA').toUpperCase(),
                     seccion: String(getColumnValue(row, 'seccion_electoral') || 'S/S'),
-                    tieneMascotas: hasP,
-                    esEsterilizado: ster,
-                    estatus: estatus,
+                    tieneMascotas: hasP, esEsterilizado: ster, estatus: estatus,
                     esTR: hasP && ster && estatus === "VAC",
-                    genero: gen,
-                    ageGroup: ageG
+                    genero: gen, ageGroup: ageG
                 });
-
                 const cRaw = getColumnValue(row, 'colonia');
                 if (cRaw) {
                     const c = String(cRaw).toUpperCase().trim();
@@ -424,7 +404,6 @@
                         if (ster) colStats[c].ster++;
                     }
                 }
-
                 if (ageG !== 'otro') {
                     if (!globalGroupGenderBreakdown[ageG]) globalGroupGenderBreakdown[ageG] = {};
                     globalGroupGenderBreakdown[ageG][gen] = (globalGroupGenderBreakdown[ageG][gen] || 0) + 1;
@@ -442,7 +421,6 @@
             const tbody = document.getElementById('dataTableBody'), header = document.getElementById('tableHeader');
             const secTerms = secT.split(',').map(t => t.trim().toLowerCase()).filter(t => t !== "");
             let f = globalRawData.filter(i => i.colonia.toLowerCase().includes(colT) && i.municipio.toLowerCase().includes(munT) && (secTerms.length ? secTerms.some(t => i.seccion.toLowerCase().includes(t)) : true));
-
             const grouped = {};
             f.forEach(i => {
                 const k = `${i.municipio}|${i.colonia}|${i.seccion}`;
@@ -451,18 +429,14 @@
                 o.totalH++;
                 if (i.tieneMascotas) {
                     o.totalM++;
-                    if (i.estatus === "VAC") o.vac++; 
-                    else if (i.estatus === "INC") o.inc++; 
-                    else if (i.estatus === "NOVAC") o.noVac++;
-                    if (i.esEsterilizado) o.ster++; 
-                    if (i.esTR) o.tr++;
+                    if (i.estatus === "VAC") o.vac++; else if (i.estatus === "INC") o.inc++; else if (i.estatus === "NOVAC") o.noVac++;
+                    if (i.esEsterilizado) o.ster++; if (i.esTR) o.tr++;
                 }
                 o.g[i.genero] = (o.g[i.genero] || 0) + 1;
                 o.a[i.ageGroup] = (o.a[i.ageGroup] || 0) + 1;
             });
             let results = Object.values(grouped);
             let hH = '', bH = '';
-
             if (currentReportType === 'summary') {
                 hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sec.</th><th class="px-6 py-4 text-center">Hog.</th><th class="px-6 py-4 text-center">Masc.</th><th class="px-6 py-4 text-center">Vac.</th><th class="px-6 py-4 text-center">Inc.</th><th class="px-6 py-4 text-center">S/V</th><th class="px-6 py-4 text-center text-blue-600">Ster.</th></tr>`;
                 results.sort((a,b) => b.totalH - a.totalH);
@@ -489,10 +463,7 @@
                     return `<tr><td class="px-6 py-3 text-[10px] font-bold text-gray-400">${g.m}</td><td class="px-6 py-3 font-semibold">${g.c}</td><td class="px-6 py-3 text-center font-bold text-slate-500 uppercase">${tg}</td><td class="px-6 py-3 text-center font-bold text-slate-500 uppercase">${ta}</td></tr>`;
                 }).join('');
             }
-
-            lastTableResults = results;
-            header.innerHTML = hH;
-            tbody.innerHTML = bH || `<tr><td colspan="9" class="px-6 py-8 text-center text-gray-400 italic">Sin datos</td></tr>`;
+            lastTableResults = results; header.innerHTML = hH; tbody.innerHTML = bH || `<tr><td colspan="9" class="px-6 py-8 text-center text-gray-400 italic">Sin datos</td></tr>`;
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
