@@ -13,6 +13,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #333333; }
         
         :root {
@@ -66,6 +68,8 @@
 
         .chart-container { height: 280px; position: relative; }
         .chart-container-large { height: 450px; position: relative; }
+
+        .contact-item:last-child { border-bottom: none; }
     </style>
 </head>
 <body class="p-4 sm:p-8">
@@ -88,7 +92,6 @@
                 <div class="flex flex-col">
                     <p class="text-[10px] sm:text-[12px] font-black uppercase text-gray-400 leading-tight">Dirección de Planeación, Evaluación y Proyectos Especiales</p>
                     <p class="text-[10px] sm:text-[12px] font-black uppercase text-gray-400 leading-tight mb-2">Subdirección de Informática y Estadísticas en Salud</p>
-                    
                     <h1 class="text-3xl sm:text-4xl font-black tracking-tight leading-none" style="color: var(--clues-green);">Visitando Corazones</h1>
                     <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Análisis encuesta visitando corazones</p>
                 </div>
@@ -227,7 +230,47 @@
             </div>
         </div>
 
-        <footer class="mt-20 pt-8 border-t text-center text-[10px] text-gray-400 uppercase font-black tracking-widest">
+        <section class="mt-12 mb-12">
+            <h2 class="text-[11px] font-black uppercase text-gray-400 tracking-[0.25em] mb-6 text-center">Responsables de la Plataforma y Soporte Técnico</h2>
+            <div class="bg-white rounded-[2rem] shadow-xl overflow-hidden max-w-2xl mx-auto border border-gray-100">
+                <div class="divide-y divide-gray-100">
+                    <div class="contact-item flex items-center p-6 hover:bg-gray-50 transition-all duration-200">
+                        <div class="w-12 h-12 rounded-full bg-green-800 flex items-center justify-center text-white font-bold text-lg mr-4 flex-shrink-0 shadow-sm">OG</div>
+                        <div class="flex-grow">
+                            <h3 class="text-[15px] font-extrabold text-gray-900 leading-tight tracking-tight">Lic. Omar Granados Piña</h3>
+                            <p class="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mt-0.5">Director de Planeación, Evaluación y Proyectos Especiales</p>
+                            <a href="mailto:dir.planeacion@slpsalud.gob.mx" class="flex items-center text-[12px] text-green-700 font-bold mt-1.5 hover:underline decoration-2 underline-offset-2">
+                                <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5"></i> dir.planeacion@slpsalud.gob.mx
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="contact-item flex items-center p-6 hover:bg-gray-50 transition-all duration-200">
+                        <div class="w-12 h-12 rounded-full bg-green-800 flex items-center justify-center text-white font-bold text-lg mr-4 flex-shrink-0 shadow-sm">DE</div>
+                        <div class="flex-grow">
+                            <h3 class="text-[15px] font-extrabold text-gray-900 leading-tight tracking-tight">Ing. Dorian Escamilla Sauceda</h3>
+                            <p class="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mt-0.5">Subdirector de Informática y Estadísticas en Salud</p>
+                            <a href="mailto:sub.informatica@slpsalud.gob.mx" class="flex items-center text-[12px] text-green-700 font-bold mt-1.5 hover:underline decoration-2 underline-offset-2">
+                                <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5"></i> sub.informatica@slpsalud.gob.mx
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="contact-item flex items-center p-6 hover:bg-gray-50 transition-all duration-200">
+                        <div class="w-12 h-12 rounded-full bg-green-800 flex items-center justify-center text-white font-bold text-lg mr-4 flex-shrink-0 shadow-sm">FM</div>
+                        <div class="flex-grow">
+                            <h3 class="text-[15px] font-extrabold text-gray-900 leading-tight tracking-tight">Fernando Montoya Rivera</h3>
+                            <p class="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mt-0.5">Desarrollador de la Herramienta y Enlace de Información CLUES</p>
+                            <a href="mailto:clues.estadistica@slpsalud.gob.bx" class="flex items-center text-[12px] text-green-700 font-bold mt-1.5 hover:underline decoration-2 underline-offset-2">
+                                <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5"></i> clues.estadistica@slpsalud.gob.bx
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="mt-8 mb-12 pt-8 border-t text-center text-[10px] text-gray-400 uppercase font-black tracking-widest">
             Corte Diciembre 2025
         </footer>
     </div>
@@ -269,7 +312,6 @@
 
         const COLORS = { green: '#0f5319', gold: '#76b82a', red: '#ea047f', secondary: '#285C4D', gray: '#6F7271', beige: '#D4C19C' };
         const CHART_COLORS = [ '#0f5319', '#76b82a', '#ea047f', '#285C4D', '#A57F2C', '#00897B', '#D81B60', '#558B2F' ];
-        const NO_APLICA_LABEL = 'NO APLICA (AVES, GALLINAS, ETC.)';
         
         const formatNumber = (num) => {
             if (num === null || num === undefined) return "0";
