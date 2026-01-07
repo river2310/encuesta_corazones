@@ -14,8 +14,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #333333; }
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Montserrat', sans-serif; background-color: #f8fafc; color: #333333; }
+        h1, h2, h3 { font-weight: 800; }
+        
         :root {
             --clues-green: #0f5319; 
             --clues-gold: #76b82a; 
@@ -79,8 +82,8 @@
             <div class="flex flex-col md:flex-row items-center gap-6">
                 <img id="dashboardLogo" src="https://d3dac9gdq8t83x.cloudfront.net/media/static/images/hor-verde.png" alt="Logo CLUES DGIS" class="h-16 w-auto">
                 <div class="flex flex-col">
-                    <p class="text-[10px] sm:text-[12px] font-black uppercase text-gray-400 leading-tight">Dirección de Planeación, Evaluación y Proyectos Especiales</p>
-                    <p class="text-[10px] sm:text-[12px] font-black uppercase text-gray-400 leading-tight mb-2">Subdirección de Informática y Estadísticas en Salud</p>
+                    <p class="text-[10px] sm:text-[12px] font-bold uppercase text-gray-400 leading-tight">Dirección de Planeación, Evaluación y Proyectos Especiales</p>
+                    <p class="text-[10px] sm:text-[12px] font-bold uppercase text-gray-400 leading-tight mb-2">Subdirección de Informática y Estadísticas en Salud</p>
                     <h1 class="text-3xl sm:text-4xl font-black tracking-tight leading-none" style="color: var(--clues-green);">Visitando Corazones</h1>
                     <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Análisis encuesta</p>
                 </div>
@@ -92,7 +95,7 @@
                 <div class="p-3 bg-green-50 rounded-2xl mb-3">
                     <i data-lucide="users" class="w-8 h-8 text-green-700"></i>
                 </div>
-                <h2 class="text-[10px] font-black uppercase text-gray-500 tracking-tighter">Población</h2>
+                <h2 class="text-[11px] font-bold uppercase text-gray-500 tracking-tighter">Población</h2>
                 <p id="main-total-personas" class="text-2xl md:text-3xl font-black text-gray-900 my-1">0</p>
                 <span class="text-[9px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase">Personas Atendidas</span>
             </div>
@@ -101,7 +104,7 @@
                 <div class="p-3 bg-green-50 rounded-2xl mb-3">
                     <i data-lucide="home" class="w-8 h-8 text-[#76b82a]"></i>
                 </div>
-                <h2 class="text-[10px] font-black uppercase text-gray-500 tracking-tighter">Visitas</h2>
+                <h2 class="text-[11px] font-bold uppercase text-gray-500 tracking-tighter">Visitas</h2>
                 <p id="main-total-visitas" class="text-2xl md:text-3xl font-black text-gray-900 my-1">0</p>
                 <span class="text-[9px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase">Hogares Visitados</span>
             </div>
@@ -110,7 +113,7 @@
                 <div class="p-3 bg-red-50 rounded-2xl mb-3">
                     <i data-lucide="paw-print" class="w-8 h-8 text-red-600"></i>
                 </div>
-                <h2 class="text-[10px] font-black uppercase text-gray-500 tracking-tighter">Mascotas</h2>
+                <h2 class="text-[11px] font-bold uppercase text-gray-500 tracking-tighter">Mascotas</h2>
                 <p id="main-hogares-mascotas" class="text-2xl md:text-3xl font-black text-gray-900 my-1">0</p>
                 <span class="text-[9px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full uppercase">Con Mascota</span>
             </div>
@@ -119,7 +122,7 @@
                 <div class="p-3 bg-slate-50 rounded-2xl mb-3">
                     <i data-lucide="file-bar-chart" class="w-8 h-8 text-slate-700"></i>
                 </div>
-                <h2 class="text-[10px] font-black uppercase text-gray-500 tracking-tighter">Reportes</h2>
+                <h2 class="text-[11px] font-bold uppercase text-gray-500 tracking-tighter">Reportes</h2>
                 <p class="text-xl md:text-2xl font-black text-slate-900 my-1">Análisis</p>
                 <span class="text-[9px] font-bold text-slate-600 bg-slate-50 px-2 py-0.5 rounded-full uppercase">Generar Reportes</span>
             </div>
@@ -133,11 +136,11 @@
             <div id="group-kpi-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"></div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-xs font-black text-gray-400 uppercase mb-4 tracking-widest text-center">Distribución por Grupo de Edad</h3>
+                    <h3 class="text-xs font-bold text-gray-400 uppercase mb-4 tracking-widest text-center">Distribución por Grupo de Edad</h3>
                     <div class="chart-container"><canvas id="ageGroupBarChart"></canvas></div>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-xs font-black text-gray-400 uppercase mb-4 tracking-widest text-center">Distribución por Género</h3>
+                    <h3 class="text-xs font-bold text-gray-400 uppercase mb-4 tracking-widest text-center">Distribución por Género</h3>
                     <div class="chart-container"><canvas id="genderBarChart"></canvas></div>
                 </div>
             </div>
@@ -149,7 +152,7 @@
                 <h2 class="text-xl font-black text-green-900 uppercase">Cobertura de Visitas Domiciliarias</h2>
             </div>
             <div class="bg-white p-8 rounded-3xl shadow-xl border-t-8 border-[#76b82a]">
-                <h3 class="text-xs font-black text-gray-400 uppercase mb-6 tracking-widest text-center">Top 10 Colonias visitadas</h3>
+                <h3 class="text-xs font-bold text-gray-400 uppercase mb-6 tracking-widest text-center">Top 10 Colonias visitadas</h3>
                 <div class="chart-container-large"><canvas id="topVisitasChart"></canvas></div>
             </div>
         </div>
@@ -161,21 +164,21 @@
             </div>
             <div class="space-y-8">
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-xs font-black text-gray-400 uppercase mb-4 tracking-widest text-center">Mascotas Vacunadas</h3>
+                    <h3 class="text-xs font-bold text-gray-400 uppercase mb-4 tracking-widest text-center">Mascotas Vacunadas</h3>
                     <div class="chart-container" style="height: 180px;"><canvas id="vaccinationStackedBarChart"></canvas></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xs font-black text-gray-400 uppercase mb-4 tracking-widest text-center">Hogares con mascotas</h3>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase mb-4 tracking-widest text-center">Hogares con mascotas</h3>
                         <div class="chart-container"><canvas id="petsPieChart"></canvas></div>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xs font-black text-gray-400 uppercase mb-4 tracking-widest text-center">Estatus de Esterilización</h3>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase mb-4 tracking-widest text-center">Estatus de Esterilización</h3>
                         <div class="chart-container"><canvas id="sterilizationPieChart"></canvas></div>
                     </div>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-xs font-black text-gray-400 uppercase mb-4 tracking-widest text-center">Top 10 Colonias por Carga de Mascotas</h3>
+                    <h3 class="text-xs font-bold text-gray-400 uppercase mb-4 tracking-widest text-center">Top 10 Colonias por Carga de Mascotas</h3>
                     <div class="chart-container-large"><canvas id="topColoniasChart"></canvas></div>
                 </div>
             </div>
@@ -190,7 +193,7 @@
                 <div class="p-8 border-b bg-gray-50 space-y-6">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div class="space-y-1">
-                            <h3 id="reportTitleDisplay" class="text-sm font-black uppercase tracking-tight" style="color: var(--clues-green);">Resumen Operativo</h3>
+                            <h3 id="reportTitleDisplay" class="text-sm font-bold uppercase tracking-tight" style="color: var(--clues-green);">Resumen Operativo</h3>
                             <p id="reportDescDisplay" class="text-[10px] text-gray-400 font-bold uppercase">Consolidado estadístico por territorio</p>
                         </div>
                         <div class="flex items-center gap-3">
@@ -210,7 +213,7 @@
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 bg-white p-5 rounded-2xl border">
                         <div class="lg:col-span-1">
-                            <label class="text-[9px] font-black text-gray-400 uppercase mb-1 block">Tipo de Reporte</label>
+                            <label class="text-[9px] font-bold text-gray-400 uppercase mb-1 block">Tipo de Reporte</label>
                             <select id="reportTypeSelector" onchange="handleReportChange()" class="w-full p-2 border rounded-lg text-xs font-bold text-gray-700 outline-none">
                                 <option value="summary">Análisis de población</option>
                                 <option value="personas">Personas atendidas</option>
@@ -220,15 +223,15 @@
                             </select>
                         </div>
                         <div class="lg:col-span-1">
-                            <label class="text-[9px] font-black text-gray-400 uppercase mb-1 block">Municipio</label>
+                            <label class="text-[9px] font-bold text-gray-400 uppercase mb-1 block">Municipio</label>
                             <input type="text" id="municipioSearchInput" placeholder="Ej: SLP" class="w-full p-2 border rounded-lg text-xs focus:ring-1 focus:ring-green-700 outline-none">
                         </div>
                         <div class="lg:col-span-2">
-                            <label class="text-[9px] font-black text-gray-400 uppercase mb-1 block">Colonia</label>
+                            <label class="text-[9px] font-bold text-gray-400 uppercase mb-1 block">Colonia</label>
                             <input type="text" id="coloniaSearchInput" placeholder="Buscar colonia..." class="w-full p-2 border rounded-lg text-xs focus:ring-1 focus:ring-green-700 outline-none">
                         </div>
                         <div class="lg:col-span-1">
-                            <label class="text-[9px] font-black text-gray-400 uppercase mb-1 block">Secciones</label>
+                            <label class="text-[9px] font-bold text-gray-400 uppercase mb-1 block">Secciones</label>
                             <input type="text" id="seccionSearchInput" placeholder="Ej: 850" class="w-full p-2 border rounded-lg text-xs focus:ring-1 focus:ring-green-700 outline-none">
                         </div>
                     </div>
@@ -243,35 +246,35 @@
         </div>
 
         <section class="mt-20 mb-20">
-            <h2 class="text-[11px] font-black uppercase text-gray-400 tracking-[0.25em] mb-12 text-center">Responsables de la Plataforma y Soporte Técnico</h2>
+            <h2 class="text-[11px] font-bold uppercase text-gray-400 tracking-[0.25em] mb-12 text-center">Responsables de la Plataforma y Soporte Técnico</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
                 <div class="contact-card bg-white p-8 rounded-[2.5rem] shadow-lg border border-gray-100 flex flex-col items-center text-center">
                     <div class="w-20 h-20 rounded-full bg-green-800 flex items-center justify-center text-white font-bold text-2xl mb-5 shadow-md">OG</div>
-                    <h3 class="text-[16px] font-extrabold text-gray-900 leading-tight mb-2 uppercase text-center">Lic. Omar Granados Piña</h3>
+                    <h3 class="text-[16px] font-bold text-gray-900 leading-tight mb-2 uppercase text-center">Lic. Omar Granados Piña</h3>
                     <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-6 h-12 flex items-center justify-center text-center">Director de Planeación, Evaluación y Proyectos Especiales</p>
-                    <a href="mailto:dir.planeacion@slpsalud.gob.mx" class="flex items-center justify-center text-[12px] text-green-700 font-black hover:text-green-900 transition-all border-b-2 border-transparent hover:border-green-700 pb-1">
+                    <a href="mailto:dir.planeacion@slpsalud.gob.mx" class="flex items-center justify-center text-[12px] text-green-700 font-bold hover:text-green-900 transition-all border-b-2 border-transparent hover:border-green-700 pb-1">
                         <i data-lucide="mail" class="w-4 h-4 mr-2"></i> dir.planeacion@slpsalud.gob.mx
                     </a>
                 </div>
                 <div class="contact-card bg-white p-8 rounded-[2.5rem] shadow-lg border border-gray-100 flex flex-col items-center text-center">
                     <div class="w-20 h-20 rounded-full bg-green-800 flex items-center justify-center text-white font-bold text-2xl mb-5 shadow-md">DE</div>
-                    <h3 class="text-[16px] font-extrabold text-gray-900 leading-tight mb-2 uppercase text-center">Ing. Dorian Escamilla Sauceda</h3>
+                    <h3 class="text-[16px] font-bold text-gray-900 leading-tight mb-2 uppercase text-center">Ing. Dorian Escamilla Sauceda</h3>
                     <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-6 h-12 flex items-center justify-center text-center">Subdirector de Informática y Estadísticas en Salud</p>
-                    <a href="mailto:sub.informatica@slpsalud.gob.mx" class="flex items-center justify-center text-[12px] text-green-700 font-black hover:text-green-900 transition-all border-b-2 border-transparent hover:border-green-700 pb-1">
+                    <a href="mailto:sub.informatica@slpsalud.gob.mx" class="flex items-center justify-center text-[12px] text-green-700 font-bold hover:text-green-900 transition-all border-b-2 border-transparent hover:border-green-700 pb-1">
                         <i data-lucide="mail" class="w-4 h-4 mr-2"></i> sub.informatica@slpsalud.gob.mx
                     </a>
                 </div>
                 <div class="contact-card bg-white p-8 rounded-[2.5rem] shadow-lg border border-gray-100 flex flex-col items-center text-center">
                     <div class="w-20 h-20 rounded-full bg-green-800 flex items-center justify-center text-white font-bold text-2xl mb-5 shadow-md">FM</div>
-                    <h3 class="text-[16px] font-extrabold text-gray-900 leading-tight mb-2 uppercase text-center">Fernando Montoya Rivera</h3>
+                    <h3 class="text-[16px] font-bold text-gray-900 leading-tight mb-2 uppercase text-center">Fernando Montoya Rivera</h3>
                     <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-6 h-12 flex items-center justify-center text-center">Desarrollador y Enlace de Información CLUES</p>
-                    <a href="mailto:clues.estadistica@slpsalud.gob.bx" class="flex items-center justify-center text-[12px] text-green-700 font-black hover:text-green-900 transition-all border-b-2 border-transparent hover:border-green-700 pb-1">
+                    <a href="mailto:clues.estadistica@slpsalud.gob.bx" class="flex items-center justify-center text-[12px] text-green-700 font-bold hover:text-green-900 transition-all border-b-2 border-transparent hover:border-green-700 pb-1">
                         <i data-lucide="mail" class="w-4 h-4 mr-2"></i> clues.estadistica@slpsalud.gob.bx
                     </a>
                 </div>
             </div>
         </section>
-        <footer class="mt-8 mb-12 pt-8 border-t text-center text-[10px] text-gray-400 uppercase font-black tracking-widest">
+        <footer class="mt-8 mb-12 pt-8 border-t text-center text-[10px] text-gray-400 uppercase font-bold tracking-widest">
             Último Corte: 31 Diciembre 2025
         </footer>
     </div>
@@ -317,7 +320,7 @@
         const URL_VISITAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=802355093&single=true&output=csv';
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') { Chart.register(ChartDataLabels); }
         let globalRawDataHogares = [], globalRawDataPersonas = [], lastTableResults = [], currentReportType = 'summary', globalGroupGenderBreakdown = {}, personasAgeGroupTotals = {};
-        const COLORS = { green: '#0f5319', gold: '#76b82a', red: '#ea047f', secondary: '#1e40af', gray: '#6F7271', beige: '#D4C19C' };
+        const COLORS = { green: '#0f5319', gold: '#76b82a', red: '#ea047f', secondary: '#0f5319', gray: '#6F7271', beige: '#D4C19C' };
         const CHART_COLORS = [ '#0f5319', '#76b82a', '#ea047f' ];
         const formatNumber = (num) => { if (num === null || num === undefined) return "0"; return num.toLocaleString('es-MX'); };
 
@@ -534,7 +537,7 @@
                 });
                 let results = Object.values(grouped); lastTableResults = results;
                 if (currentReportType === 'summary') {
-                    hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sec.</th><th class="px-6 py-4 text-center">Hog.</th><th class="px-6 py-4 text-center">Masc.</th><th class="px-6 py-4 text-center">Vac.</th><th class="px-6 py-4 text-center">Inc.</th><th class="px-6 py-4 text-center">S/V</th><th class="px-6 py-4 text-center text-green-600">Ster.</th></tr>`;
+                    hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sec.</th><th class="px-6 py-4 text-center">Hog.</th><th class="px-6 py-4 text-center">Masc.</th><th class="px-6 py-4 text-center">Vac.</th><th class="px-6 py-4 text-center">Inc.</th><th class="px-6 py-4 text-center">S/V</th><th class="px-6 py-4 text-center text-green-600 font-bold">Ster.</th></tr>`;
                     results.sort((a,b) => b.totalH - a.totalH);
                     bH = results.map(g => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-3 text-[10px] text-gray-400 font-bold">${g.m}</td><td class="px-6 py-3 font-semibold text-gray-900">${g.c}</td><td class="px-6 py-3 text-center"><span class="bg-green-50 text-green-700 px-2 py-0.5 rounded font-bold font-mono text-[10px]">${g.s}</span></td><td class="px-6 py-3 text-center text-gray-500">${g.totalH}</td><td class="px-6 py-3 text-center text-green-700">${g.totalM}</td><td class="px-6 py-3 text-center font-black text-green-600">${g.vac}</td><td class="px-6 py-3 text-center font-black text-amber-500">${g.inc}</td><td class="px-6 py-3 text-center font-black text-red-500">${g.noVac}</td><td class="px-6 py-3 text-center font-black text-green-600">${g.ster}</td></tr>`).join('');
                 } else if (currentReportType === 'itr') {
@@ -626,7 +629,7 @@
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
-        function renderCharts(g, gen, ster, vac, cols, petT, visitas) {
+        function renderCharts(g, gen, ster, vAcc, cols, petT, visitas) {
             const barOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'top', formatter: (v) => formatNumber(v), font: { weight: 'bold', size: 10 } } }, scales: { y: { beginAtZero: true, ticks: { callback: (v) => formatNumber(v) } } } };
             const pieOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v, ctx) => { let sum = ctx.dataset.data.reduce((a, b) => a + b, 0); return sum === 0 ? "0%" : formatNumber(v) + " (" + (v * 100 / sum).toFixed(1) + "%)"; } } } };
             new Chart(document.getElementById('ageGroupBarChart'), { type: 'bar', data: { labels: ['INFANCIA', 'ADOLESCENTES', 'ADULTOS', 'ADULTOS MAYORES'], datasets: [{ label: 'Individuos', data: [g.infancia, g.adolescentes, g.adultos, g['adultos mayores']], backgroundColor: [COLORS.green, COLORS.gold, COLORS.red, COLORS.green], borderRadius: 8 }] }, options: barOptions });
@@ -637,7 +640,7 @@
             
             new Chart(document.getElementById('petsPieChart'), { type: 'pie', data: { labels: ['TIENE', 'NO TIENE'], datasets: [{ data: [petT['TIENE'], petT['NO TIENE']], backgroundColor: [COLORS.green, COLORS.gray], borderWidth: 4, borderColor: '#ffffff' }] }, options: pieOptions });
             new Chart(document.getElementById('sterilizationPieChart'), { type: 'pie', data: { labels: ['ESTERILIZADOS', 'NO ESTERILIZADOS'], datasets: [{ data: [ster.ESTERILIZADOS, ster['NO ESTERILIZADOS']], backgroundColor: [COLORS.green, COLORS.red], borderWidth: 4, borderColor: '#ffffff' }] }, options: pieOptions });
-            new Chart(document.getElementById('vaccinationStackedBarChart'), { type: 'bar', data: { labels: ['VACUNACIÓN'], datasets: [{ label: 'VACUNADOS', data: [vac.VACUNADOS], backgroundColor: COLORS.green }, { label: 'INCOMPLETAS', data: [vac.INCOMPLETAS], backgroundColor: COLORS.gold }, { label: 'SIN VACUNA', data: [vac['SIN VACUNA']], backgroundColor: COLORS.red }]}, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, display: false }, y: { stacked: true } }, plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v) => v > 0 ? formatNumber(v) : '' } } } });
+            new Chart(document.getElementById('vaccinationStackedBarChart'), { type: 'bar', data: { labels: ['VACUNACIÓN'], datasets: [{ label: 'VACUNADOS', data: [vAcc.VACUNADOS], backgroundColor: COLORS.green }, { label: 'INCOMPLETAS', data: [vAcc.INCOMPLETAS], backgroundColor: COLORS.gold }, { label: 'SIN VACUNA', data: [vAcc['SIN VACUNA']], backgroundColor: COLORS.red }]}, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, display: false }, y: { stacked: true } }, plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v) => v > 0 ? formatNumber(v) : '' } } } });
             const topMasc = Object.entries(cols).sort((a,b) => b[1].totalPets - a[1].totalPets).slice(0, 10);
             new Chart(document.getElementById('topColoniasChart'), { type: 'bar', data: { labels: topMasc.map(i => i[0]), datasets: [{ label: 'SIN VACUNA', data: topMasc.map(i => i[1].noVac), backgroundColor: COLORS.red, borderRadius: 8 }, { label: 'VACUNADOS', data: topMasc.map(i => i[1].vac), backgroundColor: COLORS.green, borderRadius: 8 }, { label: 'ESTERILIZADOS', data: topMasc.map(i => i[1].ster), backgroundColor: COLORS.beige, borderRadius: 8 }, { label: 'TOTAL MASCOTAS', data: topMasc.map(i => i[1].totalPets), backgroundColor: COLORS.gold, borderRadius: 8 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, datalabels: { anchor: 'end', align: 'top', formatter: (v) => formatNumber(v), font: { size: 9, weight: 'bold' } } }, scales: { y: { ticks: { callback: (v) => formatNumber(v) } } } } });
         }
