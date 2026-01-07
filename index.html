@@ -125,7 +125,7 @@
             
             <div class="space-y-8">
                 <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-slate-700">
-                    <h3 class="text-xs font-black text-gray-400 uppercase mb-4 tracking-widest text-center">Top 10 Colonias domicilios visitados</h3>
+                    <h3 class="text-xs font-black text-gray-400 uppercase mb-4 tracking-widest text-center">Top 10 Colonias visitadas</h3>
                     <div class="chart-container-large"><canvas id="topVisitasChart"></canvas></div>
                 </div>
 
@@ -173,7 +173,7 @@
         <div id="details-reports" class="details-content">
             <div class="flex items-center space-x-3 mb-6">
                 <div class="w-1.5 h-8 bg-slate-700 rounded-full"></div>
-                <h2 class="text-xl font-black text-slate-900 uppercase">Gestión de Reportes Territoriales</h2>
+                <h2 class="text-xl font-black text-slate-900 uppercase">Gestión de reportes</h2>
             </div>
             <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
                 <div class="p-8 border-b bg-gray-50 space-y-6">
@@ -198,7 +198,7 @@
                         <div class="lg:col-span-1">
                             <label class="text-[9px] font-black text-gray-400 uppercase mb-1 block">Tipo de Reporte</label>
                             <select id="reportTypeSelector" onchange="handleReportChange()" class="w-full p-2 border rounded-lg text-xs font-bold text-gray-700 outline-none">
-                                <option value="summary">Resumen de Salud Animal</option>
+                                <option value="summary">Análisis de población</option>
                                 <option value="itr">Mascotas con Esquema Completo</option>
                                 <option value="risk">Prioridades de Vacunación</option>
                                 <option value="demo">Densidad de Hogares</option>
@@ -339,7 +339,7 @@
         function handleReportChange() {
             currentReportType = document.getElementById('reportTypeSelector').value;
             const meta = {
-                summary: { t: "Análisis de Salud Animal", d: "Visión general por zona geográfica" },
+                summary: { t: "Análisis de población", d: "Visión general por zona geográfica" },
                 itr: { t: "Esquema Sanitario Completo", d: "Mascotas con vacunación y esterilización" },
                 risk: { t: "Ranking de Prioridad Sanitaria", d: "Zonas con baja cobertura de vacunación" },
                 demo: { t: "Censo de Viviendas", d: "Cantidad de hogares registrados por sección" }
