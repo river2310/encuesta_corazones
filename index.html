@@ -194,7 +194,6 @@
                             </button>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 bg-white p-5 rounded-2xl border">
                         <div class="lg:col-span-1">
                             <label class="text-[9px] font-black text-gray-400 uppercase mb-1 block">Tipo de Reporte</label>
@@ -220,7 +219,6 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="table-container custom-scrollbar overflow-x-auto">
                     <table class="w-full text-left border-collapse" id="summaryTable">
                         <thead class="sticky top-0 bg-white shadow-sm z-10" id="tableHeader"></thead>
@@ -297,9 +295,8 @@
         const URL_POBLACION = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=315557438&single=true&output=csv';
         const URL_MASCOTAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=0&single=true&output=csv';
         const URL_VISITAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=802355093&single=true&output=csv';
-        
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') { Chart.register(ChartDataLabels); }
-        let globalRawDataHogares = [], globalRawDataPersonas = [], lastTableResults = [], currentReportType = 'summary', globalGroupGenderBreakdown = {};
+        let globalRawDataHogares = [], globalRawDataPersonas = [], lastTableResults = [], currentReportType = 'summary', globalGroupGenderBreakdown = {}, personasAgeGroupTotals = {};
         const COLORS = { green: '#0f5319', gold: '#76b82a', red: '#ea047f', secondary: '#285C4D', gray: '#6F7271', beige: '#D4C19C' };
         const CHART_COLORS = [ '#0f5319', '#76b82a', '#ea047f', '#285C4D', '#A57F2C', '#00897B', '#D81B60', '#558B2F' ];
         const formatNumber = (num) => { if (num === null || num === undefined) return "0"; return num.toLocaleString('es-MX'); };
@@ -420,12 +417,10 @@
                     if (hasP) { colStats[c].totalPets++; if (estatus === "VAC") colStats[c].vac++; if (estatus === "NOVAC") colStats[c].noVac++; if (ster) colStats[c].ster++; }
                 }
             });
-
             let tP = 0;
             const groupT = { infancia: 0, adolescentes: 0, adultos: 0, 'adultos mayores': 0 }, genderT = { femenino: 0, masculino: 0, otro: 0 };
             globalGroupGenderBreakdown = {};
             globalRawDataPersonas = [];
-
             individuos.forEach(row => {
                 if (!row || Object.keys(row).length < 2) return;
                 tP++;
@@ -436,16 +431,8 @@
                 if (genRaw.includes("fem") || genRaw.includes("mujer")) gen = "femenino"; else if (genRaw.includes("masc") || genRaw.includes("hombre")) gen = "masculino";
                 genderT[gen] = (genderT[gen] || 0) + 1;
                 if (ageG !== 'OTRO') { if (!globalGroupGenderBreakdown[ageG.toLowerCase()]) globalGroupGenderBreakdown[ageG.toLowerCase()] = { femenino: 0, masculino: 0, otro: 0 }; globalGroupGenderBreakdown[ageG.toLowerCase()][gen]++; }
-
-                globalRawDataPersonas.push({
-                    colonia: String(getColumnValue(row, 'colonia') || '').toUpperCase(),
-                    municipio: String(getColumnValue(row, 'municipio') || '').toUpperCase(),
-                    grupo_edad: ageG,
-                    pertenece: getColumnValue(row, 'pertenece_pueblo_indigena'),
-                    habla: getColumnValue(row, 'habla_lengua_indigena')
-                });
+                globalRawDataPersonas.push({ colonia: String(getColumnValue(row, 'colonia') || '').toUpperCase(), municipio: String(getColumnValue(row, 'municipio') || '').toUpperCase(), grupo_edad: ageG, pertenece: getColumnValue(row, 'pertenece_pueblo_indigena'), habla: getColumnValue(row, 'habla_lengua_indigena') });
             });
-
             const visitasPorColonia = {};
             visitas.forEach(row => { const cRaw = getColumnValue(row, 'colonia'); if (cRaw) { const c = String(cRaw).toUpperCase().trim(); visitasPorColonia[c] = (visitasPorColonia[c] || 0) + 1; } });
             document.getElementById('main-total-personas').textContent = formatNumber(tP);
@@ -459,32 +446,15 @@
             const tbody = document.getElementById('dataTableBody'), header = document.getElementById('tableHeader');
             const secTerms = secT.split(',').map(t => t.trim().toLowerCase()).filter(t => t !== "");
             let hH = '', bH = '';
-
             if (currentReportType === 'personas') {
-                hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b">
-                    <th class="px-6 py-4">Municipio</th>
-                    <th class="px-6 py-4">Colonia</th>
-                    <th class="px-6 py-4 text-center">Grupo Edad</th>
-                    <th class="px-6 py-4 text-center">P. Indígena</th>
-                    <th class="px-6 py-4 text-center">Habla Lengua</th>
-                </tr>`;
-                
-                let results = globalRawDataPersonas.filter(i => 
-                    i.colonia.toLowerCase().includes(colT) && 
-                    i.municipio.toLowerCase().includes(munT)
-                );
-                
+                hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Grupo Edad</th><th class="px-6 py-4 text-center">P. Indígena</th><th class="px-6 py-4 text-center">Habla Lengua</th></tr>`;
+                let results = globalRawDataPersonas.filter(i => i.colonia.toLowerCase().includes(colT) && i.municipio.toLowerCase().includes(munT));
                 lastTableResults = results;
-                bH = results.slice(0, 500).map(i => `<tr>
-                    <td class="px-6 py-3 text-[10px] font-bold text-gray-400">${i.municipio}</td>
-                    <td class="px-6 py-3 font-semibold text-[11px]">${i.colonia}</td>
-                    <td class="px-6 py-3 text-center font-bold text-green-700">${i.grupo_edad}</td>
-                    <td class="px-6 py-3 text-center font-semibold text-slate-500 uppercase">${i.pertenece || '-'}</td>
-                    <td class="px-6 py-3 text-center font-semibold text-slate-500 uppercase">${i.habla || '-'}</td>
-                </tr>`).join('');
-                
+                personasAgeGroupTotals = { 'INFANCIA': 0, 'ADOLESCENTES': 0, 'ADULTOS': 0, 'ADULTOS MAYORES': 0, 'OTRO': 0 };
+                results.forEach(i => personasAgeGroupTotals[i.grupo_edad]++);
+                bH = results.slice(0, 500).map(i => `<tr><td class="px-6 py-3 text-[10px] font-bold text-gray-400">${i.municipio}</td><td class="px-6 py-3 font-semibold text-[11px]">${i.colonia}</td><td class="px-6 py-3 text-center font-bold text-green-700">${i.grupo_edad}</td><td class="px-6 py-3 text-center font-semibold text-slate-500 uppercase">${i.pertenece || '-'}</td><td class="px-6 py-3 text-center font-semibold text-slate-500 uppercase">${i.habla || '-'}</td></tr>`).join('');
+                bH += `<tr class="bg-slate-100 font-bold border-t-4 border-slate-300"><td colspan="2" class="px-6 py-4 text-right uppercase text-[11px] text-slate-900">Total por Rango:</td><td colspan="3" class="px-6 py-4"><div class="flex flex-wrap gap-6 text-[12px]"><span class="bg-white px-3 py-1 rounded-full shadow-sm"><b class="text-green-800">INF:</b> ${personasAgeGroupTotals['INFANCIA']}</span><span class="bg-white px-3 py-1 rounded-full shadow-sm"><b class="text-green-800">ADO:</b> ${personasAgeGroupTotals['ADOLESCENTES']}</span><span class="bg-white px-3 py-1 rounded-full shadow-sm"><b class="text-green-800">ADU:</b> ${personasAgeGroupTotals['ADULTOS']}</span><span class="bg-white px-3 py-1 rounded-full shadow-sm"><b class="text-green-800">AM:</b> ${personasAgeGroupTotals['ADULTOS MAYORES']}</span><span class="bg-slate-800 text-white px-4 py-1 rounded-full shadow-md"><b>TOTAL:</b> ${results.length}</span></div></td></tr>`;
                 if (results.length > 500) bH += `<tr><td colspan="5" class="p-4 text-center italic text-gray-400">Mostrando primeros 500 registros...</td></tr>`;
-
             } else {
                 let f = globalRawDataHogares.filter(i => i.colonia.toLowerCase().includes(colT) && i.municipio.toLowerCase().includes(munT) && (secTerms.length ? secTerms.some(t => i.seccion.toLowerCase().includes(t)) : true));
                 const grouped = {};
@@ -497,7 +467,6 @@
                 });
                 let results = Object.values(grouped);
                 lastTableResults = results;
-
                 if (currentReportType === 'summary') {
                     hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sec.</th><th class="px-6 py-4 text-center">Hog.</th><th class="px-6 py-4 text-center">Masc.</th><th class="px-6 py-4 text-center">Vac.</th><th class="px-6 py-4 text-center">Inc.</th><th class="px-6 py-4 text-center">S/V</th><th class="px-6 py-4 text-center text-blue-600">Ster.</th></tr>`;
                     results.sort((a,b) => b.totalH - a.totalH);
@@ -537,14 +506,14 @@
                 doc.setFontSize(8); doc.setTextColor(111); doc.setFont(undefined, 'normal');
                 doc.text(`Generado el: ${date} a las ${time}`, 14, 44);
                 let head, body, foot;
-                
                 if (currentReportType === 'summary') {
                     let th=0,tm=0,tv=0,ti=0,tnv=0,ts=0; lastTableResults.forEach(g => { th+=g.totalH; tm+=g.totalM; tv+=g.vac; ti+=g.inc; tnv+=g.noVac; ts+=g.ster; });
                     head = [["MUNICIPIO", "COLONIA", "SEC.", "HOG.", "MASC.", "VAC.", "INC.", "S/V", "ESTER."]]; body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalH, g.totalM, g.vac, g.inc, g.noVac, g.ster]); foot = [["TOTALES", "", "", th, tm, tv, ti, tnv, ts]];
                 } else if (currentReportType === 'personas') {
                     head = [["MUNICIPIO", "COLONIA", "GRUPO EDAD", "P. INDÍGENA", "HABLA LENGUA"]];
                     body = lastTableResults.map(i => [i.municipio, i.colonia, i.grupo_edad, i.pertenece || '-', i.habla || '-']);
-                    foot = [["TOTAL: " + lastTableResults.length, "", "", "", ""]];
+                    const summaryLine = `TOTAL: ${lastTableResults.length} (INF: ${personasAgeGroupTotals['INFANCIA']}, ADO: ${personasAgeGroupTotals['ADOLESCENTES']}, ADU: ${personasAgeGroupTotals['ADULTOS']}, AM: ${personasAgeGroupTotals['ADULTOS MAYORES']})`;
+                    foot = [[summaryLine, "", "", "", ""]];
                 } else if (currentReportType === 'itr') {
                     let tm=0,tr=0; lastTableResults.forEach(g => { tm+=g.totalM; tr+=g.tr; });
                     head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "MASC. TOT.", "ESQ. COMP.", "% COBERT."]]; body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalM, g.tr, (g.totalM>0 ? (g.tr/g.totalM*100).toFixed(1) : 0)+"%"]); foot = [["TOTALES", "", "", tm, tr, (tm>0 ? (tr/tm*100).toFixed(1) : 0)+"%"]];
@@ -552,7 +521,6 @@
                     let tnv=0; lastTableResults.forEach(g => tnv+=g.noVac);
                     head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "S/V", "% RIESGO"]]; body = lastTableResults.map(g => [g.m, g.c, g.s, g.noVac, (g.totalM>0 ? (g.noVac/g.totalM*100).toFixed(1) : 0)+"%"]); foot = [["TOTALES", "", "", tnv, ""]];
                 } else { head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "TOTAL HOGARES"]]; body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalH]); }
-                
                 doc.autoTable({ startY: 48, head: head, body: body, foot: foot, theme: 'grid', headStyles: { fillColor: [15, 83, 25], fontSize: 7, halign: 'center' }, styles: { fontSize: 6.5, cellPadding: 1.5 } });
                 doc.save(`Visitando_Corazones_${currentReportType}_${date.replace(/\//g, '-')}.pdf`);
             };
@@ -569,13 +537,19 @@
             data.push(["Reporte:", selectedTitle.toUpperCase()]);
             data.push(["Fecha de generación:", date]);
             data.push([]);
-            
             if (currentReportType === 'summary') {
                 data.push(["MUNICIPIO", "COLONIA", "SECCIÓN", "HOGARES", "MASCOTAS", "VACUNADOS", "INCOMPLETAS", "SIN VACUNA", "ESTERILIZADOS"]);
                 lastTableResults.forEach(g => data.push([g.m, g.c, g.s, g.totalH, g.totalM, g.vac, g.inc, g.noVac, g.ster]));
             } else if (currentReportType === 'personas') {
                 data.push(["COLONIA", "MUNICIPIO", "GRUPO DE EDAD", "PERTENECE PUEBLO INDÍGENA", "HABLA LENGUA INDÍGENA"]);
                 lastTableResults.forEach(i => data.push([i.colonia, i.municipio, i.grupo_edad, i.pertenece, i.habla]));
+                data.push([]);
+                data.push(["RESUMEN ESTADÍSTICO POR RANGO DE EDAD"]);
+                data.push(["INFANCIA", personasAgeGroupTotals['INFANCIA']]);
+                data.push(["ADOLESCENTES", personasAgeGroupTotals['ADOLESCENTES']]);
+                data.push(["ADULTOS", personasAgeGroupTotals['ADULTOS']]);
+                data.push(["ADULTOS MAYORES", personasAgeGroupTotals['ADULTOS MAYORES']]);
+                data.push(["TOTAL GENERAL", lastTableResults.length]);
             } else if (currentReportType === 'itr') {
                 data.push(["MUNICIPIO", "COLONIA", "SECCIÓN", "TOTAL MASCOTAS", "ESQUEMA COMPLETO", "% COBERTURA"]);
                 lastTableResults.forEach(g => data.push([g.m, g.c, g.s, g.totalM, g.tr, (g.totalM>0 ? (g.tr/g.totalM*100).toFixed(1) : 0)+"%"]));
@@ -617,7 +591,6 @@
             const topMasc = Object.entries(cols).sort((a,b) => b[1].totalPets - a[1].totalPets).slice(0, 10);
             new Chart(document.getElementById('topColoniasChart'), { type: 'bar', data: { labels: topMasc.map(i => i[0]), datasets: [{ label: 'SIN VACUNA', data: topMasc.map(i => i[1].noVac), backgroundColor: COLORS.red, borderRadius: 8 }, { label: 'VACUNADOS', data: topMasc.map(i => i[1].vac), backgroundColor: COLORS.green, borderRadius: 8 }, { label: 'ESTERILIZADOS', data: topMasc.map(i => i[1].ster), backgroundColor: COLORS.beige, borderRadius: 8 }, { label: 'TOTAL MASCOTAS', data: topMasc.map(i => i[1].totalPets), backgroundColor: COLORS.gold, borderRadius: 8 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, datalabels: { anchor: 'end', align: 'top', formatter: (v) => formatNumber(v), font: { size: 9, weight: 'bold' } } }, scales: { y: { ticks: { callback: (v) => formatNumber(v) } } } } });
         }
-
         function showGenderBreakdown(k) {
             const d = globalGroupGenderBreakdown[k] || { femenino: 0, masculino: 0, otro: 0 };
             document.getElementById('modalTitle').textContent = `DETALLE: ${k.toUpperCase()}`;
