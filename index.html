@@ -69,7 +69,12 @@
         .chart-container { height: 280px; position: relative; }
         .chart-container-large { height: 450px; position: relative; }
 
-        .contact-item:last-child { border-bottom: none; }
+        .contact-card {
+            transition: transform 0.2s ease, shadow 0.2s ease;
+        }
+        .contact-card:hover {
+            transform: translateY(-4px);
+        }
     </style>
 </head>
 <body class="p-4 sm:p-8">
@@ -221,7 +226,7 @@
                     </div>
                 </div>
                 
-                <div class="table-container custom-scrollbar">
+                <div class="table-container custom-scrollbar overflow-x-auto">
                     <table class="w-full text-left border-collapse" id="summaryTable">
                         <thead class="sticky top-0 bg-white shadow-sm z-10" id="tableHeader"></thead>
                         <tbody id="dataTableBody" class="text-xs text-gray-700 divide-y divide-gray-100"></tbody>
@@ -230,42 +235,35 @@
             </div>
         </div>
 
-        <section class="mt-12 mb-12">
-            <h2 class="text-[11px] font-black uppercase text-gray-400 tracking-[0.25em] mb-6 text-center">Responsables de la Plataforma y Soporte Técnico</h2>
-            <div class="bg-white rounded-[2rem] shadow-xl overflow-hidden max-w-2xl mx-auto border border-gray-100">
-                <div class="divide-y divide-gray-100">
-                    <div class="contact-item flex items-center p-6 hover:bg-gray-50 transition-all duration-200">
-                        <div class="w-12 h-12 rounded-full bg-green-800 flex items-center justify-center text-white font-bold text-lg mr-4 flex-shrink-0 shadow-sm">OG</div>
-                        <div class="flex-grow">
-                            <h3 class="text-[15px] font-extrabold text-gray-900 leading-tight tracking-tight">Lic. Omar Granados Piña</h3>
-                            <p class="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mt-0.5">Director de Planeación, Evaluación y Proyectos Especiales</p>
-                            <a href="mailto:dir.planeacion@slpsalud.gob.mx" class="flex items-center text-[12px] text-green-700 font-bold mt-1.5 hover:underline decoration-2 underline-offset-2">
-                                <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5"></i> dir.planeacion@slpsalud.gob.mx
-                            </a>
-                        </div>
-                    </div>
+        <section class="mt-16 mb-20">
+            <h2 class="text-[11px] font-black uppercase text-gray-400 tracking-[0.25em] mb-10 text-center">Responsables de la Plataforma y Soporte Técnico</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
+                
+                <div class="contact-card bg-white p-6 rounded-[2rem] shadow-lg border border-gray-100 flex flex-col items-center text-center">
+                    <div class="w-16 h-16 rounded-full bg-green-800 flex items-center justify-center text-white font-bold text-xl mb-4 shadow-md">OG</div>
+                    <h3 class="text-[15px] font-extrabold text-gray-900 leading-tight tracking-tight mb-1">Lic. Omar Granados Piña</h3>
+                    <p class="text-[10px] text-gray-500 font-semibold uppercase tracking-wide mb-4 h-10 flex items-center">Director de Planeación, Evaluación y Proyectos Especiales</p>
+                    <a href="mailto:dir.planeacion@slpsalud.gob.mx" class="flex items-center justify-center text-[11px] text-green-700 font-bold hover:underline decoration-2 underline-offset-2 break-all">
+                        <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5 flex-shrink-0"></i> dir.planeacion@slpsalud.gob.mx
+                    </a>
+                </div>
 
-                    <div class="contact-item flex items-center p-6 hover:bg-gray-50 transition-all duration-200">
-                        <div class="w-12 h-12 rounded-full bg-green-800 flex items-center justify-center text-white font-bold text-lg mr-4 flex-shrink-0 shadow-sm">DE</div>
-                        <div class="flex-grow">
-                            <h3 class="text-[15px] font-extrabold text-gray-900 leading-tight tracking-tight">Ing. Dorian Escamilla Sauceda</h3>
-                            <p class="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mt-0.5">Subdirector de Informática y Estadísticas en Salud</p>
-                            <a href="mailto:sub.informatica@slpsalud.gob.mx" class="flex items-center text-[12px] text-green-700 font-bold mt-1.5 hover:underline decoration-2 underline-offset-2">
-                                <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5"></i> sub.informatica@slpsalud.gob.mx
-                            </a>
-                        </div>
-                    </div>
+                <div class="contact-card bg-white p-6 rounded-[2rem] shadow-lg border border-gray-100 flex flex-col items-center text-center">
+                    <div class="w-16 h-16 rounded-full bg-green-800 flex items-center justify-center text-white font-bold text-xl mb-4 shadow-md">DE</div>
+                    <h3 class="text-[15px] font-extrabold text-gray-900 leading-tight tracking-tight mb-1">Ing. Dorian Escamilla Sauceda</h3>
+                    <p class="text-[10px] text-gray-500 font-semibold uppercase tracking-wide mb-4 h-10 flex items-center">Subdirector de Informática y Estadísticas en Salud</p>
+                    <a href="mailto:sub.informatica@slpsalud.gob.mx" class="flex items-center justify-center text-[11px] text-green-700 font-bold hover:underline decoration-2 underline-offset-2 break-all">
+                        <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5 flex-shrink-0"></i> sub.informatica@slpsalud.gob.mx
+                    </a>
+                </div>
 
-                    <div class="contact-item flex items-center p-6 hover:bg-gray-50 transition-all duration-200">
-                        <div class="w-12 h-12 rounded-full bg-green-800 flex items-center justify-center text-white font-bold text-lg mr-4 flex-shrink-0 shadow-sm">FM</div>
-                        <div class="flex-grow">
-                            <h3 class="text-[15px] font-extrabold text-gray-900 leading-tight tracking-tight">Fernando Montoya Rivera</h3>
-                            <p class="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mt-0.5">Desarrollador de la Herramienta y Enlace de Información CLUES</p>
-                            <a href="mailto:clues.estadistica@slpsalud.gob.bx" class="flex items-center text-[12px] text-green-700 font-bold mt-1.5 hover:underline decoration-2 underline-offset-2">
-                                <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5"></i> clues.estadistica@slpsalud.gob.bx
-                            </a>
-                        </div>
-                    </div>
+                <div class="contact-card bg-white p-6 rounded-[2rem] shadow-lg border border-gray-100 flex flex-col items-center text-center">
+                    <div class="w-16 h-16 rounded-full bg-green-800 flex items-center justify-center text-white font-bold text-xl mb-4 shadow-md">FM</div>
+                    <h3 class="text-[15px] font-extrabold text-gray-900 leading-tight tracking-tight mb-1">Fernando Montoya Rivera</h3>
+                    <p class="text-[10px] text-gray-500 font-semibold uppercase tracking-wide mb-4 h-10 flex items-center">Desarrollador y Enlace de Información CLUES</p>
+                    <a href="mailto:clues.estadistica@slpsalud.gob.bx" class="flex items-center justify-center text-[11px] text-green-700 font-bold hover:underline decoration-2 underline-offset-2 break-all">
+                        <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5 flex-shrink-0"></i> clues.estadistica@slpsalud.gob.bx
+                    </a>
                 </div>
             </div>
         </section>
@@ -275,7 +273,7 @@
         </footer>
     </div>
 
-    <div id="genderBreakdownModal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4">
+    <div id="genderBreakdownModal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all">
             <div class="p-6 border-b flex justify-between items-center bg-green-800">
                 <h3 id="modalTitle" class="text-lg font-black text-white uppercase tracking-tight">Desglose</h3>
@@ -307,7 +305,10 @@
     <script>
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?output=csv';
         
-        Chart.register(ChartDataLabels);
+        if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
+            Chart.register(ChartDataLabels);
+        }
+
         let globalRawData = [], lastTableResults = [], currentReportType = 'summary', globalGroupGenderBreakdown = {};
 
         const COLORS = { green: '#0f5319', gold: '#76b82a', red: '#ea047f', secondary: '#285C4D', gray: '#6F7271', beige: '#D4C19C' };
@@ -382,7 +383,7 @@
             filterAndRenderTable("", "", "");
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        window.onload = () => {
             if (typeof lucide !== 'undefined') lucide.createIcons();
             Papa.parse(CSV_URL, {
                 download: true, header: true, skipEmptyLines: true, dynamicTyping: true,
@@ -390,36 +391,51 @@
                     document.getElementById('status-container').classList.add('hidden');
                     document.getElementById('dashboard-content').classList.remove('hidden');
                     processAndRenderData(results.data);
+                },
+                error: (err) => {
+                    document.getElementById('status-text').textContent = "Error de conexión";
+                    document.getElementById('status-subtext').textContent = "No se pudieron cargar los datos.";
+                    document.getElementById('retry-btn').classList.remove('hidden');
                 }
             });
             const col = document.getElementById('coloniaSearchInput'), sec = document.getElementById('seccionSearchInput'), mun = document.getElementById('municipioSearchInput');
             const h = () => filterAndRenderTable(col.value.toLowerCase(), sec.value.toLowerCase(), mun.value.toLowerCase());
             [col, sec, mun].forEach(el => el.addEventListener('input', h));
-        });
+        };
 
-        async function processAndRenderData(data) {
+        function processAndRenderData(data) {
             let tH = 0, tM = 0;
             const groupT = { infancia: 0, adolescentes: 0, adultos: 0, 'adultos mayores': 0 };
             const genderT = {}, petT = { 'TIENE': 0, 'NO TIENE': 0 }, vacT = { VACUNADOS: 0, 'INCOMPLETAS': 0, 'SIN VACUNA': 0 };
             const sterT = { ESTERILIZADOS: 0, 'NO ESTERILIZADOS': 0 };
             const colStats = {};
             globalRawData = [];
+            globalGroupGenderBreakdown = {};
 
             data.forEach(row => {
                 tH++;
                 const age = getColumnValue(row, 'edad'), ageG = calculateAgeGroup(age);
                 if (ageG !== 'otro') groupT[ageG]++;
-                const gen = String(getColumnValue(row, 'genero') || getColumnValue(row, 'sexo') || '').toLowerCase().trim();
+                
+                const genRaw = String(getColumnValue(row, 'genero') || getColumnValue(row, 'sexo') || '').toLowerCase().trim();
+                let gen = "otro";
+                if (genRaw.includes("fem") || genRaw.includes("mujer")) gen = "femenino";
+                else if (genRaw.includes("masc") || genRaw.includes("hombre")) gen = "masculino";
+                
                 genderT[gen] = (genderT[gen] || 0) + 1;
+                
                 const hasP = String(getColumnValue(row, 'tiene_mascotas') || '').toLowerCase().includes('si');
                 if (hasP) petT['TIENE']++; else petT['NO TIENE']++;
+                
                 const ster = String(getColumnValue(row, 'estan_esterilizados') || '').toLowerCase().includes('si');
                 const vac = String(getColumnValue(row, 'estan_vacunados') || '').toUpperCase();
+                
                 let estatus = "OTRO";
                 if (vac.includes("NO APLICA")) estatus = "NO_APLICA";
                 else if (['UNA SI LA OTRA NO', 'PERROS SI, GATOS NO', 'INCOMPLETA'].some(i => vac.includes(i))) estatus = "INC";
                 else if (vac.includes('SI')) estatus = "VAC";
                 else if (vac.includes('NO')) estatus = "NOVAC";
+                
                 if (hasP) {
                     tM++;
                     if (estatus === "VAC") vacT.VACUNADOS++;
@@ -427,6 +443,7 @@
                     else if (estatus === "NOVAC") vacT['SIN VACUNA']++;
                     if (ster) sterT.ESTERILIZADOS++; else sterT['NO ESTERILIZADOS']++;
                 }
+
                 globalRawData.push({
                     municipio: String(getColumnValue(row, 'municipio') || 'N/A').toUpperCase(),
                     colonia: String(getColumnValue(row, 'colonia') || 'SIN COLONIA').toUpperCase(),
@@ -435,6 +452,7 @@
                     esTR: hasP && ster && estatus === "VAC",
                     genero: gen, ageGroup: ageG
                 });
+
                 const cRaw = getColumnValue(row, 'colonia');
                 if (cRaw) {
                     const c = String(cRaw).toUpperCase().trim();
@@ -446,6 +464,7 @@
                         if (ster) colStats[c].ster++;
                     }
                 }
+                
                 if (ageG !== 'otro') {
                     if (!globalGroupGenderBreakdown[ageG]) globalGroupGenderBreakdown[ageG] = {};
                     globalGroupGenderBreakdown[ageG][gen] = (globalGroupGenderBreakdown[ageG][gen] || 0) + 1;
@@ -462,7 +481,13 @@
         function filterAndRenderTable(colT, secT, munT) {
             const tbody = document.getElementById('dataTableBody'), header = document.getElementById('tableHeader');
             const secTerms = secT.split(',').map(t => t.trim().toLowerCase()).filter(t => t !== "");
-            let f = globalRawData.filter(i => i.colonia.toLowerCase().includes(colT) && i.municipio.toLowerCase().includes(munT) && (secTerms.length ? secTerms.some(t => i.seccion.toLowerCase().includes(t)) : true));
+            
+            let f = globalRawData.filter(i => 
+                i.colonia.toLowerCase().includes(colT) && 
+                i.municipio.toLowerCase().includes(munT) && 
+                (secTerms.length ? secTerms.some(t => i.seccion.toLowerCase().includes(t)) : true)
+            );
+            
             const grouped = {};
             f.forEach(i => {
                 const k = `${i.municipio}|${i.colonia}|${i.seccion}`;
@@ -477,8 +502,10 @@
                 o.g[i.genero] = (o.g[i.genero] || 0) + 1;
                 o.a[i.ageGroup] = (o.a[i.ageGroup] || 0) + 1;
             });
+            
             let results = Object.values(grouped);
             let hH = '', bH = '';
+            
             if (currentReportType === 'summary') {
                 hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sec.</th><th class="px-6 py-4 text-center">Hog.</th><th class="px-6 py-4 text-center">Masc.</th><th class="px-6 py-4 text-center">Vac.</th><th class="px-6 py-4 text-center">Inc.</th><th class="px-6 py-4 text-center">S/V</th><th class="px-6 py-4 text-center text-blue-600">Ster.</th></tr>`;
                 results.sort((a,b) => b.totalH - a.totalH);
@@ -510,64 +537,72 @@
         }
 
         function generatePDFReport() {
+            if (!window.jspdf) return;
             const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
             const now = new Date(), date = now.toLocaleDateString('es-MX'), time = now.toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit'});
-            const img = new Image(); img.src = 'https://d3dac9gdq8t83x.cloudfront.net/media/static/images/hor-verde.png'; img.crossOrigin = 'Anonymous';
-            img.onload = () => {
-                doc.addImage(img, 'PNG', 14, 10, 45, 18);
-                doc.setFontSize(8); doc.setTextColor(111); doc.setFont(undefined, 'bold');
-                doc.text("Dirección de Planeación, Evaluación y Proyectos Especiales", 65, 16);
-                doc.text("Subdirección de Informática y Estadísticas en Salud", 65, 20);
-                doc.setFontSize(14); doc.setTextColor(15, 83, 25);
-                let selectedTitle = document.getElementById('reportTypeSelector').selectedOptions[0].text;
-                doc.text(`Reporte: ${selectedTitle.toUpperCase()}`, 65, 28);
-                doc.setDrawColor(15, 83, 25); doc.line(14, 35, 196, 35);
-                doc.setFontSize(8); doc.setTextColor(111); doc.setFont(undefined, 'normal');
-                doc.text(`Generado el: ${date} a las ${time}`, 14, 42);
-                let head, body, foot;
-                if (currentReportType === 'summary') {
-                    let th=0,tm=0,tv=0,ti=0,tnv=0,ts=0; lastTableResults.forEach(g => { th+=g.totalH; tm+=g.totalM; tv+=g.vac; ti+=g.inc; tnv+=g.noVac; ts+=g.ster; });
-                    head = [["MUNICIPIO", "COLONIA", "SEC.", "HOG.", "MASC.", "VAC.", "INC.", "S/V", "ESTER."]];
-                    body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalH, g.totalM, g.vac, g.inc, g.noVac, g.ster]);
-                    foot = [["TOTALES", "", "", th, tm, tv, ti, tnv, ts]];
-                } else if (currentReportType === 'itr') {
-                    let tm=0,tr=0; lastTableResults.forEach(g => { tm+=g.totalM; tr+=g.tr; });
-                    head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "MASC. TOT.", "ESQUEMA COMP.", "% CUMPLIM."]];
-                    body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalM, g.tr, (g.totalM>0 ? (g.tr/g.totalM*100).toFixed(1) : 0)+"%"]);
-                    foot = [["TOTALES", "", "", tm, tr, (tm>0 ? (tr/tm*100).toFixed(1) : 0)+"%"]];
-                } else if (currentReportType === 'risk') {
-                    let tnv=0; lastTableResults.forEach(g => tnv+=g.noVac);
-                    head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "S/V", "% RIESGO"]];
-                    body = lastTableResults.map(g => [g.m, g.c, g.s, g.noVac, (g.totalM>0 ? (g.noVac/g.totalM*100).toFixed(1) : 0)+"%"]);
-                    foot = [["TOTALES", "", "", tnv, ""]];
-                } else {
-                    head = [["MUNICIPIO", "COLONIA", "GÉNERO PRED.", "EDAD PRED."]];
-                    body = lastTableResults.map(g => {
-                        const tg = Object.entries(g.g).sort((a,b) => b[1]-a[1])[0]?.[0] || 'N/A';
-                        const ta = Object.entries(g.a).sort((a,b) => b[1]-a[1])[0]?.[0] || 'N/A';
-                        return [g.m, g.c, tg.toUpperCase(), ta.toUpperCase()];
-                    });
-                }
-                doc.autoTable({ startY: 45, head: head, body: body, foot: foot, theme: 'grid', headStyles: { fillColor: [15, 83, 25], fontSize: 7, halign: 'center' }, styles: { fontSize: 6.5, cellPadding: 1.5 } });
-                doc.save(`Reporte_Visitando_Corazones_${currentReportType}.pdf`);
-            };
+            
+            doc.setFontSize(8); doc.setTextColor(111); doc.setFont(undefined, 'bold');
+            doc.text("Dirección de Planeación, Evaluación y Proyectos Especiales", 14, 16);
+            doc.text("Subdirección de Informática y Estadísticas en Salud", 14, 20);
+            
+            doc.setFontSize(14); doc.setTextColor(15, 83, 25);
+            let selectedTitle = document.getElementById('reportTypeSelector').selectedOptions[0].text;
+            doc.text(`Reporte: ${selectedTitle.toUpperCase()}`, 14, 28);
+            doc.setDrawColor(15, 83, 25); doc.line(14, 35, 196, 35);
+            
+            doc.setFontSize(8); doc.setTextColor(111); doc.setFont(undefined, 'normal');
+            doc.text(`Generado el: ${date} a las ${time}`, 14, 42);
+            
+            let head, body, foot;
+            if (currentReportType === 'summary') {
+                let th=0,tm=0,tv=0,ti=0,tnv=0,ts=0; lastTableResults.forEach(g => { th+=g.totalH; tm+=g.totalM; tv+=g.vac; ti+=g.inc; tnv+=g.noVac; ts+=g.ster; });
+                head = [["MUNICIPIO", "COLONIA", "SEC.", "HOG.", "MASC.", "VAC.", "INC.", "S/V", "ESTER."]];
+                body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalH, g.totalM, g.vac, g.inc, g.noVac, g.ster]);
+                foot = [["TOTALES", "", "", th, tm, tv, ti, tnv, ts]];
+            } else if (currentReportType === 'itr') {
+                let tm=0,tr=0; lastTableResults.forEach(g => { tm+=g.totalM; tr+=g.tr; });
+                head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "MASC. TOT.", "ESQUEMA COMP.", "% CUMPLIM."]];
+                body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalM, g.tr, (g.totalM>0 ? (g.tr/g.totalM*100).toFixed(1) : 0)+"%"]);
+                foot = [["TOTALES", "", "", tm, tr, (tm>0 ? (tr/tm*100).toFixed(1) : 0)+"%"]];
+            } else if (currentReportType === 'risk') {
+                let tnv=0; lastTableResults.forEach(g => tnv+=g.noVac);
+                head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "S/V", "% RIESGO"]];
+                body = lastTableResults.map(g => [g.m, g.c, g.s, g.noVac, (g.totalM>0 ? (g.noVac/g.totalM*100).toFixed(1) : 0)+"%"]);
+                foot = [["TOTALES", "", "", tnv, ""]];
+            } else {
+                head = [["MUNICIPIO", "COLONIA", "GÉNERO PRED.", "EDAD PRED."]];
+                body = lastTableResults.map(g => {
+                    const tg = Object.entries(g.g).sort((a,b) => b[1]-a[1])[0]?.[0] || 'N/A';
+                    const ta = Object.entries(g.a).sort((a,b) => b[1]-a[1])[0]?.[0] || 'N/A';
+                    return [g.m, g.c, tg.toUpperCase(), ta.toUpperCase()];
+                });
+            }
+            
+            doc.autoTable({ 
+                startY: 45, head: head, body: body, foot: foot, theme: 'grid', 
+                headStyles: { fillColor: [15, 83, 25], fontSize: 7, halign: 'center' }, 
+                styles: { fontSize: 6.5, cellPadding: 1.5 } 
+            });
+            doc.save(`Reporte_Visitando_Corazones_${currentReportType}.pdf`);
         }
 
         function renderKPIs(g, t, a) {
             const icons = { infancia: 'baby', adolescentes: 'graduation-cap', adultos: 'briefcase', 'adultos mayores': 'heart-pulse' };
             const cls = { infancia: COLORS.green, adolescentes: COLORS.gold, adultos: COLORS.red, 'adultos mayores': COLORS.secondary };
-            document.getElementById('group-kpi-container').innerHTML = a.map(k => `<div class="kpi-card bg-white p-6 rounded-3xl shadow-md border-t-4" style="border-top-color: ${cls[k]};" onclick="showGenderBreakdown('${k}')"><div class="flex justify-between items-start mb-2"><span class="text-[10px] font-bold uppercase text-gray-400">${k}</span><i data-lucide="${icons[k]}" class="w-4 h-4" style="color: ${cls[k]}"></i></div><div class="text-2xl font-black text-gray-800">${formatNumber(g[k] || 0)}</div></div>`).join('');
+            document.getElementById('group-kpi-container').innerHTML = a.map(k => `<div class="kpi-card bg-white p-6 rounded-3xl shadow-md border-t-4 transition-transform hover:scale-105 cursor-pointer" style="border-top-color: ${cls[k]};" onclick="showGenderBreakdown('${k}')"><div class="flex justify-between items-start mb-2"><span class="text-[10px] font-bold uppercase text-gray-400">${k}</span><i data-lucide="${icons[k]}" class="w-4 h-4" style="color: ${cls[k]}"></i></div><div class="text-2xl font-black text-gray-800">${formatNumber(g[k] || 0)}</div></div>`).join('');
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         function renderCharts(g, gen, ster, vac, cols, petT) {
             const barOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'top', formatter: (v) => formatNumber(v), font: { weight: 'bold', size: 10 } }, tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label || ''}: ${formatNumber(ctx.parsed.y || ctx.parsed)}` } } }, scales: { y: { beginAtZero: true, ticks: { callback: (v) => formatNumber(v) } } } };
             const pieOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v, ctx) => { let sum = ctx.dataset.data.reduce((a, b) => a + b, 0); return sum === 0 ? "0%" : formatNumber(v) + " (" + (v * 100 / sum).toFixed(1) + "%)"; } } } };
+            
             new Chart(document.getElementById('ageGroupBarChart'), { type: 'bar', data: { labels: ['INFANCIA', 'ADOLESCENTES', 'ADULTOS', 'ADULTOS MAYORES'], datasets: [{ label: 'Personas', data: [g.infancia, g.adolescentes, g.adultos, g['adultos mayores']], backgroundColor: CHART_COLORS, borderRadius: 8 }] }, options: barOptions });
             new Chart(document.getElementById('genderBarChart'), { type: 'bar', data: { labels: Object.keys(gen).map(k => k.toUpperCase()), datasets: [{ data: Object.values(gen), backgroundColor: CHART_COLORS, borderRadius: 8 }] }, options: barOptions });
             new Chart(document.getElementById('petsPieChart'), { type: 'pie', data: { labels: ['TIENE', 'NO TIENE'], datasets: [{ data: [petT['TIENE'], petT['NO TIENE']], backgroundColor: CHART_COLORS, borderWidth: 4, borderColor: '#ffffff' }] }, options: pieOptions });
             new Chart(document.getElementById('sterilizationPieChart'), { type: 'pie', data: { labels: ['ESTERILIZADOS', 'NO ESTERILIZADOS'], datasets: [{ data: [ster.ESTERILIZADOS, ster['NO ESTERILIZADOS']], backgroundColor: [COLORS.green, COLORS.red], borderWidth: 4, borderColor: '#ffffff' }] }, options: pieOptions });
             new Chart(document.getElementById('vaccinationStackedBarChart'), { type: 'bar', data: { labels: ['VACUNACIÓN'], datasets: [{ label: 'VACUNADOS', data: [vac.VACUNADOS], backgroundColor: COLORS.green }, { label: 'INCOMPLETAS', data: [vac.INCOMPLETAS], backgroundColor: COLORS.gold }, { label: 'SIN VACUNA', data: [vac['SIN VACUNA']], backgroundColor: COLORS.red }]}, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, display: false }, y: { stacked: true } }, plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v) => v > 0 ? formatNumber(v) : '' } } } });
+            
             const top = Object.entries(cols).sort((a,b) => b[1].totalPets - a[1].totalPets).slice(0, 10);
             new Chart(document.getElementById('topColoniasChart'), { type: 'bar', data: { labels: top.map(i => i[0]), datasets: [{ label: 'NO VACUNADOS', data: top.map(i => i[1].noVac), backgroundColor: COLORS.red, borderRadius: 8 }, { label: 'VACUNADOS', data: top.map(i => i[1].vac), backgroundColor: COLORS.green, borderRadius: 8 }, { label: 'ESTERILIZADOS', data: top.map(i => i[1].ster), backgroundColor: COLORS.beige, borderRadius: 8 }, { label: 'TOTAL MASCOTAS', data: top.map(i => i[1].totalPets), backgroundColor: COLORS.gold, borderRadius: 8 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, datalabels: { anchor: 'end', align: 'top', formatter: (v) => formatNumber(v), font: { size: 9, weight: 'bold' } } }, scales: { y: { ticks: { callback: (v) => formatNumber(v) } } } } });
         }
@@ -575,8 +610,9 @@
         function showGenderBreakdown(k) {
             const d = globalGroupGenderBreakdown[k] || {};
             document.getElementById('modalTitle').textContent = `DETALLE: ${k.toUpperCase()}`;
-            document.getElementById('countFemenino').textContent = formatNumber(d['femenino'] || d['mujer'] || 0);
-            document.getElementById('countMasculino').textContent = formatNumber(d['masculino'] || d['hombre'] || 0);
+            document.getElementById('countFemenino').textContent = formatNumber(d['femenino'] || 0);
+            document.getElementById('countMasculino').textContent = formatNumber(d['masculino'] || 0);
+            document.getElementById('countOtros').textContent = formatNumber(d['otro'] || 0);
             document.getElementById('genderBreakdownModal').classList.remove('hidden');
         }
         function hideGenderBreakdown() { document.getElementById('genderBreakdownModal').classList.add('hidden'); }
