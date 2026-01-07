@@ -345,11 +345,19 @@
             return 'ADULTOS MAYORES';
         };
 
+        const calculateQuinquenio = (v) => {
+            const a = parseInt(v);
+            if (isNaN(a)) return 'NO ESPECIFICADO';
+            const lower = Math.floor(a / 5) * 5;
+            const upper = lower + 4;
+            return `${lower}-${upper} AÑOS`;
+        };
+
         function handleReportChange() {
             currentReportType = document.getElementById('reportTypeSelector').value;
             const meta = {
                 summary: { t: "Análisis de población", d: "Visión general por zona geográfica" },
-                personas: { t: "Personas atendidas", d: "Detalle demográfico e identidad por colonia" },
+                personas: { t: "Personas atendidas", d: "Sumatoria por sección, colonia y rango de edad" },
                 itr: { t: "Esquema Sanitario Completo", d: "Mascotas con vacunación y esterilización" },
                 risk: { t: "Ranking de Prioridad Sanitaria", d: "Zonas con baja cobertura de vacunación" },
                 demo: { t: "Censo de Viviendas", d: "Cantidad de hogares registrados por sección" }
@@ -431,7 +439,7 @@
             individuos.forEach(row => {
                 if (!row || Object.keys(row).length < 2) return;
                 tP++;
-                const age = getColumnValue(row, 'edad'), ageG = calculateAgeGroup(age);
+                const age = getColumnValue(row, 'edad'), ageG = calculateAgeGroup(age), quin = calculateQuinquenio(age);
                 if (ageG !== 'OTRO') groupT[ageG.toLowerCase()]++;
                 const genRaw = String(getColumnValue(row, 'genero') || getColumnValue(row, 'sexo') || '').toLowerCase().trim();
                 let gen = "femenino";
@@ -445,7 +453,15 @@
                     globalGroupGenderBreakdown[ageG.toLowerCase()][gen]++; 
                 }
 
-                globalRawDataPersonas.push({ colonia: String(getColumnValue(row, 'colonia') || '').toUpperCase(), municipio: String(getColumnValue(row, 'municipio') || '').toUpperCase(), grupo_edad: ageG, pertenece: getColumnValue(row, 'pertenece_pueblo_indigena'), habla: getColumnValue(row, 'habla_lengua_indigena') });
+                globalRawDataPersonas.push({ 
+                    colonia: String(getColumnValue(row, 'colonia') || '').toUpperCase(), 
+                    municipio: String(getColumnValue(row, 'municipio') || '').toUpperCase(),
+                    seccion: String(getColumnValue(row, 'seccion_electoral') || 'S/S'),
+                    grupo_edad: ageG, 
+                    quinquenio: quin,
+                    pertenece: String(getColumnValue(row, 'pertenece_pueblo_indigena') || '').toLowerCase().includes('si'), 
+                    habla: String(getColumnValue(row, 'habla_lengua_indigena') || '').toLowerCase().includes('si') 
+                });
             });
 
             const visitasPorColonia = {};
@@ -462,14 +478,71 @@
             const secTerms = secT.split(',').map(t => t.trim().toLowerCase()).filter(t => t !== "");
             let hH = '', bH = '';
             if (currentReportType === 'personas') {
-                hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Grupo Edad</th><th class="px-6 py-4 text-center">P. Indígena</th><th class="px-6 py-4 text-center">Habla Lengua</th></tr>`;
-                let results = globalRawDataPersonas.filter(i => i.colonia.toLowerCase().includes(colT) && i.municipio.toLowerCase().includes(munT));
+                hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b">
+                    <th class="px-6 py-4">Sec.</th>
+                    <th class="px-6 py-4">Colonia</th>
+                    <th class="px-6 py-4 text-center">Infancia</th>
+                    <th class="px-6 py-4 text-center">Adoles.</th>
+                    <th class="px-6 py-4 text-center">Adultos</th>
+                    <th class="px-6 py-4 text-center">AM</th>
+                    <th class="px-6 py-4 text-center">P. Indígena</th>
+                    <th class="px-6 py-4 text-center">H. Lengua</th>
+                    <th class="px-6 py-4 text-center text-green-800">Total</th>
+                </tr>`;
+                
+                let filtered = globalRawDataPersonas.filter(i => 
+                    i.colonia.toLowerCase().includes(colT) && 
+                    i.municipio.toLowerCase().includes(munT) &&
+                    (secTerms.length ? secTerms.some(t => i.seccion.toLowerCase().includes(t)) : true)
+                );
+
+                const grouped = {};
+                filtered.forEach(i => {
+                    const k = `${i.seccion}|${i.colonia}`;
+                    if (!grouped[k]) {
+                        grouped[k] = { s: i.seccion, c: i.colonia, inf: 0, ado: 0, adu: 0, am: 0, ind: 0, hla: 0, tot: 0 };
+                    }
+                    const o = grouped[k];
+                    o.tot++;
+                    if (i.grupo_edad === 'INFANCIA') o.inf++;
+                    else if (i.grupo_edad === 'ADOLESCENTES') o.ado++;
+                    else if (i.grupo_edad === 'ADULTOS') o.adu++;
+                    else if (i.grupo_edad === 'ADULTOS MAYORES') o.am++;
+                    if (i.pertenece) o.ind++;
+                    if (i.habla) o.hla++;
+                });
+
+                let results = Object.values(grouped).sort((a,b) => a.s.localeCompare(b.s, undefined, {numeric: true}));
                 lastTableResults = results;
-                personasAgeGroupTotals = { 'INFANCIA': 0, 'ADOLESCENTES': 0, 'ADULTOS': 0, 'ADULTOS MAYORES': 0, 'OTRO': 0 };
-                results.forEach(i => personasAgeGroupTotals[i.grupo_edad]++);
-                bH = results.slice(0, 500).map(i => `<tr><td class="px-6 py-3 text-[10px] font-bold text-gray-400">${i.municipio}</td><td class="px-6 py-3 font-semibold text-[11px]">${i.colonia}</td><td class="px-6 py-3 text-center font-bold text-green-700">${i.grupo_edad}</td><td class="px-6 py-3 text-center font-semibold text-slate-500 uppercase">${i.pertenece || '-'}</td><td class="px-6 py-3 text-center font-semibold text-slate-500 uppercase">${i.habla || '-'}</td></tr>`).join('');
-                bH += `<tr class="bg-slate-100 font-bold border-t-4 border-slate-300"><td colspan="2" class="px-6 py-4 text-right uppercase text-[11px] text-slate-900">Total por Rango:</td><td colspan="3" class="px-6 py-4"><div class="flex flex-wrap gap-6 text-[12px]"><span class="bg-white px-3 py-1 rounded-full shadow-sm"><b class="text-green-800">INF:</b> ${personasAgeGroupTotals['INFANCIA']}</span><span class="bg-white px-3 py-1 rounded-full shadow-sm"><b class="text-green-800">ADO:</b> ${personasAgeGroupTotals['ADOLESCENTES']}</span><span class="bg-white px-3 py-1 rounded-full shadow-sm"><b class="text-green-800">ADU:</b> ${personasAgeGroupTotals['ADULTOS']}</span><span class="bg-white px-3 py-1 rounded-full shadow-sm"><b class="text-green-800">AM:</b> ${personasAgeGroupTotals['ADULTOS MAYORES']}</span><span class="bg-slate-800 text-white px-4 py-1 rounded-full shadow-md"><b>TOTAL:</b> ${results.length}</span></div></td></tr>`;
-                if (results.length > 500) bH += `<tr><td colspan="5" class="p-4 text-center italic text-gray-400">Mostrando primeros 500 registros...</td></tr>`;
+                
+                let grandInf=0, grandAdo=0, grandAdu=0, grandAm=0, grandInd=0, grandHla=0;
+                
+                bH = results.map(o => {
+                    grandInf += o.inf; grandAdo += o.ado; grandAdu += o.adu; grandAm += o.am; grandInd += o.ind; grandHla += o.hla;
+                    return `<tr>
+                        <td class="px-6 py-3 font-mono font-bold text-blue-700">${o.s}</td>
+                        <td class="px-6 py-3 font-semibold text-[11px]">${o.c}</td>
+                        <td class="px-6 py-3 text-center">${o.inf}</td>
+                        <td class="px-6 py-3 text-center">${o.ado}</td>
+                        <td class="px-6 py-3 text-center">${o.adu}</td>
+                        <td class="px-6 py-3 text-center">${o.am}</td>
+                        <td class="px-6 py-3 text-center font-bold text-amber-600">${o.ind}</td>
+                        <td class="px-6 py-3 text-center font-bold text-amber-600">${o.hla}</td>
+                        <td class="px-6 py-3 text-center font-black text-green-800">${o.tot}</td>
+                    </tr>`;
+                }).join('');
+
+                bH += `<tr class="bg-green-50 font-black border-t-4 border-green-200">
+                    <td colspan="2" class="px-6 py-4 text-right uppercase text-[11px]">Sumatoria General:</td>
+                    <td class="px-6 py-3 text-center">${grandInf}</td>
+                    <td class="px-6 py-3 text-center">${grandAdo}</td>
+                    <td class="px-6 py-3 text-center">${grandAdu}</td>
+                    <td class="px-6 py-3 text-center">${grandAm}</td>
+                    <td class="px-6 py-3 text-center text-amber-700">${grandInd}</td>
+                    <td class="px-6 py-3 text-center text-amber-700">${grandHla}</td>
+                    <td class="px-6 py-3 text-center text-green-900">${filtered.length}</td>
+                </tr>`;
+
             } else {
                 let f = globalRawDataHogares.filter(i => i.colonia.toLowerCase().includes(colT) && i.municipio.toLowerCase().includes(munT) && (secTerms.length ? secTerms.some(t => i.seccion.toLowerCase().includes(t)) : true));
                 const grouped = {};
@@ -521,14 +594,16 @@
                 doc.setFontSize(8); doc.setTextColor(111); doc.setFont(undefined, 'normal');
                 doc.text(`Generado el: ${date} a las ${time}`, 14, 44);
                 let head, body, foot;
+                
                 if (currentReportType === 'summary') {
                     let th=0,tm=0,tv=0,ti=0,tnv=0,ts=0; lastTableResults.forEach(g => { th+=g.totalH; tm+=g.totalM; tv+=g.vac; ti+=g.inc; tnv+=g.noVac; ts+=g.ster; });
                     head = [["MUNICIPIO", "COLONIA", "SEC.", "HOG.", "MASC.", "VAC.", "INC.", "S/V", "ESTER."]]; body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalH, g.totalM, g.vac, g.inc, g.noVac, g.ster]); foot = [["TOTALES", "", "", th, tm, tv, ti, tnv, ts]];
                 } else if (currentReportType === 'personas') {
-                    head = [["MUNICIPIO", "COLONIA", "GRUPO EDAD", "P. INDÍGENA", "HABLA LENGUA"]];
-                    body = lastTableResults.map(i => [i.municipio, i.colonia, i.grupo_edad, i.pertenece || '-', i.habla || '-']);
-                    const summaryLine = `TOTAL: ${lastTableResults.length} (INF: ${personasAgeGroupTotals['INFANCIA']}, ADO: ${personasAgeGroupTotals['ADOLESCENTES']}, ADU: ${personasAgeGroupTotals['ADULTOS']}, AM: ${personasAgeGroupTotals['ADULTOS MAYORES']})`;
-                    foot = [[summaryLine, "", "", "", ""]];
+                    head = [["SEC.", "COLONIA", "INFANCIA", "ADOLES.", "ADULTOS", "AM", "P. IND.", "H. LENGUA", "TOTAL"]];
+                    body = lastTableResults.map(o => [o.s, o.c, o.inf, o.ado, o.adu, o.am, o.ind, o.hla, o.tot]);
+                    let tI=0, tA=0, tU=0, tM=0, tN=0, tL=0, tT=0; 
+                    lastTableResults.forEach(o => { tI+=o.inf; tA+=o.ado; tU+=o.adu; tM+=o.am; tN+=o.ind; tL+=o.hla; tT+=o.tot; });
+                    foot = [["TOTALES", "", tI, tA, tU, tM, tN, tL, tT]];
                 } else if (currentReportType === 'itr') {
                     let tm=0,tr=0; lastTableResults.forEach(g => { tm+=g.totalM; tr+=g.tr; });
                     head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "MASC. TOT.", "ESQ. COMP.", "% COBERT."]]; body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalM, g.tr, (g.totalM>0 ? (g.tr/g.totalM*100).toFixed(1) : 0)+"%"]); foot = [["TOTALES", "", "", tm, tr, (tm>0 ? (tr/tm*100).toFixed(1) : 0)+"%"]];
@@ -536,6 +611,7 @@
                     let tnv=0; lastTableResults.forEach(g => tnv+=g.noVac);
                     head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "S/V", "% RIESGO"]]; body = lastTableResults.map(g => [g.m, g.c, g.s, g.noVac, (g.totalM>0 ? (g.noVac/g.totalM*100).toFixed(1) : 0)+"%"]); foot = [["TOTALES", "", "", tnv, ""]];
                 } else { head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "TOTAL HOGARES"]]; body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalH]); }
+                
                 doc.autoTable({ startY: 48, head: head, body: body, foot: foot, theme: 'grid', headStyles: { fillColor: [15, 83, 25], fontSize: 7, halign: 'center' }, styles: { fontSize: 6.5, cellPadding: 1.5 } });
                 doc.save(`Visitando_Corazones_${currentReportType}_${date.replace(/\//g, '-')}.pdf`);
             };
@@ -556,15 +632,8 @@
                 data.push(["MUNICIPIO", "COLONIA", "SECCIÓN", "HOGARES", "MASCOTAS", "VACUNADOS", "INCOMPLETAS", "SIN VACUNA", "ESTERILIZADOS"]);
                 lastTableResults.forEach(g => data.push([g.m, g.c, g.s, g.totalH, g.totalM, g.vac, g.inc, g.noVac, g.ster]));
             } else if (currentReportType === 'personas') {
-                data.push(["COLONIA", "MUNICIPIO", "GRUPO DE EDAD", "PERTENECE PUEBLO INDÍGENA", "HABLA LENGUA INDÍGENA"]);
-                lastTableResults.forEach(i => data.push([i.colonia, i.municipio, i.grupo_edad, i.pertenece, i.habla]));
-                data.push([]);
-                data.push(["RESUMEN ESTADÍSTICO POR RANGO DE EDAD"]);
-                data.push(["INFANCIA", personasAgeGroupTotals['INFANCIA']]);
-                data.push(["ADOLESCENTES", personasAgeGroupTotals['ADOLESCENTES']]);
-                data.push(["ADULTOS", personasAgeGroupTotals['ADULTOS']]);
-                data.push(["ADULTOS MAYORES", personasAgeGroupTotals['ADULTOS MAYORES']]);
-                data.push(["TOTAL GENERAL", lastTableResults.length]);
+                data.push(["SECCIÓN", "COLONIA", "INFANCIA", "ADOLESCENTES", "ADULTOS", "ADULTOS MAYORES", "PERTENECE PUEBLO INDÍGENA", "HABLA LENGUA INDÍGENA", "TOTAL PERSONAS"]);
+                lastTableResults.forEach(o => data.push([o.s, o.c, o.inf, o.ado, o.adu, o.am, o.ind, o.hla, o.tot]));
             } else if (currentReportType === 'itr') {
                 data.push(["MUNICIPIO", "COLONIA", "SECCIÓN", "TOTAL MASCOTAS", "ESQUEMA COMPLETO", "% COBERTURA"]);
                 lastTableResults.forEach(g => data.push([g.m, g.c, g.s, g.totalM, g.tr, (g.totalM>0 ? (g.tr/g.totalM*100).toFixed(1) : 0)+"%"]));
