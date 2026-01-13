@@ -236,8 +236,8 @@
                 <div class="p-8 border-b bg-gray-50 space-y-6">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div class="space-y-1">
-                            <h3 id="reportTitleDisplay" class="text-sm font-bold uppercase tracking-tight" style="color: var(--clues-green);">Resumen Operativo</h3>
-                            <p id="reportDescDisplay" class="text-[10px] text-gray-400 font-bold uppercase">Consolidado estadístico por territorio</p>
+                            <h3 id="reportTitleDisplay" class="text-sm font-bold uppercase tracking-tight" style="color: var(--clues-green);">Diagnóstico Población con Mascota</h3>
+                            <p id="reportDescDisplay" class="text-[10px] text-gray-400 font-bold uppercase">Consolidado operativo detallado por demarcación geográfica</p>
                         </div>
                         <div class="flex items-center gap-3">
                             <button onclick="clearFilters()" class="flex items-center space-x-2 bg-white border border-gray-300 hover:bg-gray-100 text-gray-600 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm">
@@ -258,11 +258,11 @@
                         <div class="lg:col-span-1">
                             <label class="text-[9px] font-bold text-gray-400 uppercase mb-1 block">Tipo de Reporte</label>
                             <select id="reportTypeSelector" onchange="handleReportChange()" class="w-full p-2 border rounded-lg text-xs font-bold text-gray-700 outline-none">
-                                <option value="summary">Análisis de población</option>
-                                <option value="personas">Personas atendidas</option>
-                                <option value="itr">Mascotas con Esquema Completo</option>
-                                <option value="risk">Prioridades de Vacunación</option>
-                                <option value="demo">Densidad de Hogares</option>
+                                <option value="summary">Diagnóstico Población con Mascota</option>
+                                <option value="personas">Perfil Demográfico de Población</option>
+                                <option value="itr">Estatus Sanitario y Bienestar Animal</option>
+                                <option value="risk">Mapa de Riesgo y Rezago Sanitario</option>
+                                <option value="demo">Censo de Cobertura de Viviendas</option>
                             </select>
                         </div>
                         <div class="lg:col-span-1">
@@ -281,7 +281,7 @@
                 </div>
                 <div class="table-container custom-scrollbar overflow-x-auto">
                     <table class="w-full text-left border-collapse" id="summaryTable">
-                        <thead class="sticky top-0 bg-white shadow-sm z-10" id="tableHeader"></thead>
+                        <thead class="sticky top-0 bg-white shadow-sm v-10" id="tableHeader"></thead>
                         <tbody id="dataTableBody" class="text-xs text-gray-700 divide-y divide-gray-100"></tbody>
                     </table>
                 </div>
@@ -425,11 +425,11 @@
         function handleReportChange() {
             currentReportType = document.getElementById('reportTypeSelector').value;
             const meta = {
-                summary: { t: "Análisis de población", d: "Visión general por zona geográfica" },
-                personas: { t: "Personas atendidas", d: "Sumatoria por sección, colonia y rango de edad" },
-                itr: { t: "Esquema Sanitario Completo", d: "Mascotas con vacunación y esterilización" },
-                risk: { t: "Ranking de Prioridad Sanitaria", d: "Zonas con baja cobertura de vacunación" },
-                demo: { t: "Censo de Viviendas", d: "Cantidad de hogares registrados por sección" }
+                summary: { t: "Diagnóstico Población con Mascota", d: "Consolidado operativo detallado por demarcación geográfica" },
+                personas: { t: "Perfil Demográfico de Población", d: "Desglose por grupos de edad, género y pertenencia indígena" },
+                itr: { t: "Estatus Sanitario y Bienestar Animal", d: "Porcentaje de mascotas con esquema sanitario integral (Vacuna + Esterilización)" },
+                risk: { t: "Mapa de Riesgo y Rezago Sanitario", d: "Identificación de zonas críticas con baja cobertura de vacunación" },
+                demo: { t: "Censo de Cobertura de Viviendas", d: "Cuantificación de hogares únicos registrados en el territorio" }
             };
             document.getElementById('reportTitleDisplay').textContent = meta[currentReportType].t;
             document.getElementById('reportDescDisplay').textContent = meta[currentReportType].d;
