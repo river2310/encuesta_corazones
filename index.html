@@ -261,9 +261,9 @@
                             <label class="text-[9px] font-bold text-gray-400 uppercase mb-1 block">Tipo de Reporte</label>
                             <select id="reportTypeSelector" onchange="handleReportChange()" class="w-full p-2 border rounded-lg text-xs font-bold text-gray-700 outline-none">
                                 <option value="summary">Diagnóstico Población con Mascota</option>
-                                <option value="personas">Perfil Demográfico de Población</option>
-                                <option value="itr">Estatus Sanitario y Bienestar Animal</option>
-                                <option value="risk">Mapa de Riesgo y Rezago Sanitario</option>
+                                <option value="personas">Perfil Población Encuestada</option>
+                                <option value="itr">Mascotas con vacunas completas</option>
+                                <option value="risk">Mapa de Riesgo</option>
                                 <option value="demo">Censo de Cobertura de Viviendas</option>
                             </select>
                         </div>
@@ -276,7 +276,7 @@
                             <input type="text" id="coloniaSearchInput" placeholder="Buscar colonia..." class="w-full p-2 border rounded-lg text-xs focus:ring-1 focus:ring-green-700 outline-none">
                         </div>
                         <div class="lg:col-span-1">
-                            <label class="text-[9px] font-bold text-gray-400 uppercase mb-1 block">Secciones</label>
+                            <label class="text-[9px] font-bold text-gray-400 uppercase mb-1 block">Sección</label>
                             <input type="text" id="seccionSearchInput" placeholder="Ej: 850" class="w-full p-2 border rounded-lg text-xs focus:ring-1 focus:ring-green-700 outline-none">
                         </div>
                     </div>
@@ -428,9 +428,9 @@
             currentReportType = document.getElementById('reportTypeSelector').value;
             const meta = {
                 summary: { t: "Diagnóstico Población con Mascota", d: "Consolidado operativo detallado por demarcación geográfica" },
-                personas: { t: "Perfil Demográfico de Población", d: "Desglose por grupos de edad, género y pertenencia indígena" },
-                itr: { t: "Estatus Sanitario y Bienestar Animal", d: "Porcentaje de mascotas con esquema sanitario integral (Vacuna + Esterilización)" },
-                risk: { t: "Mapa de Riesgo y Rezago Sanitario", d: "Identificación de zonas críticas con baja cobertura de vacunación" },
+                personas: { t: "Perfil Población Encuestada", d: "Desglose por grupos de edad, género y pertenencia indígena" },
+                itr: { t: "Mascotas con vacunas completas", d: "Porcentaje de mascotas con esquema sanitario integral (Vacuna + Esterilización)" },
+                risk: { t: "Mapa de Riesgo", d: "Identificación de zonas críticas con baja cobertura de vacunación" },
                 demo: { t: "Censo de Cobertura de Viviendas", d: "Cuantificación de hogares únicos registrados en el territorio" }
             };
             document.getElementById('reportTitleDisplay').textContent = meta[currentReportType].t;
@@ -560,7 +560,7 @@
             let hH = '', bH = '';
             
             if (currentReportType === 'personas') {
-                hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Sec.</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Infancia</th><th class="px-6 py-4 text-center">Adoles.</th><th class="px-6 py-4 text-center">Adultos</th><th class="px-6 py-4 text-center">AM</th><th class="px-6 py-4 text-center">P. Ind.</th><th class="px-6 py-4 text-center">H. Lengua</th><th class="px-6 py-4 text-center text-green-800">Total</th></tr>`;
+                hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Sección</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Infancia</th><th class="px-6 py-4 text-center">Adolescentes</th><th class="px-6 py-4 text-center">Adultos</th><th class="px-6 py-4 text-center">Adultos Mayores</th><th class="px-6 py-4 text-center">Pueblo Indígena</th><th class="px-6 py-4 text-center">Habla Lengua</th><th class="px-6 py-4 text-center text-green-800">Total</th></tr>`;
                 let filtered = globalRawDataPersonas.filter(i => i.colonia.toLowerCase().includes(colT) && i.municipio.toLowerCase().includes(munT) && (secTerms.length ? secTerms.some(t => i.seccion.toLowerCase().includes(t)) : true));
                 const grouped = {};
                 filtered.forEach(i => {
@@ -590,19 +590,19 @@
                 let results = Object.values(grouped); lastTableResults = results;
                 
                 if (currentReportType === 'summary') {
-                    hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sec.</th><th class="px-6 py-4 text-center">Hog.</th><th class="px-6 py-4 text-center">Masc.</th><th class="px-6 py-4 text-center">Vac.</th><th class="px-6 py-4 text-center">Inc.</th><th class="px-6 py-4 text-center">S/V</th><th class="px-6 py-4 text-center text-green-600 font-bold">Ster.</th></tr>`;
+                    hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sección</th><th class="px-6 py-4 text-center">Hogares</th><th class="px-6 py-4 text-center">Mascotas</th><th class="px-6 py-4 text-center">Vacunados</th><th class="px-6 py-4 text-center">Incompletas</th><th class="px-6 py-4 text-center">Sin Vacuna</th><th class="px-6 py-4 text-center text-green-600 font-bold">Esterilizados</th></tr>`;
                     results.sort((a,b) => b.totalH - a.totalH);
                     bH = results.map(g => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-3 text-[10px] text-gray-400 font-bold">${g.m}</td><td class="px-6 py-3 font-semibold text-gray-900">${g.c}</td><td class="px-6 py-3 text-center"><span class="bg-green-50 text-green-700 px-2 py-0.5 rounded font-bold font-mono text-[10px]">${g.s}</span></td><td class="px-6 py-3 text-center text-gray-500">${g.totalH}</td><td class="px-6 py-3 text-center text-green-700">${g.totalM}</td><td class="px-6 py-3 text-center font-black text-green-600">${g.vac}</td><td class="px-6 py-3 text-center font-black text-amber-500">${g.inc}</td><td class="px-6 py-3 text-center font-black text-red-500">${g.noVac}</td><td class="px-6 py-3 text-center font-black text-green-600">${g.ster}</td></tr>`).join('');
                 } else if (currentReportType === 'itr') {
-                    hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sec.</th><th class="px-6 py-4 text-center">Total Mascotas</th><th class="px-6 py-4 text-center text-green-700">Esq. Completo</th><th class="px-6 py-4 text-center text-green-700">% Cobertura</th></tr>`;
+                    hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sección</th><th class="px-6 py-4 text-center">Total Mascotas</th><th class="px-6 py-4 text-center text-green-700">Esquema Completo</th><th class="px-6 py-4 text-center text-green-700">Porcentaje Cobertura</th></tr>`;
                     results.sort((a,b) => b.tr - a.tr);
                     bH = results.map(g => { const idx = g.totalM > 0 ? (g.tr/g.totalM*100).toFixed(1) : 0; return `<tr class="hover:bg-green-50 transition-colors"><td class="px-6 py-3 text-[10px] text-gray-400 font-bold">${g.m}</td><td class="px-6 py-3 font-semibold text-green-900">${g.c}</td><td class="px-6 py-3 text-center font-mono text-[10px]">${g.s}</td><td class="px-6 py-3 text-center text-gray-400">${g.totalM}</td><td class="px-6 py-3 text-center font-black text-green-700 text-lg">${g.tr}</td><td class="px-6 py-3 text-center font-bold text-green-700">${idx}%</td></tr>`; }).join('');
                 } else if (currentReportType === 'risk') {
-                    hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sec.</th><th class="px-6 py-4 text-center text-red-700">Sin Vacuna</th><th class="px-6 py-4 text-center">% Riesgo</th></tr>`;
+                    hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sección</th><th class="px-6 py-4 text-center text-red-700">Sin Vacuna</th><th class="px-6 py-4 text-center">Porcentaje Riesgo</th></tr>`;
                     results.sort((a,b) => b.noVac - a.noVac);
-                    bH = results.map(g => { const r = g.totalM > 0 ? (g.noVac/g.totalM*100).toFixed(1) : 0; return `<tr class="hover:bg-red-50"><td class="px-6 py-3 text-[10px] text-gray-400 font-bold">${g.m}</td><td class="px-6 py-3 font-semibold text-red-900">${g.c}</td><td class="px-6 py-3 text-center font-mono text-[10px]">${g.s}</td><td class="px-6 py-3 text-center font-black text-red-600 text-lg">${g.noVac}</td><td class="px-6 py-3 text-center font-bold text-red-700">${r}%</td></tr>`; }).join('');
+                    bH = results.map(g => { const r = g.noVac > 0 ? (g.noVac/g.totalM*100).toFixed(1) : 0; return `<tr class="hover:bg-red-50"><td class="px-6 py-3 text-[10px] text-gray-400 font-bold">${g.m}</td><td class="px-6 py-3 font-semibold text-red-900">${g.c}</td><td class="px-6 py-3 text-center font-mono text-[10px]">${g.s}</td><td class="px-6 py-3 text-center font-black text-red-600 text-lg">${g.noVac}</td><td class="px-6 py-3 text-center font-bold text-red-700">${r}%</td></tr>`; }).join('');
                 } else if (currentReportType === 'demo') {
-                    hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sec.</th><th class="px-6 py-4 text-center">Hogares Registrados</th></tr>`;
+                    hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sección</th><th class="px-6 py-4 text-center">Hogares Registrados</th></tr>`;
                     bH = results.map(g => { return `<tr><td class="px-6 py-3 text-[10px] font-bold text-gray-400">${g.m}</td><td class="px-6 py-3 font-semibold">${g.c}</td><td class="px-6 py-3 text-center font-mono text-[10px]">${g.s}</td><td class="px-6 py-3 text-center font-bold text-slate-500 uppercase">${g.totalH}</td></tr>`; }).join('');
                 }
             }
@@ -629,22 +629,22 @@
                 let head, body, foot;
                 if (currentReportType === 'summary') {
                     let th=0,tm=0,tv=0,ti=0,tnv=0,ts=0; lastTableResults.forEach(g => { th+=g.totalH; tm+=g.totalM; tv+=g.vac; ti+=g.inc; tnv+=g.noVac; ts+=g.ster; });
-                    head = [["MUNICIPIO", "COLONIA", "SEC.", "HOG.", "MASC.", "VAC.", "INC.", "S/V", "ESTER."]]; 
+                    head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "HOGARES", "MASCOTAS", "VACUNADOS", "INCOMPLETAS", "SIN VACUNA", "ESTERILIZADOS"]]; 
                     body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalH, g.totalM, g.vac, g.inc, g.noVac, g.ster]); 
                     foot = [["TOTALES", "", "", th, tm, tv, ti, tnv, ts]];
                 } else if (currentReportType === 'personas') {
-                    head = [["SEC.", "COLONIA", "INFANCIA", "ADOLES.", "ADULTOS", "AM", "P. IND.", "H. LENGUA", "TOTAL"]];
+                    head = [["SECCIÓN", "COLONIA", "INFANCIA", "ADOLESCENTES", "ADULTOS", "ADULTOS MAYORES", "PUEBLO INDÍGENA", "HABLA LENGUA", "TOTAL"]];
                     body = lastTableResults.map(o => [o.s, o.c, o.inf, o.ado, o.adu, o.am, o.ind, o.hla, o.tot]);
                     let tI=0, tA=0, tU=0, tM=0, tN=0, tL=0, tT=0; lastTableResults.forEach(o => { tI+=o.inf; tA+=o.ado; tU+=o.adu; tM+=o.am; tN+=o.ind; tL+=o.hla; tT+=o.tot; });
                     foot = [["TOTALES", "", tI, tA, tU, tM, tN, tL, tT]];
                 } else if (currentReportType === 'itr') {
                     let tm=0,tr=0; lastTableResults.forEach(g => { tm+=g.totalM; tr+=g.tr; });
-                    head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "MASC. TOT.", "ESQ. COMP.", "% COBERT."]]; 
+                    head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "TOTAL MASCOTAS", "ESQUEMA COMPLETO", "PORCENTAJE COBERTURA"]]; 
                     body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalM, g.tr, (g.totalM>0 ? (g.tr/g.totalM*100).toFixed(1) : 0)+"%"]); 
                     foot = [["TOTALES", "", "", tm, tr, (tm>0 ? (tr/tm*100).toFixed(1) : 0)+"%"]];
                 } else if (currentReportType === 'risk') {
                     let tnv=0; lastTableResults.forEach(g => tnv+=g.noVac);
-                    head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "S/V", "% RIESGO"]]; 
+                    head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "SIN VACUNA", "PORCENTAJE RIESGO"]]; 
                     body = lastTableResults.map(g => [g.m, g.c, g.s, g.noVac, (g.totalM>0 ? (g.noVac/g.totalM*100).toFixed(1) : 0)+"%"]); 
                     foot = [["TOTALES", "", "", tnv, ""]];
                 } else { 
@@ -668,13 +668,13 @@
                 data.push(["MUNICIPIO", "COLONIA", "SECCIÓN", "HOGARES", "MASCOTAS", "VACUNADOS", "INCOMPLETAS", "SIN VACUNA", "ESTERILIZADOS"]);
                 lastTableResults.forEach(g => data.push([g.m, g.c, g.s, g.totalH, g.totalM, g.vac, g.inc, g.noVac, g.ster]));
             } else if (currentReportType === 'personas') {
-                data.push(["SECCIÓN", "COLONIA", "INFANCIA", "ADOLESCENTES", "ADULTOS", "ADULTOS MAYORES", "P. INDIGENA", "H. LENGUA", "TOTAL"]);
+                data.push(["SECCIÓN", "COLONIA", "INFANCIA", "ADOLESCENTES", "ADULTOS", "ADULTOS MAYORES", "PUEBLO INDÍGENA", "HABLA LENGUA", "TOTAL"]);
                 lastTableResults.forEach(o => data.push([o.s, o.c, o.inf, o.ado, o.adu, o.am, o.ind, o.hla, o.tot]));
             } else if (currentReportType === 'itr') {
-                data.push(["MUNICIPIO", "COLONIA", "SECCIÓN", "TOTAL MASCOTAS", "ESQUEMA COMPLETO", "% COBERTURA"]);
+                data.push(["MUNICIPIO", "COLONIA", "SECCIÓN", "TOTAL MASCOTAS", "ESQUEMA COMPLETO", "PORCENTAJE COBERTURA"]);
                 lastTableResults.forEach(g => data.push([g.m, g.c, g.s, g.totalM, g.tr, (g.totalM>0 ? (g.tr/g.totalM*100).toFixed(1) : 0)+"%"]));
             } else if (currentReportType === 'risk') {
-                data.push(["MUNICIPIO", "COLONIA", "SECCIÓN", "SIN VACUNA", "% RIESGO"]);
+                data.push(["MUNICIPIO", "COLONIA", "SECCIÓN", "SIN VACUNA", "PORCENTAJE RIESGO"]);
                 lastTableResults.forEach(g => data.push([g.m, g.c, g.s, g.noVac, (g.totalM>0 ? (g.noVac/g.totalM*100).toFixed(1) : 0)+"%"]));
             } else {
                 data.push(["MUNICIPIO", "COLONIA", "SECCIÓN", "TOTAL HOGARES"]);
