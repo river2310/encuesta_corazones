@@ -13,6 +13,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <!-- Librería Leaflet y Plugin de Clustering -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
         body { font-family: 'Montserrat', sans-serif; background-color: #f8fafc; color: #333333; overflow-x: hidden; }
@@ -63,6 +71,18 @@
         .email-link {
             overflow-wrap: anywhere;
             word-break: break-all;
+        }
+
+        /* Estilo personalizado para el marcador tipo Google Maps */
+        .custom-pin-container {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .custom-pin {
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
         }
     </style>
 </head>
@@ -154,9 +174,15 @@
                 <div class="w-1.5 h-8 bg-[#76b82a] rounded-full"></div>
                 <h2 class="text-xl font-black text-green-900 uppercase">Cobertura de Visitas Domiciliarias</h2>
             </div>
-            <div class="bg-white p-8 rounded-3xl shadow-xl border-t-8 border-[#76b82a]">
-                <h3 class="text-xs font-black text-gray-400 uppercase mb-6 tracking-widest text-center">Top 10 Colonias visitadas</h3>
-                <div class="chart-container-large"><canvas id="topVisitasChart"></canvas></div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-3xl shadow-xl border-t-8 border-[#76b82a]">
+                    <h3 class="text-xs font-black text-gray-400 uppercase mb-6 tracking-widest text-center">Top 10 Colonias visitadas</h3>
+                    <div class="chart-container-large"><canvas id="topVisitasChart"></canvas></div>
+                </div>
+                <div class="bg-white p-8 rounded-3xl shadow-xl border-t-8 border-[#76b82a]">
+                    <h3 class="text-xs font-black text-gray-400 uppercase mb-6 tracking-widest text-center">Distribución Geográfica (Clusters)</h3>
+                    <div id="visitasMap" style="height: 450px;" class="rounded-2xl border shadow-inner"></div>
+                </div>
             </div>
         </div>
 
@@ -251,7 +277,7 @@
                     <p class="text-[8px] sm:text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-2 sm:mb-6 h-auto sm:h-12 flex items-center justify-center">Secretaria de Salud</p>
                     <div class="w-full">
                         <a href="mailto:secretaria.salud@slpsalud.gob.mx" class="email-link inline-flex items-center justify-center text-center text-[7px] sm:text-[12px] text-green-700 font-normal hover:text-green-900 transition-all border-b border-transparent hover:border-green-700 pb-0.5 w-full">
-                            <i data-lucide="mail" class="w-4 h-4 mr-1 shrink-0 text-green-700"></i> secretaria.salud@slpsalud.gob.mx
+                            <i data-lucide="mail" class="w-2.5 h-2.5 sm:w-4 sm:h-4 mr-1 shrink-0 text-green-700"></i> secretaria.salud@slpsalud.gob.mx
                         </a>
                     </div>
                 </div>
@@ -261,7 +287,7 @@
                     <p class="text-[8px] sm:text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-2 sm:mb-6 h-auto sm:h-12 flex items-center justify-center">Director de Planeación</p>
                     <div class="w-full">
                         <a href="mailto:dir.planeacion@slpsalud.gob.mx" class="email-link inline-flex items-center justify-center text-center text-[7px] sm:text-[12px] text-green-700 font-normal hover:text-green-900 transition-all border-b border-transparent hover:border-green-700 pb-0.5 w-full">
-                            <i data-lucide="mail" class="w-4 h-4 mr-1 shrink-0 text-green-700"></i> dir.planeacion@slpsalud.gob.mx
+                            <i data-lucide="mail" class="w-2.5 h-2.5 sm:w-4 sm:h-4 mr-1 shrink-0 text-green-700"></i> dir.planeacion@slpsalud.gob.mx
                         </a>
                     </div>
                 </div>
@@ -271,7 +297,7 @@
                     <p class="text-[8px] sm:text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-2 sm:mb-6 h-auto sm:h-12 flex items-center justify-center">Subdirector de Informática</p>
                     <div class="w-full">
                         <a href="mailto:sub.informatica@slpsalud.gob.mx" class="email-link inline-flex items-center justify-center text-center text-[7px] sm:text-[12px] text-green-700 font-normal hover:text-green-900 transition-all border-b border-transparent hover:border-green-700 pb-0.5 w-full">
-                            <i data-lucide="mail" class="w-4 h-4 mr-1 shrink-0 text-green-700"></i> sub.informatica@slpsalud.gob.mx
+                            <i data-lucide="mail" class="w-2.5 h-2.5 sm:w-4 sm:h-4 mr-1 shrink-0 text-green-700"></i> sub.informatica@slpsalud.gob.mx
                         </a>
                     </div>
                 </div>
@@ -281,7 +307,7 @@
                     <p class="text-[8px] sm:text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-2 sm:mb-6 h-auto sm:h-12 flex items-center justify-center">Desarrollador y Analista de datos</p>
                     <div class="w-full">
                         <a href="mailto:clues.estadistica@slpsalud.gob.mx" class="email-link inline-flex items-center justify-center text-center text-[7px] sm:text-[12px] text-green-700 font-normal hover:text-green-900 transition-all border-b border-transparent hover:border-green-700 pb-0.5 w-full">
-                            <i data-lucide="mail" class="w-4 h-4 mr-1 shrink-0 text-green-700"></i> clues.estadistica@slpsalud.gob.mx
+                            <i data-lucide="mail" class="w-2.5 h-2.5 sm:w-4 sm:h-4 mr-1 shrink-0 text-green-700"></i> clues.estadistica@slpsalud.gob.mx
                         </a>
                     </div>
                 </div>
@@ -331,10 +357,13 @@
         const URL_POBLACION = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=315557438&single=true&output=csv';
         const URL_MASCOTAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=0&single=true&output=csv';
         const URL_VISITAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=802355093&single=true&output=csv';
+        const URL_GEOREFERENCIA = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=979206153&single=true&output=csv';
         
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') { Chart.register(ChartDataLabels); }
         
-        let globalRawDataHogares = [], globalRawDataPersonas = [], lastTableResults = [], currentReportType = 'demo', globalGroupGenderBreakdown = {}, personasAgeGroupTotals = {};
+        let globalRawDataHogares = [], globalRawDataPersonas = [], globalGeorefData = [], lastTableResults = [], currentReportType = 'demo', globalGroupGenderBreakdown = {}, personasAgeGroupTotals = {};
+        let leafletMap = null, markersClusterGroup = null;
+
         const COLORS = { green: '#0f5319', gold: '#76b82a', red: '#ea047f', secondary: '#0f5319', gray: '#6F7271', beige: '#D4C19C' };
         const CHART_COLORS = [ '#0f5319', '#76b82a', '#ea047f' ];
         const BAR_COLORS = [ '#0f5319', '#76b82a', '#ea047f', '#A57F2C', '#6F7271', '#D4C19C', '#00897B', '#D81B60', '#558B2F', '#8E24AA' ];
@@ -357,11 +386,75 @@
                 btn.classList.add('active');
                 let ring = 'ring-slate-100';
                 if(sectionId === 'population') ring = 'ring-green-100';
-                else if(sectionId === 'visitas') ring = 'ring-blue-100';
+                else if(sectionId === 'visitas') {
+                    ring = 'ring-blue-100';
+                    setTimeout(initVisitasMap, 600);
+                }
                 else if(sectionId === 'pets') ring = 'ring-red-100';
                 btn.classList.add('ring-4', ring);
                 setTimeout(() => { content.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300);
             }
+        }
+
+        function createGoogleMarkerIcon(color = '#0f5319') {
+            const svgTemplate = `
+                <svg class="custom-pin" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 0C7.58 0 4 3.58 4 8C4 13.54 12 24 12 24C12 24 20 13.54 20 8C20 3.58 16.42 0 12 0Z" fill="${color}"/>
+                    <circle cx="12" cy="8" r="4" fill="white"/>
+                </svg>
+            `;
+            return L.divIcon({
+                className: 'custom-pin-container',
+                html: svgTemplate,
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32]
+            });
+        }
+
+        function initVisitasMap() {
+            if (!globalGeorefData || globalGeorefData.length === 0) return;
+            
+            if (!leafletMap) {
+                leafletMap = L.map('visitasMap').setView([22.1566, -100.9855], 12);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '© OpenStreetMap © CARTO'
+                }).addTo(leafletMap);
+                markersClusterGroup = L.markerClusterGroup();
+                leafletMap.addLayer(markersClusterGroup);
+            }
+
+            markersClusterGroup.clearLayers();
+
+            const customIcon = createGoogleMarkerIcon(COLORS.green);
+
+            globalGeorefData.forEach(row => {
+                const lat = parseFloat(getColumnValue(row, 'latitud'));
+                const lng = parseFloat(getColumnValue(row, 'longitud'));
+                const brigada = getColumnValue(row, 'brigada') || 'Sin Brigada';
+                const colonia = getColumnValue(row, 'colonia') || 'Desconocida';
+
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    const marker = L.marker([lat, lng], { icon: customIcon });
+                    marker.bindPopup(`
+                        <div class="p-2">
+                            <h4 class="font-black text-green-800 uppercase text-xs mb-1">Brigada: ${brigada}</h4>
+                            <p class="text-[10px] font-bold text-gray-500 uppercase">Colonia: ${colonia}</p>
+                            <p class="text-[9px] text-gray-400 mt-1 italic">Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}</p>
+                        </div>
+                    `);
+                    markersClusterGroup.addLayer(marker);
+                }
+            });
+
+            if (globalGeorefData.length > 0) {
+                const bounds = markersClusterGroup.getBounds();
+                if (bounds.isValid()) {
+                    leafletMap.fitBounds(bounds, { padding: [30, 30] });
+                }
+            }
+
+            setTimeout(() => { leafletMap.invalidateSize(); }, 200);
         }
 
         const getColumnValue = (row, key) => {
@@ -425,7 +518,13 @@
         window.onload = async () => {
             if (typeof lucide !== 'undefined') lucide.createIcons();
             try {
-                const [hogaresData, persAtendData, visitasData] = await Promise.all([ fetchCSVData(URL_MASCOTAS), fetchCSVData(URL_POBLACION), fetchCSVData(URL_VISITAS) ]);
+                const [hogaresData, persAtendData, visitasData, georefData] = await Promise.all([ 
+                    fetchCSVData(URL_MASCOTAS), 
+                    fetchCSVData(URL_POBLACION), 
+                    fetchCSVData(URL_VISITAS),
+                    fetchCSVData(URL_GEOREFERENCIA)
+                ]);
+                globalGeorefData = georefData;
                 document.getElementById('status-container').classList.add('hidden');
                 document.getElementById('dashboard-content').classList.remove('hidden');
                 processAndRenderData(hogaresData, persAtendData, visitasData);
