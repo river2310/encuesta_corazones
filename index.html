@@ -64,56 +64,9 @@
             overflow-wrap: anywhere;
             word-break: break-all;
         }
-        #guide-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 100;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        .highlight-element {
-            position: relative;
-            z-index: 101 !important;
-            box-shadow: 0 0 0 10000px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255,255,255,0.6) !important;
-            pointer-events: none;
-        }
-        #guide-tooltip {
-            position: fixed;
-            z-index: 102;
-            background: white;
-            padding: 16px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 300px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: auto;
-            transition: top 0.3s ease, left 0.3s ease;
-        }
-        #guide-tooltip::after {
-            content: '';
-            position: absolute;
-            border: 10px solid transparent;
-        }
-        .tooltip-top::after { bottom: -20px; left: 50%; transform: translateX(-50%); border-top-color: white; }
-        .tooltip-bottom::after { top: -20px; left: 50%; transform: translateX(-50%); border-bottom-color: white; }
     </style>
 </head>
 <body class="p-4 sm:p-8">
-
-    <div id="guide-overlay"></div>
-    <div id="guide-tooltip">
-        <h4 id="guide-title" class="text-sm font-black uppercase text-green-800 tracking-tight">Título Guía</h4>
-        <p id="guide-text" class="text-[11px] text-gray-600 leading-relaxed font-medium">Descripción de la función del elemento.</p>
-        <div class="flex justify-between items-center mt-2">
-            <span id="guide-step-count" class="text-[9px] font-bold text-gray-400 uppercase">1 de 4</span>
-            <button id="guide-next-btn" class="bg-green-700 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-green-800 transition-colors">Siguiente</button>
-        </div>
-    </div>
 
     <div id="status-container" class="flex flex-col items-center justify-center mt-32">
         <div id="loading-animation" class="animate-heart mb-6">
@@ -340,7 +293,7 @@
                 </div>
             </div>
         </section>
-        <footer class="mt-8 mb-12 pt-8 border-t text-center text-[10px] text-gray-400 uppercase font-bold tracking-widest">
+        <footer class="mt-8 mb-12 pt-8 border-t text-center text-[13px] text-gray-400 uppercase font-bold tracking-widest">
             Último Corte: 31 Diciembre 2025
         </footer>
     </div>
@@ -484,7 +437,6 @@
                 document.getElementById('status-container').classList.add('hidden');
                 document.getElementById('dashboard-content').classList.remove('hidden');
                 processAndRenderData(hogaresData, persAtendData, visitasData);
-                setTimeout(startGuide, 1000);
             } catch (error) {
                 document.getElementById('status-text').textContent = "Error de Conexión";
                 document.getElementById('status-subtext').textContent = "No se pudieron obtener los datos. Verifique que las hojas estén publicadas.";
@@ -745,80 +697,6 @@
             document.getElementById('genderBreakdownModal').classList.remove('hidden');
         }
         function hideGenderBreakdown() { document.getElementById('genderBreakdownModal').classList.add('hidden'); }
-
-        let currentGuideStep = 0;
-        const guideSteps = [
-            { id: 'btn-population', title: 'Población Atendida', text: 'Total acumulado de personas atendidas por nuestras brigadas en territorio.' },
-            { id: 'btn-visitas', title: 'Cobertura de Visitas', text: 'Número total de hogares únicos censados y visitados durante la campaña.' },
-            { id: 'btn-pets', title: 'Censo de Mascotas', text: 'Identificación de hogares con animales de compañía y su estatus sanitario.' },
-            { id: 'btn-reports', title: 'Gestión de Reportes', text: 'Acceso a análisis detallados por colonia y exportación de datos en PDF o Excel.' }
-        ];
-
-        function startGuide() {
-            const overlay = document.getElementById('guide-overlay');
-            overlay.style.display = 'block';
-            setTimeout(() => overlay.style.opacity = '1', 10);
-            currentGuideStep = 0;
-            showGuideStep();
-        }
-
-        function showGuideStep() {
-            const step = guideSteps[currentGuideStep];
-            const target = document.getElementById(step.id);
-            const tooltip = document.getElementById('guide-tooltip');
-            const nextBtn = document.getElementById('guide-next-btn');
-
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-            setTimeout(() => {
-                guideSteps.forEach(s => document.getElementById(s.id).classList.remove('highlight-element'));
-                target.classList.add('highlight-element');
-                
-                document.getElementById('guide-title').textContent = step.title;
-                document.getElementById('guide-text').textContent = step.text;
-                document.getElementById('guide-step-count').textContent = `${currentGuideStep + 1} de ${guideSteps.length}`;
-                nextBtn.textContent = currentGuideStep === guideSteps.length - 1 ? 'Finalizar' : 'Siguiente';
-
-                const rect = target.getBoundingClientRect();
-                const tooltipWidth = Math.min(300, window.innerWidth * 0.9);
-                tooltip.style.display = 'flex';
-                tooltip.classList.remove('tooltip-top', 'tooltip-bottom');
-
-                let top;
-                if (rect.bottom + 200 > window.innerHeight) {
-                    top = rect.top - tooltip.offsetHeight - 20;
-                    tooltip.classList.add('tooltip-top');
-                } else {
-                    top = rect.bottom + 20;
-                    tooltip.classList.add('tooltip-bottom');
-                }
-
-                let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-                left = Math.max(10, Math.min(window.innerWidth - tooltipWidth - 10, left));
-
-                tooltip.style.top = `${top}px`;
-                tooltip.style.left = `${left}px`;
-                tooltip.style.width = `${tooltipWidth}px`;
-
-                nextBtn.onclick = () => {
-                    if (currentGuideStep < guideSteps.length - 1) {
-                        currentGuideStep++;
-                        showGuideStep();
-                    } else {
-                        endGuide();
-                    }
-                };
-            }, 500);
-        }
-
-        function endGuide() {
-            const overlay = document.getElementById('guide-overlay');
-            const tooltip = document.getElementById('guide-tooltip');
-            overlay.style.opacity = '0';
-            tooltip.style.display = 'none';
-            guideSteps.forEach(s => document.getElementById(s.id).classList.remove('highlight-element'));
-            setTimeout(() => overlay.style.display = 'none', 500);
-        }
     </script>
 </body>
 </html>
