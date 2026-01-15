@@ -13,14 +13,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    
-    <!-- Librería Leaflet y Plugin de Clustering -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
         body { font-family: 'Montserrat', sans-serif; background-color: #f8fafc; color: #333333; overflow-x: hidden; }
@@ -72,8 +69,6 @@
             overflow-wrap: anywhere;
             word-break: break-all;
         }
-
-        /* Estilo personalizado para el marcador tipo Google Maps */
         .custom-pin-container {
             width: 32px;
             height: 32px;
@@ -87,7 +82,6 @@
     </style>
 </head>
 <body class="p-4 sm:p-8">
-
     <div id="status-container" class="flex flex-col items-center justify-center mt-32">
         <div id="loading-animation" class="animate-heart mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="#ea047f" stroke="#ea047f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart">
@@ -99,7 +93,6 @@
         <p class="text-[10px] font-bold text-gray-400 mt-4 uppercase tracking-[0.2em] text-center">Servicios de Salud de San Luis Potosí</p>
         <button id="retry-btn" onclick="location.reload()" class="hidden mt-6 px-8 py-3 bg-gray-800 text-white font-bold uppercase text-xs tracking-widest rounded-lg hover:bg-black transition-colors shadow-lg">Reintentar Conexión</button>
     </div>
-
     <div id="dashboard-content" class="hidden max-w-7xl mx-auto">
         <header class="mb-10 text-center md:text-left border-b pb-6">
             <div class="flex flex-col md:flex-row items-center gap-6">
@@ -112,7 +105,6 @@
                 </div>
             </div>
         </header>
-
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div onclick="toggleDetails('population')" id="btn-population" class="app-tile bg-white p-6 rounded-3xl shadow-xl border-b-8 border-green-700 hover:shadow-2xl flex flex-col items-center text-center">
                 <div class="p-3 bg-green-50 rounded-2xl mb-3">
@@ -122,7 +114,6 @@
                 <p id="main-total-personas" class="text-2xl md:text-3xl font-black text-gray-900 my-1">0</p>
                 <span class="text-[9px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase">Personas Atendidas</span>
             </div>
-
             <div onclick="toggleDetails('visitas')" id="btn-visitas" class="app-tile bg-white p-6 rounded-3xl shadow-xl border-b-8 border-[#76b82a] hover:shadow-2xl flex flex-col items-center text-center">
                 <div class="p-3 bg-green-50 rounded-2xl mb-3">
                     <i data-lucide="home" class="w-8 h-8 text-[#76b82a]"></i>
@@ -131,7 +122,6 @@
                 <p id="main-total-visitas" class="text-2xl md:text-3xl font-black text-gray-900 my-1">0</p>
                 <span class="text-[9px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full uppercase">Hogares Visitados</span>
             </div>
-
             <div onclick="toggleDetails('pets')" id="btn-pets" class="app-tile bg-white p-6 rounded-3xl shadow-xl border-b-8 border-red-600 hover:shadow-2xl flex flex-col items-center text-center">
                 <div class="p-3 bg-red-50 rounded-2xl mb-3">
                     <i data-lucide="paw-print" class="w-8 h-8 text-red-600"></i>
@@ -140,7 +130,6 @@
                 <p id="main-hogares-mascotas" class="text-2xl md:text-3xl font-black text-gray-900 my-1">0</p>
                 <span class="text-[9px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full uppercase">Con Mascota</span>
             </div>
-
             <div onclick="toggleDetails('reports')" id="btn-reports" class="app-tile bg-white p-6 rounded-3xl shadow-xl border-b-8 border-slate-700 hover:shadow-2xl flex flex-col items-center text-center">
                 <div class="p-3 bg-slate-50 rounded-2xl mb-3">
                     <i data-lucide="file-bar-chart" class="w-8 h-8 text-slate-700"></i>
@@ -150,7 +139,6 @@
                 <span class="text-[9px] font-bold text-slate-600 bg-slate-50 px-2 py-0.5 rounded-full uppercase">Generar Reportes</span>
             </div>
         </div>
-
         <div id="details-population" class="details-content">
             <div class="flex items-center space-x-3 mb-6">
                 <div class="w-1.5 h-8 bg-green-700 rounded-full"></div>
@@ -168,7 +156,6 @@
                 </div>
             </div>
         </div>
-
         <div id="details-visitas" class="details-content">
             <div class="flex items-center space-x-3 mb-6">
                 <div class="w-1.5 h-8 bg-[#76b82a] rounded-full"></div>
@@ -185,7 +172,6 @@
                 </div>
             </div>
         </div>
-
         <div id="details-pets" class="details-content">
             <div class="flex items-center space-x-3 mb-6">
                 <div class="w-1.5 h-8 bg-red-600 rounded-full"></div>
@@ -208,7 +194,6 @@
                 </div>
             </div>
         </div>
-
         <div id="details-reports" class="details-content">
             <div class="flex items-center space-x-3 mb-6">
                 <div class="w-1.5 h-8 bg-slate-700 rounded-full"></div>
@@ -242,8 +227,8 @@
                             <select id="reportTypeSelector" onchange="handleReportChange()" class="w-full p-2 border rounded-lg text-xs font-bold text-gray-700 outline-none">
                                 <option value="demo">Cobertura en Viviendas</option>
                                 <option value="personas">Población Encuestada</option>
-                                <option value="summary">Población con mascota</option>
                                 <option value="cronicas">Población con enfermedades crónicas</option>
+                                <option value="summary">Población con mascota</option>
                             </select>
                         </div>
                         <div class="lg:col-span-1">
@@ -268,7 +253,6 @@
                 </div>
             </div>
         </div>
-
         <section class="mt-16 sm:mt-24 mb-16 px-2 sm:px-0">
             <h2 class="text-[10px] sm:text-[11px] font-bold uppercase text-gray-400 tracking-[0.2em] sm:tracking-[0.25em] mb-8 sm:mb-12 text-center">Responsables de la Plataforma y Soporte Técnico</h2>
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8 max-w-7xl mx-auto">
@@ -318,7 +302,6 @@
             Último Corte: 31 Diciembre 2025
         </footer>
     </div>
-
     <div id="genderBreakdownModal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden transform transition-all">
             <div class="p-6 border-b flex justify-between items-center bg-green-800">
@@ -353,36 +336,28 @@
             </div>
         </div>
     </div>
-
     <script>
         const URL_POBLACION = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=315557438&single=true&output=csv';
         const URL_MASCOTAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=0&single=true&output=csv';
         const URL_VISITAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=802355093&single=true&output=csv';
         const URL_GEOREFERENCIA = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=979206153&single=true&output=csv';
         const URL_CRONICAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=1004174643&single=true&output=csv';
-        
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') { Chart.register(ChartDataLabels); }
-        
         let globalRawDataHogares = [], globalRawDataPersonas = [], globalGeorefData = [], globalRawDataCronicas = [], lastTableResults = [], currentReportType = 'demo', globalGroupGenderBreakdown = {}, personasAgeGroupTotals = {};
         let leafletMap = null, markersClusterGroup = null;
-
         const COLORS = { green: '#0f5319', gold: '#76b82a', red: '#ea047f', secondary: '#0f5319', gray: '#6F7271', beige: '#D4C19C' };
         const CHART_COLORS = [ '#0f5319', '#76b82a', '#ea047f' ];
         const BAR_COLORS = [ '#0f5319', '#76b82a', '#ea047f', '#A57F2C', '#6F7271', '#D4C19C', '#00897B', '#D81B60', '#558B2F', '#8E24AA' ];
-        
         const formatNumber = (num) => { if (num === null || num === undefined) return "0"; return num.toLocaleString('es-MX'); };
-
         function toggleDetails(sectionId) {
             const sections = ['population', 'visitas', 'pets', 'reports'];
             const content = document.getElementById(`details-${sectionId}`);
             const btn = document.getElementById(`btn-${sectionId}`);
             const isAlreadyActive = content.classList.contains('active');
-            
             sections.forEach(s => {
                 document.getElementById(`details-${s}`).classList.remove('active');
                 document.getElementById(`btn-${s}`).classList.remove('active', 'ring-4', 'ring-green-100', 'ring-blue-100', 'ring-red-100', 'ring-slate-100');
             });
-            
             if (!isAlreadyActive) {
                 content.classList.add('active');
                 btn.classList.add('active');
@@ -397,7 +372,6 @@
                 setTimeout(() => { content.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300);
             }
         }
-
         function createGoogleMarkerIcon(color = '#0f5319') {
             const svgTemplate = `
                 <svg class="custom-pin" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -413,10 +387,8 @@
                 popupAnchor: [0, -32]
             });
         }
-
         function initVisitasMap() {
             if (!globalGeorefData || globalGeorefData.length === 0) return;
-            
             if (!leafletMap) {
                 leafletMap = L.map('visitasMap').setView([22.1566, -100.9855], 12);
                 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -425,17 +397,13 @@
                 markersClusterGroup = L.markerClusterGroup();
                 leafletMap.addLayer(markersClusterGroup);
             }
-
             markersClusterGroup.clearLayers();
-
             const customIcon = createGoogleMarkerIcon(COLORS.green);
-
             globalGeorefData.forEach(row => {
                 const lat = parseFloat(getColumnValue(row, 'latitud'));
                 const lng = parseFloat(getColumnValue(row, 'longitud'));
                 const brigada = getColumnValue(row, 'brigada') || 'Sin Brigada';
                 const colonia = getColumnValue(row, 'colonia') || 'Desconocida';
-
                 if (!isNaN(lat) && !isNaN(lng)) {
                     const marker = L.marker([lat, lng], { icon: customIcon });
                     marker.bindPopup(`
@@ -448,17 +416,14 @@
                     markersClusterGroup.addLayer(marker);
                 }
             });
-
             if (globalGeorefData.length > 0) {
                 const bounds = markersClusterGroup.getBounds();
                 if (bounds.isValid()) {
                     leafletMap.fitBounds(bounds, { padding: [30, 30] });
                 }
             }
-
             setTimeout(() => { leafletMap.invalidateSize(); }, 200);
         }
-
         const getColumnValue = (row, key) => {
             if (!row) return undefined;
             if (row[key] !== undefined) return row[key];
@@ -469,7 +434,6 @@
             const found = Object.keys(row).find(k => k.toLowerCase().includes(normalizedKey));
             return found ? row[found] : undefined;
         };
-
         const calculateAgeGroup = (v) => {
             const a = parseInt(v);
             if (isNaN(a)) return 'OTRO';
@@ -478,7 +442,6 @@
             if (a <= 59) return 'ADULTOS';
             return 'ADULTOS MAYORES';
         };
-
         const calculateQuinquenio = (v) => {
             const a = parseInt(v);
             if (isNaN(a)) return 'NO ESPECIFICADO';
@@ -486,27 +449,24 @@
             const upper = lower + 4;
             return `${lower}-${upper} AÑOS`;
         };
-
         function handleReportChange() {
             currentReportType = document.getElementById('reportTypeSelector').value;
             const meta = {
                 demo: { t: "Cobertura en Viviendas", d: "Cuantificación de hogares únicos registrados en el territorio" },
                 personas: { t: "Población Encuestada", d: "Desglose por grupos de edad, género y pertenencia indígena" },
-                summary: { t: "Población con mascota", d: "Consolidado operativo detallado por demarcación geográfica" },
-                cronicas: { t: "Población con enfermedades crónicas", d: "Número de personas diagnosticadas con enfermedades crónicas por colonia" }
+                cronicas: { t: "Población con enfermedades crónicas", d: "Número de personas diagnosticadas con enfermedades crónicas por colonia" },
+                summary: { t: "Población con mascota", d: "Consolidado operativo detallado por demarcación geográfica" }
             };
             document.getElementById('reportTitleDisplay').textContent = meta[currentReportType].t;
             document.getElementById('reportDescDisplay').textContent = meta[currentReportType].d;
             filterAndRenderTable(document.getElementById('coloniaSearchInput').value.toLowerCase(), document.getElementById('seccionSearchInput').value.toLowerCase(), document.getElementById('municipioSearchInput').value.toLowerCase());
         }
-
         function clearFilters() {
             document.getElementById('coloniaSearchInput').value = "";
             document.getElementById('seccionSearchInput').value = "";
             document.getElementById('municipioSearchInput').value = "";
             filterAndRenderTable("", "", "");
         }
-
         const fetchCSVData = async (url) => {
             try {
                 const response = await fetch(url);
@@ -517,7 +477,6 @@
                 });
             } catch (err) { console.error(err); throw err; }
         };
-
         window.onload = async () => {
             if (typeof lucide !== 'undefined') lucide.createIcons();
             try {
@@ -542,12 +501,10 @@
             const h = () => filterAndRenderTable(col.value.toLowerCase(), sec.value.toLowerCase(), mun.value.toLowerCase());
             [col, sec, mun].forEach(el => el.addEventListener('input', h));
         };
-
         function processAndRenderData(mascotas, individuos, visitas) {
             let tH = 0, tM = 0;
             const petT = { 'TIENE': 0, 'NO TIENE': 0 }, vacT = { VACUNADOS: 0, 'SIN VACUNA': 0 }, colStats = {};
             globalRawDataHogares = [];
-            
             mascotas.forEach(row => {
                 if (!row || Object.keys(row).length < 2) return;
                 tH++;
@@ -558,14 +515,11 @@
                 if (vac.includes("NO APLICA")) estatus = "NO_APLICA";
                 else if (vac.includes('SI')) estatus = "VAC";
                 else if (vac.includes('NO')) estatus = "NOVAC";
-                
                 if (hasP) {
                     tM++;
                     if (estatus === "VAC") vacT.VACUNADOS++; else if (estatus === "NOVAC") vacT['SIN VACUNA']++;
                 }
-                
                 globalRawDataHogares.push({ municipio: String(getColumnValue(row, 'municipio') || 'N/A').toUpperCase(), colonia: String(getColumnValue(row, 'colonia') || 'SIN COLONIA').toUpperCase(), seccion: String(getColumnValue(row, 'seccion_electoral') || 'S/S'), tieneMascotas: hasP, estatus: estatus });
-                
                 const cRaw = getColumnValue(row, 'colonia');
                 if (cRaw) {
                     const c = String(cRaw).toUpperCase().trim();
@@ -573,33 +527,27 @@
                     if (hasP) { colStats[c].totalPets++; if (estatus === "VAC") colStats[c].vac++; if (estatus === "NOVAC") colStats[c].noVac++; }
                 }
             });
-
             let tP = 0;
             const groupT = { infancia: 0, adolescentes: 0, adultos: 0, 'adultos mayores': 0 }, genderT = { femenino: 0, masculino: 0, "no binario": 0 };
             globalGroupGenderBreakdown = {};
             globalRawDataPersonas = [];
-            
             individuos.forEach(row => {
                 if (!row || Object.keys(row).length < 2) return;
                 tP++;
                 const age = getColumnValue(row, 'edad'), ageG = calculateAgeGroup(age), quin = calculateQuinquenio(age);
                 if (ageG !== 'OTRO') groupT[ageG.toLowerCase()]++;
-                
                 const genRaw = String(getColumnValue(row, 'genero') || getColumnValue(row, 'sexo') || '').toLowerCase().trim();
                 let gen = "femenino";
                 if (genRaw.includes("fem") || genRaw.includes("mujer")) gen = "femenino"; 
                 else if (genRaw.includes("masc") || genRaw.includes("hombre")) gen = "masculino";
                 else if (genRaw.includes("no binario") || genRaw.includes("binario")) gen = "no binario";
-                
                 genderT[gen] = (genderT[gen] || 0) + 1;
                 if (ageG !== 'OTRO') { 
                     if (!globalGroupGenderBreakdown[ageG.toLowerCase()]) globalGroupGenderBreakdown[ageG.toLowerCase()] = { femenino: 0, masculino: 0, "no binario": 0 }; 
                     globalGroupGenderBreakdown[ageG.toLowerCase()][gen]++; 
                 }
-                
                 globalRawDataPersonas.push({ colonia: String(getColumnValue(row, 'colonia') || '').toUpperCase(), municipio: String(getColumnValue(row, 'municipio') || '').toUpperCase(), seccion: String(getColumnValue(row, 'seccion_electoral') || 'S/S'), grupo_edad: ageG, quinquenio: quin, pertenece: String(getColumnValue(row, 'pertenece_pueblo_indigena') || '').toLowerCase().includes('si'), habla: String(getColumnValue(row, 'habla_lengua_indigena') || '').toLowerCase().includes('si') });
             });
-
             const visitasPorColonia = {};
             let tV = 0;
             visitas.forEach(row => { 
@@ -610,21 +558,17 @@
                     tV++;
                 }
             });
-
             document.getElementById('main-total-personas').textContent = formatNumber(tP);
             document.getElementById('main-total-visitas').textContent = formatNumber(tV);
             document.getElementById('main-hogares-mascotas').textContent = formatNumber(tM);
-            
             renderKPIs(groupT, tP, ['infancia', 'adolescentes', 'adultos', 'adultos mayores']);
             renderCharts(groupT, genderT, vacT, colStats, petT, visitasPorColonia);
             handleReportChange();
         }
-
         function filterAndRenderTable(colT, secT, munT) {
             const tbody = document.getElementById('dataTableBody'), header = document.getElementById('tableHeader');
             const secTerms = secT.split(',').map(t => t.trim().toLowerCase()).filter(t => t !== "");
             let hH = '', bH = '';
-            
             if (currentReportType === 'cronicas') {
                 hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b">
                         <th class="px-6 py-4">Municipio</th>
@@ -635,37 +579,30 @@
                         <th class="px-6 py-4 text-center">Dislipidemia</th>
                         <th class="px-6 py-4 text-center text-green-800">Total Casos</th>
                       </tr>`;
-                
                 let filtered = globalRawDataCronicas.filter(i => {
                     const col = String(getColumnValue(i, 'colonia') || '').toLowerCase();
                     const mun = String(getColumnValue(i, 'municipio') || '').toLowerCase();
                     const sec = String(getColumnValue(i, 'seccion_electoral') || '').toLowerCase();
                     return col.includes(colT) && mun.includes(munT) && (secTerms.length ? secTerms.some(t => sec.includes(t)) : true);
                 });
-
                 const grouped = {};
                 filtered.forEach(i => {
                     const mun = String(getColumnValue(i, 'municipio') || 'N/A').toUpperCase();
                     const col = String(getColumnValue(i, 'colonia') || 'SIN COLONIA').toUpperCase();
                     const key = `${mun}|${col}`;
-                    
-                    if (!grouped[key]) grouped[key] = { m: mun, c: col, hip: 0, dia: 0, car: 0, dis: 0, tot: 0 };
-                    
+                    if (!grouped[key]) grouped[key] = { m: mun, c: col, hip: 0, dia: 0, car: 0,  dis: 0, tot: 0 };
                     const isHip = String(getColumnValue(i, 'hipertension_arterial') || '').toLowerCase().includes('si');
                     const isDia = String(getColumnValue(i, 'diabetes_mellitus') || '').toLowerCase().includes('si');
                     const isCar = String(getColumnValue(i, 'enfermedad_cardiovascular') || '').toLowerCase().includes('si');
                     const isDis = String(getColumnValue(i, 'dislipidemia') || '').toLowerCase().includes('si');
-                    
                     if (isHip) grouped[key].hip++;
                     if (isDia) grouped[key].dia++;
                     if (isCar) grouped[key].car++;
                     if (isDis) grouped[key].dis++;
                     if (isHip || isDia || isCar || isDis) grouped[key].tot++;
                 });
-
                 let results = Object.values(grouped).sort((a,b) => b.tot - a.tot);
                 lastTableResults = results;
-                
                 let gH=0, gD=0, gC=0, gDi=0, gT=0;
                 bH = results.map(o => {
                     gH += o.hip; gD += o.dia; gC += o.car; gDi += o.dis; gT += o.tot;
@@ -716,7 +653,6 @@
                     if (i.tieneMascotas) { o.totalM++; if (i.estatus === "VAC") o.vac++; else if (i.estatus === "NOVAC") o.noVac++; }
                 });
                 let results = Object.values(grouped); lastTableResults = results;
-                
                 if (currentReportType === 'summary') {
                     hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Municipio</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Sección</th><th class="px-6 py-4 text-center">Hogares</th><th class="px-6 py-4 text-center">Mascotas</th><th class="px-6 py-4 text-center">Vacunados</th><th class="px-6 py-4 text-center">Sin Vacuna</th></tr>`;
                     results.sort((a,b) => b.totalH - a.totalH);
@@ -729,13 +665,11 @@
             header.innerHTML = hH; tbody.innerHTML = bH || `<tr><td colspan="9" class="px-6 py-8 text-center text-gray-400 italic">No se encontraron resultados</td></tr>`;
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
-
         function generatePDFReport() {
             if (!window.jspdf) return;
             const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
             const now = new Date(), date = now.toLocaleDateString('es-MX'), time = now.toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit'});
             const img = new Image(); img.crossOrigin = "Anonymous"; img.src = document.getElementById('dashboardLogo').src;
-            
             img.onload = () => {
                 doc.addImage(img, 'PNG', 14, 10, 40, 15);
                 doc.setFontSize(8); doc.setTextColor(111); doc.setFont(undefined, 'bold');
@@ -745,7 +679,6 @@
                 doc.text(`Reporte: ${selectedTitle.toUpperCase()}`, 14, 35); doc.setDrawColor(15, 83, 25); doc.line(14, 38, 196, 38);
                 doc.setFontSize(8); doc.setTextColor(111); doc.setFont(undefined, 'normal');
                 doc.text(`Generado el: ${date} a las ${time}`, 14, 44);
-                
                 let head, body, foot;
                 if (currentReportType === 'cronicas') {
                     head = [["MUNICIPIO", "COLONIA", "HIPERTENSIÓN", "DIABETES", "CARDIOVASCULARES", "DISLIPIDEMIA", "TOTAL"]];
@@ -768,18 +701,15 @@
                     body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalH]); 
                     foot = [["TOTAL", "", "", lastTableResults.reduce((a, b) => a + b.totalH, 0)]];
                 }
-                
                 doc.autoTable({ startY: 48, head: head, body: body, foot: foot, theme: 'grid', headStyles: { fillColor: [15, 83, 25], fontSize: 7, halign: 'center' }, styles: { fontSize: 6.5, cellPadding: 1.5 } });
                 doc.save(`Reporte_Visitando_Corazones_${currentReportType}.pdf`);
             };
         }
-
         function generateExcelReport() {
             if (!window.XLSX) return;
             const now = new Date(), date = now.toLocaleDateString('es-MX');
             let data = []; let selectedTitle = document.getElementById('reportTypeSelector').selectedOptions[0].text;
             data.push(["VISITANDO CORAZONES - DASHBOARD INFORMATIVO"]); data.push(["Reporte:", selectedTitle.toUpperCase()]); data.push(["Fecha:", date]); data.push([]);
-            
             if (currentReportType === 'cronicas') {
                 data.push(["MUNICIPIO", "COLONIA", "HIPERTENSIÓN", "DIABETES", "CARDIOVASCULARES", "DISLIPIDEMIA", "TOTAL CASOS"]);
                 lastTableResults.forEach(o => data.push([o.m, o.c, o.hip, o.dia, o.car, o.dis, o.tot]));
@@ -796,7 +726,6 @@
             const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(data);
             XLSX.utils.book_append_sheet(wb, ws, "Reporte"); XLSX.writeFile(wb, `Reporte_Visitando_Corazones_${currentReportType}.xlsx`);
         }
-
         function renderKPIs(g, t, a) {
             const icons = { infancia: 'baby', adolescentes: 'graduation-cap', adultos: 'briefcase', 'adultos mayores': 'heart-pulse' };
             const cls = { infancia: COLORS.green, adolescentes: COLORS.gold, adultos: COLORS.red, 'adultos mayores': COLORS.green };
@@ -808,25 +737,18 @@
                 </div>`).join('');
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
-
         function renderCharts(g, gen, vAcc, cols, petT, visitas) {
             const barOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'top', formatter: (v) => formatNumber(v), font: { weight: 'bold', size: 10 } } }, scales: { y: { beginAtZero: true, ticks: { callback: (v) => formatNumber(v) } } } };
             const pieOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v, ctx) => { let sum = ctx.dataset.data.reduce((a, b) => a + b, 0); return sum === 0 ? "0%" : formatNumber(v) + " (" + (v * 100 / sum).toFixed(1) + "%)"; } } } };
-            
             new Chart(document.getElementById('ageGroupBarChart'), { type: 'bar', data: { labels: ['INFANCIA', 'ADOLESCENTES', 'ADULTOS', 'ADULTOS MAYORES'], datasets: [{ label: 'Individuos', data: [g.infancia, g.adolescentes, g.adultos, g['adultos mayores']], backgroundColor: [COLORS.green, COLORS.gold, COLORS.red, COLORS.green], borderRadius: 8 }] }, options: barOptions });
             new Chart(document.getElementById('genderBarChart'), { type: 'bar', data: { labels: ['FEMENINO', 'MASCULINO', 'NO BINARIO'], datasets: [{ data: [gen.femenino, gen.masculino, gen['no binario']], backgroundColor: [COLORS.red, COLORS.green, COLORS.gold], borderRadius: 8 }] }, options: barOptions });
-            
             const topVis = Object.entries(visitas).sort((a,b) => b[1] - a[1]).slice(0, 10);
             new Chart(document.getElementById('topVisitasChart'), { type: 'bar', data: { labels: topVis.map(i => i[0]), datasets: [{ label: 'Visitas', data: topVis.map(i => i[1]), backgroundColor: BAR_COLORS, borderRadius: 8 }] }, options: barOptions });
-            
             new Chart(document.getElementById('petsPieChart'), { type: 'pie', data: { labels: ['TIENE', 'NO TIENE'], datasets: [{ data: [petT['TIENE'], petT['NO TIENE']], backgroundColor: [COLORS.green, COLORS.gray], borderWidth: 4, borderColor: '#ffffff' }] }, options: pieOptions });
-            
             new Chart(document.getElementById('vaccinationStackedBarChart'), { type: 'bar', data: { labels: ['VACUNACIÓN'], datasets: [{ label: 'VACUNADOS', data: [vAcc.VACUNADOS], backgroundColor: COLORS.green }, { label: 'SIN VACUNA', data: [vAcc['SIN VACUNA']], backgroundColor: COLORS.red }]}, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, display: false }, y: { stacked: true } }, plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v) => v > 0 ? formatNumber(v) : '' } } } });
-            
             const topMasc = Object.entries(cols).sort((a,b) => b[1].totalPets - a[1].totalPets).slice(0, 10);
             new Chart(document.getElementById('topColoniasChart'), { type: 'bar', data: { labels: topMasc.map(i => i[0]), datasets: [{ label: 'SIN VACUNA', data: topMasc.map(i => i[1].noVac), backgroundColor: COLORS.red, borderRadius: 8 }, { label: 'VACUNADOS', data: topMasc.map(i => i[1].vac), backgroundColor: COLORS.green, borderRadius: 8 }, { label: 'TOTAL MASCOTAS', data: topMasc.map(i => i[1].totalPets), backgroundColor: COLORS.gold, borderRadius: 8 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, datalabels: { anchor: 'end', align: 'top', formatter: (v) => formatNumber(v), font: { size: 9, weight: 'bold' } } }, scales: { y: { ticks: { callback: (v) => formatNumber(v) } } } } });
         }
-
         function showGenderBreakdown(k) {
             const d = globalGroupGenderBreakdown[k] || { femenino: 0, masculino: 0, "no binario": 0 };
             document.getElementById('modalTitle').textContent = `DETALLE: ${k.toUpperCase()}`;
