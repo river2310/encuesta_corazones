@@ -243,6 +243,7 @@
                                 <option value="demo">Cobertura en Viviendas</option>
                                 <option value="personas">Población Encuestada</option>
                                 <option value="summary">Población con mascota</option>
+                                <option value="cronicas">Población con enfermedades crónicas</option>
                             </select>
                         </div>
                         <div class="lg:col-span-1">
@@ -358,10 +359,11 @@
         const URL_MASCOTAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=0&single=true&output=csv';
         const URL_VISITAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=802355093&single=true&output=csv';
         const URL_GEOREFERENCIA = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=979206153&single=true&output=csv';
+        const URL_CRONICAS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSy3hGy5Bnrvw51d2VBy_NXEmSDVkeRXXvZFmnknN8S_ay2wb5zuh-jwg4yE3yxlEvEQTvJhxlxSQwX/pub?gid=1004174643&single=true&output=csv';
         
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') { Chart.register(ChartDataLabels); }
         
-        let globalRawDataHogares = [], globalRawDataPersonas = [], globalGeorefData = [], lastTableResults = [], currentReportType = 'demo', globalGroupGenderBreakdown = {}, personasAgeGroupTotals = {};
+        let globalRawDataHogares = [], globalRawDataPersonas = [], globalGeorefData = [], globalRawDataCronicas = [], lastTableResults = [], currentReportType = 'demo', globalGroupGenderBreakdown = {}, personasAgeGroupTotals = {};
         let leafletMap = null, markersClusterGroup = null;
 
         const COLORS = { green: '#0f5319', gold: '#76b82a', red: '#ea047f', secondary: '#0f5319', gray: '#6F7271', beige: '#D4C19C' };
@@ -490,7 +492,8 @@
             const meta = {
                 demo: { t: "Cobertura en Viviendas", d: "Cuantificación de hogares únicos registrados en el territorio" },
                 personas: { t: "Población Encuestada", d: "Desglose por grupos de edad, género y pertenencia indígena" },
-                summary: { t: "Población con mascota", d: "Consolidado operativo detallado por demarcación geográfica" }
+                summary: { t: "Población con mascota", d: "Consolidado operativo detallado por demarcación geográfica" },
+                cronicas: { t: "Población con enfermedades crónicas", d: "Número de personas diagnosticadas con enfermedades crónicas por colonia" }
             };
             document.getElementById('reportTitleDisplay').textContent = meta[currentReportType].t;
             document.getElementById('reportDescDisplay').textContent = meta[currentReportType].d;
@@ -518,13 +521,15 @@
         window.onload = async () => {
             if (typeof lucide !== 'undefined') lucide.createIcons();
             try {
-                const [hogaresData, persAtendData, visitasData, georefData] = await Promise.all([ 
+                const [hogaresData, persAtendData, visitasData, georefData, cronicasData] = await Promise.all([ 
                     fetchCSVData(URL_MASCOTAS), 
                     fetchCSVData(URL_POBLACION), 
                     fetchCSVData(URL_VISITAS),
-                    fetchCSVData(URL_GEOREFERENCIA)
+                    fetchCSVData(URL_GEOREFERENCIA),
+                    fetchCSVData(URL_CRONICAS)
                 ]);
                 globalGeorefData = georefData;
+                globalRawDataCronicas = cronicasData;
                 document.getElementById('status-container').classList.add('hidden');
                 document.getElementById('dashboard-content').classList.remove('hidden');
                 processAndRenderData(hogaresData, persAtendData, visitasData);
@@ -620,7 +625,69 @@
             const secTerms = secT.split(',').map(t => t.trim().toLowerCase()).filter(t => t !== "");
             let hH = '', bH = '';
             
-            if (currentReportType === 'personas') {
+            if (currentReportType === 'cronicas') {
+                hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b">
+                        <th class="px-6 py-4">Municipio</th>
+                        <th class="px-6 py-4">Colonia</th>
+                        <th class="px-6 py-4 text-center">Hipertensión</th>
+                        <th class="px-6 py-4 text-center">Diabetes</th>
+                        <th class="px-6 py-4 text-center">Cardiovasculares</th>
+                        <th class="px-6 py-4 text-center">Dislipidemia</th>
+                        <th class="px-6 py-4 text-center text-green-800">Total Casos</th>
+                      </tr>`;
+                
+                let filtered = globalRawDataCronicas.filter(i => {
+                    const col = String(getColumnValue(i, 'colonia') || '').toLowerCase();
+                    const mun = String(getColumnValue(i, 'municipio') || '').toLowerCase();
+                    const sec = String(getColumnValue(i, 'seccion_electoral') || '').toLowerCase();
+                    return col.includes(colT) && mun.includes(munT) && (secTerms.length ? secTerms.some(t => sec.includes(t)) : true);
+                });
+
+                const grouped = {};
+                filtered.forEach(i => {
+                    const mun = String(getColumnValue(i, 'municipio') || 'N/A').toUpperCase();
+                    const col = String(getColumnValue(i, 'colonia') || 'SIN COLONIA').toUpperCase();
+                    const key = `${mun}|${col}`;
+                    
+                    if (!grouped[key]) grouped[key] = { m: mun, c: col, hip: 0, dia: 0, car: 0, dis: 0, tot: 0 };
+                    
+                    const isHip = String(getColumnValue(i, 'hipertension_arterial') || '').toLowerCase().includes('si');
+                    const isDia = String(getColumnValue(i, 'diabetes_mellitus') || '').toLowerCase().includes('si');
+                    const isCar = String(getColumnValue(i, 'enfermedad_cardiovascular') || '').toLowerCase().includes('si');
+                    const isDis = String(getColumnValue(i, 'dislipidemia') || '').toLowerCase().includes('si');
+                    
+                    if (isHip) grouped[key].hip++;
+                    if (isDia) grouped[key].dia++;
+                    if (isCar) grouped[key].car++;
+                    if (isDis) grouped[key].dis++;
+                    if (isHip || isDia || isCar || isDis) grouped[key].tot++;
+                });
+
+                let results = Object.values(grouped).sort((a,b) => b.tot - a.tot);
+                lastTableResults = results;
+                
+                let gH=0, gD=0, gC=0, gDi=0, gT=0;
+                bH = results.map(o => {
+                    gH += o.hip; gD += o.dia; gC += o.car; gDi += o.dis; gT += o.tot;
+                    return `<tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-3 text-[10px] text-gray-400 font-bold">${o.m}</td>
+                        <td class="px-6 py-3 font-semibold text-gray-900">${o.c}</td>
+                        <td class="px-6 py-3 text-center">${o.hip}</td>
+                        <td class="px-6 py-3 text-center">${o.dia}</td>
+                        <td class="px-6 py-3 text-center">${o.car}</td>
+                        <td class="px-6 py-3 text-center">${o.dis}</td>
+                        <td class="px-6 py-3 text-center font-black text-green-800">${o.tot}</td>
+                    </tr>`;
+                }).join('');
+                bH += `<tr class="bg-green-50 font-black border-t-4 border-green-200">
+                        <td colspan="2" class="px-6 py-4 text-right uppercase text-[11px]">Sumatoria General:</td>
+                        <td class="px-6 py-3 text-center">${gH}</td>
+                        <td class="px-6 py-3 text-center">${gD}</td>
+                        <td class="px-6 py-3 text-center">${gC}</td>
+                        <td class="px-6 py-3 text-center">${gDi}</td>
+                        <td class="px-6 py-3 text-center text-green-900">${gT}</td>
+                    </tr>`;
+            } else if (currentReportType === 'personas') {
                 hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Sección</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Infancia</th><th class="px-6 py-4 text-center">Adolescentes</th><th class="px-6 py-4 text-center">Adultos</th><th class="px-6 py-4 text-center">Adultos Mayores</th><th class="px-6 py-4 text-center">Pueblo Indígena</th><th class="px-6 py-4 text-center">Habla Lengua</th><th class="px-6 py-4 text-center text-green-800">Total</th></tr>`;
                 let filtered = globalRawDataPersonas.filter(i => i.colonia.toLowerCase().includes(colT) && i.municipio.toLowerCase().includes(munT) && (secTerms.length ? secTerms.some(t => i.seccion.toLowerCase().includes(t)) : true));
                 const grouped = {};
@@ -680,7 +747,13 @@
                 doc.text(`Generado el: ${date} a las ${time}`, 14, 44);
                 
                 let head, body, foot;
-                if (currentReportType === 'summary') {
+                if (currentReportType === 'cronicas') {
+                    head = [["MUNICIPIO", "COLONIA", "HIPERTENSIÓN", "DIABETES", "CARDIOVASCULARES", "DISLIPIDEMIA", "TOTAL"]];
+                    body = lastTableResults.map(o => [o.m, o.c, o.hip, o.dia, o.car, o.dis, o.tot]);
+                    let gH=0, gD=0, gC=0, gDi=0, gT=0;
+                    lastTableResults.forEach(o => { gH+=o.hip; gD+=o.dia; gC+=o.car; gDi+=o.dis; gT+=o.tot; });
+                    foot = [["TOTALES", "", gH, gD, gC, gDi, gT]];
+                } else if (currentReportType === 'summary') {
                     let th=0,tm=0,tv=0,tnv=0; lastTableResults.forEach(g => { th+=g.totalH; tm+=g.totalM; tv+=g.vac; tnv+=g.noVac; });
                     head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "HOGARES", "MASCOTAS", "VACUNADOS", "SIN VACUNA"]]; 
                     body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalH, g.totalM, g.vac, g.noVac]); 
@@ -707,7 +780,10 @@
             let data = []; let selectedTitle = document.getElementById('reportTypeSelector').selectedOptions[0].text;
             data.push(["VISITANDO CORAZONES - DASHBOARD INFORMATIVO"]); data.push(["Reporte:", selectedTitle.toUpperCase()]); data.push(["Fecha:", date]); data.push([]);
             
-            if (currentReportType === 'summary') {
+            if (currentReportType === 'cronicas') {
+                data.push(["MUNICIPIO", "COLONIA", "HIPERTENSIÓN", "DIABETES", "CARDIOVASCULARES", "DISLIPIDEMIA", "TOTAL CASOS"]);
+                lastTableResults.forEach(o => data.push([o.m, o.c, o.hip, o.dia, o.car, o.dis, o.tot]));
+            } else if (currentReportType === 'summary') {
                 data.push(["MUNICIPIO", "COLONIA", "SECCIÓN", "HOGARES", "MASCOTAS", "VACUNADOS", "SIN VACUNA"]);
                 lastTableResults.forEach(g => data.push([g.m, g.c, g.s, g.totalH, g.totalM, g.vac, g.noVac]));
             } else if (currentReportType === 'personas') {
