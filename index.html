@@ -25,7 +25,7 @@
         :root {
             --clues-green: #0f5319; 
             --clues-gold: #76b82a; 
-            --clues-red: #ea047f; 
+            --clues-red: #d32f2f; 
             --clues-gray: #6F7271;
             --clues-light-gold: #D4C19C;
         }
@@ -79,12 +79,18 @@
         .custom-pin {
             filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
         }
+        .marker-cluster-small { background-color: rgba(211, 47, 47, 0.6) !important; }
+        .marker-cluster-small div { background-color: rgba(211, 47, 47, 1) !important; color: white !important; }
+        .marker-cluster-medium { background-color: rgba(241, 211, 87, 0.6) !important; }
+        .marker-cluster-medium div { background-color: rgba(241, 211, 87, 1) !important; }
+        .marker-cluster-large { background-color: rgba(15, 83, 25, 0.6) !important; }
+        .marker-cluster-large div { background-color: rgba(15, 83, 25, 1) !important; color: white !important; }
     </style>
 </head>
 <body class="p-4 sm:p-8">
     <div id="status-container" class="flex flex-col items-center justify-center mt-32">
         <div id="loading-animation" class="animate-heart mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="#ea047f" stroke="#ea047f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="#d32f2f" stroke="#d32f2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart">
                 <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
             </svg>
         </div>
@@ -345,9 +351,9 @@
         if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') { Chart.register(ChartDataLabels); }
         let globalRawDataHogares = [], globalRawDataPersonas = [], globalGeorefData = [], globalRawDataCronicas = [], lastTableResults = [], currentReportType = 'demo', globalGroupGenderBreakdown = {}, personasAgeGroupTotals = {};
         let leafletMap = null, markersClusterGroup = null;
-        const COLORS = { green: '#0f5319', gold: '#76b82a', red: '#ea047f', secondary: '#0f5319', gray: '#6F7271', beige: '#D4C19C' };
-        const CHART_COLORS = [ '#0f5319', '#76b82a', '#ea047f' ];
-        const BAR_COLORS = [ '#0f5319', '#76b82a', '#ea047f', '#A57F2C', '#6F7271', '#D4C19C', '#00897B', '#D81B60', '#558B2F', '#8E24AA' ];
+        const COLORS = { green: '#0f5319', gold: '#76b82a', red: '#d32f2f', secondary: '#0f5319', gray: '#6F7271', beige: '#D4C19C' };
+        const CHART_COLORS = [ '#0f5319', '#76b82a', '#d32f2f' ];
+        const BAR_COLORS = [ '#0f5319', '#76b82a', '#d32f2f', '#A57F2C', '#6F7271', '#D4C19C', '#00897B', '#D81B60', '#558B2F', '#8E24AA' ];
         const formatNumber = (num) => { if (num === null || num === undefined) return "0"; return num.toLocaleString('es-MX'); };
         function toggleDetails(sectionId) {
             const sections = ['population', 'visitas', 'pets', 'reports'];
@@ -372,7 +378,7 @@
                 setTimeout(() => { content.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 300);
             }
         }
-        function createGoogleMarkerIcon(color = '#0f5319') {
+        function createGoogleMarkerIcon(color = '#d32f2f') {
             const svgTemplate = `
                 <svg class="custom-pin" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 0C7.58 0 4 3.58 4 8C4 13.54 12 24 12 24C12 24 20 13.54 20 8C20 3.58 16.42 0 12 0Z" fill="${color}"/>
@@ -398,7 +404,7 @@
                 leafletMap.addLayer(markersClusterGroup);
             }
             markersClusterGroup.clearLayers();
-            const customIcon = createGoogleMarkerIcon(COLORS.green);
+            const customIcon = createGoogleMarkerIcon(COLORS.red);
             globalGeorefData.forEach(row => {
                 const lat = parseFloat(getColumnValue(row, 'latitud'));
                 const lng = parseFloat(getColumnValue(row, 'longitud'));
@@ -665,43 +671,87 @@
             header.innerHTML = hH; tbody.innerHTML = bH || `<tr><td colspan="9" class="px-6 py-8 text-center text-gray-400 italic">No se encontraron resultados</td></tr>`;
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
+
         function generatePDFReport() {
             if (!window.jspdf) return;
-            const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
+            const { jsPDF } = window.jspdf; 
+            const doc = new jsPDF('p', 'mm', 'a4');
             const now = new Date(), date = now.toLocaleDateString('es-MX'), time = now.toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit'});
             const img = new Image(); img.crossOrigin = "Anonymous"; img.src = document.getElementById('dashboardLogo').src;
+            
             img.onload = () => {
-                doc.addImage(img, 'PNG', 14, 10, 40, 15);
-                doc.setFontSize(8); doc.setTextColor(111); doc.setFont(undefined, 'bold');
-                doc.text("Dirección de Planeación, Evaluación y Proyectos Especiales", 60, 16); doc.text("Subdirección de Informática y Estadísticas en Salud", 60, 20);
-                doc.setFontSize(14); doc.setTextColor(15, 83, 25);
-                let selectedTitle = document.getElementById('reportTypeSelector').selectedOptions[0].text;
-                doc.text(`Reporte: ${selectedTitle.toUpperCase()}`, 14, 35); doc.setDrawColor(15, 83, 25); doc.line(14, 38, 196, 38);
-                doc.setFontSize(8); doc.setTextColor(111); doc.setFont(undefined, 'normal');
-                doc.text(`Generado el: ${date} a las ${time}`, 14, 44);
-                let head, body, foot;
+                const drawHeader = (docInstance) => {
+                    docInstance.addImage(img, 'PNG', 14, 10, 40, 15);
+                    docInstance.setFontSize(8); docInstance.setTextColor(111); docInstance.setFont(undefined, 'bold');
+                    docInstance.text("Dirección de Planeación, Evaluación y Proyectos Especiales", 60, 16); docInstance.text("Subdirección de Informática y Estadísticas en Salud", 60, 20);
+                    docInstance.setFontSize(14); docInstance.setTextColor(15, 83, 25);
+                    let selectedTitle = document.getElementById('reportTypeSelector').selectedOptions[0].text;
+                    docInstance.text(`Reporte: ${selectedTitle.toUpperCase()}`, 14, 35); docInstance.setDrawColor(15, 83, 25); docInstance.line(14, 38, 196, 38);
+                    docInstance.setFontSize(8); docInstance.setTextColor(111); docInstance.setFont(undefined, 'normal');
+                    docInstance.text(`Generado el: ${date} a las ${time}`, 14, 44);
+                };
+
+                let head, colIdxs;
                 if (currentReportType === 'cronicas') {
                     head = [["MUNICIPIO", "COLONIA", "HIPERTENSIÓN", "DIABETES", "CARDIOVASCULARES", "DISLIPIDEMIA", "TOTAL"]];
-                    body = lastTableResults.map(o => [o.m, o.c, o.hip, o.dia, o.car, o.dis, o.tot]);
-                    let gH=0, gD=0, gC=0, gDi=0, gT=0;
-                    lastTableResults.forEach(o => { gH+=o.hip; gD+=o.dia; gC+=o.car; gDi+=o.dis; gT+=o.tot; });
-                    foot = [["TOTALES", "", gH, gD, gC, gDi, gT]];
+                    colIdxs = [2, 3, 4, 5, 6]; 
                 } else if (currentReportType === 'summary') {
-                    let th=0,tm=0,tv=0,tnv=0; lastTableResults.forEach(g => { th+=g.totalH; tm+=g.totalM; tv+=g.vac; tnv+=g.noVac; });
                     head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "HOGARES", "MASCOTAS", "VACUNADOS", "SIN VACUNA"]]; 
-                    body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalH, g.totalM, g.vac, g.noVac]); 
-                    foot = [["TOTALES", "", "", th, tm, tv, tnv]];
+                    colIdxs = [3, 4, 5, 6];
                 } else if (currentReportType === 'personas') {
                     head = [["SECCIÓN", "COLONIA", "INFANCIA", "ADOLESCENTES", "ADULTOS", "ADULTOS MAYORES", "PUEBLO INDÍGENA", "HABLA LENGUA", "TOTAL"]];
-                    body = lastTableResults.map(o => [o.s, o.c, o.inf, o.ado, o.adu, o.am, o.ind, o.hla, o.tot]);
-                    let tI=0, tA=0, tU=0, tM=0, tN=0, tL=0, tT=0; lastTableResults.forEach(o => { tI+=o.inf; tA+=o.ado; tU+=o.adu; tM+=o.am; tN+=o.ind; tL+=o.hla; tT+=o.tot; });
-                    foot = [["TOTALES", "", tI, tA, tU, tM, tN, tL, tT]];
+                    colIdxs = [2, 3, 4, 5, 6, 7, 8];
                 } else { 
                     head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "TOTAL HOGARES"]]; 
-                    body = lastTableResults.map(g => [g.m, g.c, g.s, g.totalH]); 
-                    foot = [["TOTAL", "", "", lastTableResults.reduce((a, b) => a + b.totalH, 0)]];
+                    colIdxs = [3];
                 }
-                doc.autoTable({ startY: 48, head: head, body: body, foot: foot, theme: 'grid', headStyles: { fillColor: [15, 83, 25], fontSize: 7, halign: 'center' }, styles: { fontSize: 6.5, cellPadding: 1.5 } });
+
+                const rowsPerPage = 32;
+                const totalRows = lastTableResults.length;
+                const grandTotals = new Array(head[0].length).fill(0);
+                
+                for (let i = 0; i < totalRows; i += rowsPerPage) {
+                    if (i > 0) doc.addPage();
+                    drawHeader(doc);
+                    
+                    const chunk = lastTableResults.slice(i, i + rowsPerPage);
+                    const pageBody = chunk.map(row => {
+                        if (currentReportType === 'cronicas') return [row.m, row.c, row.hip, row.dia, row.car, row.dis, row.tot];
+                        if (currentReportType === 'summary') return [row.m, row.c, row.s, row.totalH, row.totalM, row.vac, row.noVac];
+                        if (currentReportType === 'personas') return [row.s, row.c, row.inf, row.ado, row.adu, row.am, row.ind, row.hla, row.tot];
+                        return [row.m, row.c, row.s, row.totalH];
+                    });
+
+                    const pageSums = new Array(head[0].length).fill(null);
+                    colIdxs.forEach(idx => {
+                        let sum = pageBody.reduce((acc, curr) => acc + (parseFloat(curr[idx]) || 0), 0);
+                        pageSums[idx] = sum;
+                        grandTotals[idx] += sum;
+                    });
+                    pageSums[0] = "SUBTOTAL PÁGINA";
+
+                    const isLastPage = (i + rowsPerPage) >= totalRows;
+                    const tableFoot = [pageSums];
+
+                    if (isLastPage) {
+                        const finalTotalRow = new Array(head[0].length).fill(null);
+                        colIdxs.forEach(idx => finalTotalRow[idx] = grandTotals[idx]);
+                        finalTotalRow[0] = "TOTAL GENERAL";
+                        tableFoot.push(finalTotalRow);
+                    }
+
+                    doc.autoTable({ 
+                        startY: 48, 
+                        head: head, 
+                        body: pageBody, 
+                        foot: tableFoot,
+                        theme: 'grid', 
+                        headStyles: { fillColor: [15, 83, 25], fontSize: 7, halign: 'center' }, 
+                        footStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontSize: 7, fontStyle: 'bold' },
+                        styles: { fontSize: 6.5, cellPadding: 1.5 } 
+                    });
+                }
+                
                 doc.save(`Reporte_Visitando_Corazones_${currentReportType}.pdf`);
             };
         }
