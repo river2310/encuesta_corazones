@@ -518,7 +518,7 @@
                 if (hasP) petT['TIENE']++; else petT['NO TIENE']++;
                 const vac = String(getColumnValue(row, 'estan_vacunados') || '').toUpperCase();
                 let estatus = "OTRO";
-                if (vac.includes("NO APLICA")) estatus = "NO_APLICA";
+                if (vac.includes("NO APLICA")) estatus = "NO_AP_ICA";
                 else if (vac.includes('SI')) estatus = "VAC";
                 else if (vac.includes('NO')) estatus = "NOVAC";
                 if (hasP) {
@@ -756,6 +756,8 @@
                     const isLastPage = (i + rowsPerPage) >= totalRows;
                     const tableFoot = [pageSums];
                     if (isLastPage) {
+                        const spacerRow = new Array(head[0].length).fill("");
+                        tableFoot.push(spacerRow);
                         const finalTotalRow = new Array(head[0].length).fill(null);
                         colIdxs.forEach(idx => finalTotalRow[idx] = grandTotals[idx]);
                         finalTotalRow[0] = "TOTAL GENERAL";
@@ -769,7 +771,13 @@
                         theme: 'grid', 
                         headStyles: { fillColor: [15, 83, 25], fontSize: 7, halign: 'center' }, 
                         footStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontSize: 7, fontStyle: 'bold' },
-                        styles: { fontSize: 6.5, cellPadding: 1.5 } 
+                        styles: { fontSize: 6.5, cellPadding: 1.5 },
+                        didParseCell: function(data) {
+                            if (data.section === 'foot' && data.row.raw[0] === "TOTAL GENERAL") {
+                                data.cell.styles.fillColor = [15, 83, 25];
+                                data.cell.styles.textColor = [255, 255, 255];
+                            }
+                        }
                     });
                 }
                 doc.save(`Reporte_Visitando_Corazones_${currentReportType}.pdf`);
