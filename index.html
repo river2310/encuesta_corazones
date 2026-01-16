@@ -518,7 +518,7 @@
                 if (hasP) petT['TIENE']++; else petT['NO TIENE']++;
                 const vac = String(getColumnValue(row, 'estan_vacunados') || '').toUpperCase();
                 let estatus = "OTRO";
-                if (vac.includes("NO APLICA")) estatus = "NO_AP_ICA";
+                if (vac.includes("NO APLICA")) estatus = "NO_APLICA";
                 else if (vac.includes('SI')) estatus = "VAC";
                 else if (vac.includes('NO')) estatus = "NOVAC";
                 if (hasP) {
@@ -631,12 +631,23 @@
                         <td class="px-6 py-3 text-center text-green-900">${gT}</td>
                     </tr>`;
             } else if (currentReportType === 'personas') {
-                hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b"><th class="px-6 py-4">Sección</th><th class="px-6 py-4">Colonia</th><th class="px-6 py-4 text-center">Infancia</th><th class="px-6 py-4 text-center">Adolescentes</th><th class="px-6 py-4 text-center">Adultos</th><th class="px-6 py-4 text-center">Adultos Mayores</th><th class="px-6 py-4 text-center">Pueblo Indígena</th><th class="px-6 py-4 text-center">Habla Lengua</th><th class="px-6 py-4 text-center text-green-800">Total</th></tr>`;
+                hH = `<tr class="text-[10px] font-black uppercase text-gray-500 border-b">
+                        <th class="px-6 py-4">Municipio</th>
+                        <th class="px-6 py-4">Sección</th>
+                        <th class="px-6 py-4">Colonia</th>
+                        <th class="px-6 py-4 text-center">Infancia</th>
+                        <th class="px-6 py-4 text-center">Adolescentes</th>
+                        <th class="px-6 py-4 text-center">Adultos</th>
+                        <th class="px-6 py-4 text-center">Adultos Mayores</th>
+                        <th class="px-6 py-4 text-center">Pueblo Indígena</th>
+                        <th class="px-6 py-4 text-center">Habla Lengua</th>
+                        <th class="px-6 py-4 text-center text-green-800">Total</th>
+                      </tr>`;
                 let filtered = globalRawDataPersonas.filter(i => i.colonia.toLowerCase().includes(colT) && i.municipio.toLowerCase().includes(munT) && (secTerms.length ? secTerms.some(t => i.seccion.toLowerCase().includes(t)) : true));
                 const grouped = {};
                 filtered.forEach(i => {
-                    const k = `${i.seccion}|${i.colonia}`;
-                    if (!grouped[k]) grouped[k] = { s: i.seccion, c: i.colonia, inf: 0, ado: 0, adu: 0, am: 0, ind: 0, hla: 0, tot: 0 };
+                    const k = `${i.municipio}|${i.seccion}|${i.colonia}`;
+                    if (!grouped[k]) grouped[k] = { m: i.municipio, s: i.seccion, c: i.colonia, inf: 0, ado: 0, adu: 0, am: 0, ind: 0, hla: 0, tot: 0 };
                     const o = grouped[k]; o.tot++;
                     if (i.grupo_edad === 'INFANCIA') o.inf++; else if (i.grupo_edad === 'ADOLESCENTES') o.ado++; else if (i.grupo_edad === 'ADULTOS') o.adu++; else if (i.grupo_edad === 'ADULTOS MAYORES') o.am++;
                     if (i.pertenece) o.ind++; if (i.habla) o.hla++;
@@ -646,9 +657,29 @@
                 let gI=0, gA=0, gU=0, gM=0, gN=0, gL=0;
                 bH = results.map(o => {
                     gI += o.inf; gA += o.ado; gU += o.adu; gM += o.am; gN += o.ind; gL += o.hla;
-                    return `<tr><td class="px-6 py-3 font-mono font-bold text-green-900">${o.s}</td><td class="px-6 py-3 font-semibold text-[11px]">${o.c}</td><td class="px-6 py-3 text-center">${o.inf}</td><td class="px-6 py-3 text-center">${o.ado}</td><td class="px-6 py-3 text-center">${o.adu}</td><td class="px-6 py-3 text-center">${o.am}</td><td class="px-6 py-3 text-center font-bold text-amber-600">${o.ind}</td><td class="px-6 py-3 text-center font-bold text-amber-600">${o.hla}</td><td class="px-6 py-3 text-center font-black text-green-800">${o.tot}</td></tr>`;
+                    return `<tr>
+                        <td class="px-6 py-3 text-[10px] text-gray-400 font-bold">${o.m}</td>
+                        <td class="px-6 py-3 font-mono font-bold text-green-900">${o.s}</td>
+                        <td class="px-6 py-3 font-semibold text-[11px]">${o.c}</td>
+                        <td class="px-6 py-3 text-center">${o.inf}</td>
+                        <td class="px-6 py-3 text-center">${o.ado}</td>
+                        <td class="px-6 py-3 text-center">${o.adu}</td>
+                        <td class="px-6 py-3 text-center">${o.am}</td>
+                        <td class="px-6 py-3 text-center font-bold text-amber-600">${o.ind}</td>
+                        <td class="px-6 py-3 text-center font-bold text-amber-600">${o.hla}</td>
+                        <td class="px-6 py-3 text-center font-black text-green-800">${o.tot}</td>
+                    </tr>`;
                 }).join('');
-                bH += `<tr class="bg-green-50 font-black border-t-4 border-green-200"><td colspan="2" class="px-6 py-4 text-right uppercase text-[11px]">Sumatoria General:</td><td class="px-6 py-3 text-center">${gI}</td><td class="px-6 py-3 text-center">${gA}</td><td class="px-6 py-3 text-center">${gU}</td><td class="px-6 py-3 text-center">${gM}</td><td class="px-6 py-3 text-center text-amber-700">${gN}</td><td class="px-6 py-3 text-center text-amber-700">${gL}</td><td class="px-6 py-3 text-center text-green-900">${filtered.length}</td></tr>`;
+                bH += `<tr class="bg-green-50 font-black border-t-4 border-green-200">
+                        <td colspan="3" class="px-6 py-4 text-right uppercase text-[11px]">Sumatoria General:</td>
+                        <td class="px-6 py-3 text-center">${gI}</td>
+                        <td class="px-6 py-3 text-center">${gA}</td>
+                        <td class="px-6 py-3 text-center">${gU}</td>
+                        <td class="px-6 py-3 text-center">${gM}</td>
+                        <td class="px-6 py-3 text-center text-amber-700">${gN}</td>
+                        <td class="px-6 py-3 text-center text-amber-700">${gL}</td>
+                        <td class="px-6 py-3 text-center text-green-900">${filtered.length}</td>
+                    </tr>`;
             } else {
                 let f = globalRawDataHogares.filter(i => i.colonia.toLowerCase().includes(colT) && i.municipio.toLowerCase().includes(munT) && (secTerms.length ? secTerms.some(t => i.seccion.toLowerCase().includes(t)) : true));
                 const grouped = {};
@@ -668,7 +699,7 @@
                     bH = results.map(g => { return `<tr><td class="px-6 py-3 text-[10px] font-bold text-gray-400">${g.m}</td><td class="px-6 py-3 font-semibold">${g.c}</td><td class="px-6 py-3 text-center font-mono text-[10px]">${g.s}</td><td class="px-6 py-3 text-center font-bold text-slate-500 uppercase">${g.totalH}</td></tr>`; }).join('');
                 }
             }
-            header.innerHTML = hH; tbody.innerHTML = bH || `<tr><td colspan="9" class="px-6 py-8 text-center text-gray-400 italic">No se encontraron resultados</td></tr>`;
+            header.innerHTML = hH; tbody.innerHTML = bH || `<tr><td colspan="10" class="px-6 py-8 text-center text-gray-400 italic">No se encontraron resultados</td></tr>`;
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
         function generatePDFReport() {
@@ -696,8 +727,8 @@
                     head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "HOGARES", "MASCOTAS", "VACUNADOS", "SIN VACUNA"]]; 
                     colIdxs = [3, 4, 5, 6];
                 } else if (currentReportType === 'personas') {
-                    head = [["SECCIÓN", "COLONIA", "INFANCIA", "ADOLESCENTES", "ADULTOS", "ADULTOS MAYORES", "PUEBLO INDÍGENA", "HABLA LENGUA", "TOTAL"]];
-                    colIdxs = [2, 3, 4, 5, 6, 7, 8];
+                    head = [["MUNICIPIO", "SECCIÓN", "COLONIA", "INFANCIA", "ADOLESCENTES", "ADULTOS", "ADULTOS MAYORES", "PUEBLO INDÍGENA", "HABLA LENGUA", "TOTAL"]];
+                    colIdxs = [3, 4, 5, 6, 7, 8, 9];
                 } else { 
                     head = [["MUNICIPIO", "COLONIA", "SECCIÓN", "TOTAL HOGARES"]]; 
                     colIdxs = [3];
@@ -712,7 +743,7 @@
                     const pageBody = chunk.map(row => {
                         if (currentReportType === 'cronicas') return [row.m, row.c, row.hip, row.dia, row.car, row.dis, row.tot];
                         if (currentReportType === 'summary') return [row.m, row.c, row.s, row.totalH, row.totalM, row.vac, row.noVac];
-                        if (currentReportType === 'personas') return [row.s, row.c, row.inf, row.ado, row.adu, row.am, row.ind, row.hla, row.tot];
+                        if (currentReportType === 'personas') return [row.m, row.s, row.c, row.inf, row.ado, row.adu, row.am, row.ind, row.hla, row.tot];
                         return [row.m, row.c, row.s, row.totalH];
                     });
                     const pageSums = new Array(head[0].length).fill(null);
@@ -756,8 +787,8 @@
                 data.push(["MUNICIPIO", "COLONIA", "SECCIÓN", "HOGARES", "MASCOTAS", "VACUNADOS", "SIN VACUNA"]);
                 lastTableResults.forEach(g => data.push([g.m, g.c, g.s, g.totalH, g.totalM, g.vac, g.noVac]));
             } else if (currentReportType === 'personas') {
-                data.push(["SECCIÓN", "COLONIA", "INFANCIA", "ADOLESCENTES", "ADULTOS", "ADULTOS MAYORES", "PUEBLO INDÍGENA", "HABLA LENGUA", "TOTAL"]);
-                lastTableResults.forEach(o => data.push([o.s, o.c, o.inf, o.ado, o.adu, o.am, o.ind, o.hla, o.tot]));
+                data.push(["MUNICIPIO", "SECCIÓN", "COLONIA", "INFANCIA", "ADOLESCENTES", "ADULTOS", "ADULTOS MAYORES", "PUEBLO INDÍGENA", "HABLA LENGUA", "TOTAL"]);
+                lastTableResults.forEach(o => data.push([o.m, o.s, o.c, o.inf, o.ado, o.adu, o.am, o.ind, o.hla, o.tot]));
             } else {
                 data.push(["MUNICIPIO", "COLONIA", "SECCIÓN", "TOTAL HOGARES"]);
                 lastTableResults.forEach(g => data.push([g.m, g.c, g.s, g.totalH]));
