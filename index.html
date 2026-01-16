@@ -384,7 +384,7 @@
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
             const err = document.getElementById('login-error');
-            if (u === 'gob@ssslp' && p === 'i6=8Q2') {
+            if (btoa(u) === 'Z29iQHNzc2xw' && btoa(p) === 'aTY9OFEy') {
                 document.getElementById('login-container').classList.add('hidden');
                 document.getElementById('status-container').classList.remove('hidden');
                 initApp();
@@ -869,7 +869,7 @@
             const topVis = Object.entries(visitas).sort((a,b) => b[1] - a[1]).slice(0, 10);
             new Chart(document.getElementById('topVisitasChart'), { type: 'bar', data: { labels: topVis.map(i => i[0]), datasets: [{ label: 'Visitas', data: topVis.map(i => i[1]), backgroundColor: BAR_COLORS, borderRadius: 8 }] }, options: barOptions });
             new Chart(document.getElementById('petsPieChart'), { type: 'pie', data: { labels: ['TIENE', 'NO TIENE'], datasets: [{ data: [petT['TIENE'], petT['NO TIENE']], backgroundColor: [COLORS.green, COLORS.gray], borderWidth: 4, borderColor: '#ffffff' }] }, options: pieOptions });
-            new Chart(document.getElementById('vaccinationStackedBarChart'), { type: 'bar', data: { labels: ['VACUNACIÓN'], datasets: [{ label: 'VACUNADOS', data: [vAcc.VACUNADOS], backgroundColor: COLORS.green }, { label: 'SIN VACUNA', data: [vAcc['SIN VACUNA']], backgroundColor: COLORS.red }]}, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, display: false }, y: { stacked: true } }, plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v) => v > 0 ? formatNumber(v) : '' } } } });
+            new Chart(document.getElementById('vaccinationStackedBarChart'), { type: 'bar', data: { labels: ['VACUNACIÓN'], datasets: [{ label: 'VACUNACIÓN', data: [vAcc.VACUNADOS], backgroundColor: COLORS.green }, { label: 'SIN VACUNA', data: [vAcc['SIN VACUNA']], backgroundColor: COLORS.red }]}, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, display: false }, y: { stacked: true } }, plugins: { legend: { position: 'bottom' }, datalabels: { color: '#fff', font: { weight: 'bold' }, formatter: (v) => v > 0 ? formatNumber(v) : '' } } } });
             const topMasc = Object.entries(cols).sort((a,b) => b[1].totalPets - a[1].totalPets).slice(0, 10);
             new Chart(document.getElementById('topColoniasChart'), { type: 'bar', data: { labels: topMasc.map(i => i[0]), datasets: [{ label: 'SIN VACUNA', data: topMasc.map(i => i[1].noVac), backgroundColor: COLORS.red, borderRadius: 8 }, { label: 'VACUNADOS', data: topMasc.map(i => i[1].vac), backgroundColor: COLORS.green, borderRadius: 8 }, { label: 'TOTAL MASCOTAS', data: topMasc.map(i => i[1].totalPets), backgroundColor: COLORS.gold, borderRadius: 8 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' }, datalabels: { anchor: 'end', align: 'top', formatter: (v) => formatNumber(v), font: { size: 9, weight: 'bold' } } }, scales: { y: { ticks: { callback: (v) => formatNumber(v) } } } } });
         }
